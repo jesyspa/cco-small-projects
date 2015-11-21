@@ -12,7 +12,7 @@ maintainer:            Stefan Holdermans <stefan@cs.uu.nl>
 stability:             provisional
 homepage:              http://www.cs.uu.nl/wiki/Cco/MiniProjects
 tested-with:           GHC == 6.8.2, GHC == 6.8.3, GHC == 6.10.1
-build-type:            Simple
+build-type:            Custom
 cabal-version:         >= 1.8
 extra-source-files:    AUTHORS, Makefile, src/CCO/Diag/AG.ag,
                        src/CCO/Diag/AG/Base.ag, src/CCO/Picture/AG.ag,
@@ -21,23 +21,23 @@ extra-source-files:    AUTHORS, Makefile, src/CCO/Diag/AG.ag,
 
 executable parse-tdiag
   main-is:             ParseTDiag.hs
-  build-depends:       base, uu-cco >= 0.1.0.1
+  build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.Diag, CCO.Diag.AG, CCO.Diag.Base, CCO.Diag.Lexer,
                        CCO.Diag.Parser
   hs-source-dirs:      src
 
 executable tc-tdiag
   main-is:             TypeCheckTDiag.hs
-  build-depends:       base, uu-cco >= 0.1.0.1
+  build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   hs-source-dirs:      src
 
 executable tdiag2picture
   main-is:             TDiagToPicture.hs
-  build-depends:       base, uu-cco >= 0.1.0.1
+  build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   hs-source-dirs:      src
 
 executable pp-picture
   main-is:             PpPicture.hs
-  build-depends:       base, uu-cco >= 0.1.0.1
+  build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.Picture, CCO.Picture.AG
   hs-source-dirs:      src

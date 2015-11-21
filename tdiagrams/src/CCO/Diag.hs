@@ -20,7 +20,11 @@ module CCO.Diag (
 
     -- * Parser
   , parser         -- :: Component String Diag
+  , tcTDiag
 ) where
 
 import CCO.Diag.Base      (Ident, Diag (Diag), Diag_ (..))
 import CCO.Diag.Parser    (parser)
+import CCO.Diag.TypeCheck (tcTDiag)
+import CCO.Diag.AG
+

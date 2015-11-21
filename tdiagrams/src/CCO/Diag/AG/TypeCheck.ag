@@ -1,0 +1,63 @@
+imports
+{
+import CCO.Diag.DiagType
+import Data.Maybe
+}
+
+-------------------------------------------------------------------------------
+-- Type Checking
+-------------------------------------------------------------------------------
+
+
+attr Diag Diag_
+  syn   tp :: TypeAnnotation
+
+sem Diag_
+  | Program        lhs.tp = tpProgram @l
+  | Platform       lhs.tp = tpPlatform @m
+  | Interpreter    lhs.tp = tpInterpreter @m @l
+  | Compiler       lhs.tp = tpCompiler @m @l1 @l2
+  | Execute        lhs.tp = tpExecute @d1.tp @d2.tp
+  | Compile        lhs.tp = tpCompile @d1.tp @d2.tp
+
+-------------------------------------------------------------------------------
+-- Utilities
+-------------------------------------------------------------------------------
+
+{
+type TypeAnnotation = Either [TypeError] DiagType
+
+tpProgram :: String -> TypeAnnotation
+tpProgram native = Right $ nullType { canRunOn = Just native }
+
+tpPlatform :: String -> TypeAnnotation
+tpPlatform runs = Right $ nullType { canRun = Just runs }
+
+tpInterpreter :: String -> String -> TypeAnnotation
+tpInterpreter native runs = Right $ nullType { canRunOn = Just native, canRun = Just runs }
+
+tpCompiler :: String -> String -> String -> TypeAnnotation
+tpCompiler native src tgt = Right $ nullType { canRunOn = Just native, canCompile = Just (src, tgt)}
+
+getCanRunOn, getCanRun, getCanCompile :: Maybe a -> Either [TypeError] a
+getCanRunOn   = maybe (Left [GenericError "cannot run"]) Right
+getCanRun     = maybe (Left [GenericError "cannot be run on"]) Right
+getCanCompile = maybe (Left [GenericError "cannot compile"]) Right
+
+ifEqualGive :: DiagType -> String -> String -> TypeAnnotation
+ifEqualGive dt a a' | a == a' = Right dt
+                    | otherwise = Left [GenericError $ "type mismatch: " ++ a ++ " vs " ++ a']
+
+-- The type stuff here is insane and will not work.  I hoped to avoid
+-- case distinctions, but I don't think this approach will work.
+tpExecute :: TypeAnnotation -> TypeAnnotation -> TypeAnnotation
+tpExecute top bot = ((,) <$> top <*> bot) >>= uncurry f
+    where f t b = ((,) <$> getCanRunOn t <*> getCanRun b) >>= ifEqualGive result
+            where result = DiagType { canRun = canRun <$> t, canRunOn = canRunOn b, canCompile = canCompile t}
+
+tpCompile :: TypeAnnotation -> TypeAnnotation -> TypeAnnotation
+tpCompile input compiler = ((,) <$> input <*> compiler) >>= uncurry f
+    where f i c = ((,) <$> getCanRunOn i <*> getCanCompile c) >>= uncurry (\im (is, it) -> ifEqualGive (result it) im is)
+            where result it = DiagType { canRun = canRun i, canRunOn = Just it, canCompile = canCompile i}
+
+}
