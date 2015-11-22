@@ -10,54 +10,57 @@ import Data.Maybe
 
 
 attr Diag Diag_
-  syn   tp :: TypeAnnotation
+  syn tp     :: self
+
+attr Diag_
+  syn err :: {Maybe TypeError}
+  inh ti :: DiagType
+
 
 sem Diag_
-  | Program        lhs.tp = tpProgram @l
-  | Platform       lhs.tp = tpPlatform @m
-  | Interpreter    lhs.tp = tpInterpreter @m @l
-  | Compiler       lhs.tp = tpCompiler @m @l1 @l2
-  | Execute        lhs.tp = tpExecute @d1.tp @d2.tp
-  | Compile        lhs.tp = tpCompile @d1.tp @d2.tp
+  | Program           lhs.err = Nothing
+  | Platform          lhs.err = Nothing
+  | Interpreter       lhs.err = Nothing
+  | Compiler          lhs.err = Nothing
+  | Execute           lhs.err = isExecutable (unWrap @d1.tp) (unWrap @d2.tp)
+  | Compile           lhs.err = isCompilable (unWrap @d1.tp) (unWrap @d2.tp)
 
+sem Diag_
+  | Execute           @d1.ti = runsOn (unWrap @d2.tp)
+                      @d2.ti = wantsToRun (unWrap @d1.tp)
+  | Compile           @d1.ti = nullType
+                      @d2.ti = nullType
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
 
 {
-type TypeAnnotation = Either [TypeError] DiagType
+type Language = String
+type Platform = String
 
-tpProgram :: String -> TypeAnnotation
-tpProgram native = Right $ nullType { canRunOn = Just native }
+unWrap :: Diag -> Diag_
+unWrap (Diag pos d) = d
 
-tpPlatform :: String -> TypeAnnotation
-tpPlatform runs = Right $ nullType { canRun = Just runs }
+runsOn :: Diag_ -> DiagType
+runsOn (Platform p m) = nullType {canRun = Just m}
+runsOn (Interpreter i l m) = nullType {canRun = Just l}
+runsOn (Compiler c l1 l2 m) = nullType {canRun = Just l}
 
-tpInterpreter :: String -> String -> TypeAnnotation
-tpInterpreter native runs = Right $ nullType { canRunOn = Just native, canRun = Just runs }
 
-tpCompiler :: String -> String -> String -> TypeAnnotation
-tpCompiler native src tgt = Right $ nullType { canRunOn = Just native, canCompile = Just (src, tgt)}
+equalOrError :: (String, String) -> TypeError -> Maybe TypeError
+equalOrError (s1, s2) e = if s1 == s2 then Nothing else Just e
 
-getCanRunOn, getCanRun, getCanCompile :: Maybe a -> Either [TypeError] a
-getCanRunOn   = maybe (Left [GenericError "cannot run"]) Right
-getCanRun     = maybe (Left [GenericError "cannot be run on"]) Right
-getCanCompile = maybe (Left [GenericError "cannot compile"]) Right
+isExecutable :: Diag_ -> Diag_ -> Maybe TypeError
+isExecutable (Program p l) (Interpreter i l' m) = (l, l') `equalOrError` (GenericError $ "Type mismatch. " ++ l ++ l')
+isExecutable (Interpreter i l m) (Platform m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
+isExecutable (Compiler i l1 l2 m) (Platform m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
+isExecutable (Execute d1 d2) _ = isExecutable (unWrap d1) (unWrap d2)
+isExecutable (Compile d1 d2) _ = isExecutable (unWrap d1) (unWrap d2)
+isExecutable _ _ = Just $ GenericError "Nonsense"
 
-ifEqualGive :: DiagType -> String -> String -> TypeAnnotation
-ifEqualGive dt a a' | a == a' = Right dt
-                    | otherwise = Left [GenericError $ "type mismatch: " ++ a ++ " vs " ++ a']
-
--- The type stuff here is insane and will not work.  I hoped to avoid
--- case distinctions, but I don't think this approach will work.
-tpExecute :: TypeAnnotation -> TypeAnnotation -> TypeAnnotation
-tpExecute top bot = ((,) <$> top <*> bot) >>= uncurry f
-    where f t b = ((,) <$> getCanRunOn t <*> getCanRun b) >>= ifEqualGive result
-            where result = DiagType { canRun = canRun <$> t, canRunOn = canRunOn b, canCompile = canCompile t}
-
-tpCompile :: TypeAnnotation -> TypeAnnotation -> TypeAnnotation
-tpCompile input compiler = ((,) <$> input <*> compiler) >>= uncurry f
-    where f i c = ((,) <$> getCanRunOn i <*> getCanCompile c) >>= uncurry (\im (is, it) -> ifEqualGive (result it) im is)
-            where result it = DiagType { canRun = canRun i, canRunOn = Just it, canCompile = canCompile i}
-
+isCompilable :: Diag_ -> Diag_ -> Maybe TypeError
+isCompilable (Program p l) (Compiler c l' l'' m) = (l, l') `equalOrError` (GenericError $ "Type mismatch. " ++ l ++ l')
+isCompilable (Interpreter i l m) (Compiler c l' l'' m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
+isCompilable (Compiler i l l2 m) (Compiler c l' l2' m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
+isCompilable _ _ = Just $ GenericError "Nonsense"
 }
