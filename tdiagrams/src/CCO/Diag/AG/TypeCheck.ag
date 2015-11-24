@@ -29,24 +29,24 @@ sem Diag_
   | Platform          lhs.canRunOn = Nothing
   | Interpreter       lhs.canRunOn = Just @m
   | Compiler          lhs.canRunOn = Just @m
-  | Execute           lhs.canRunOn = @d1.canRunOn
-  | Compile           lhs.canRunOn = @d1.canRunOn
+  | Execute           lhs.canRunOn = @d2.canRunOn
+  | Compile           lhs.canRunOn = snd <$> @d2.canCompile
 
 sem Diag_
   | Program           lhs.canRun = Nothing
   | Platform          lhs.canRun = Just @m
   | Interpreter       lhs.canRun = Just @l
-  | Compiler          lhs.canRun = Just @l1
-  | Execute           lhs.canRun = @d2.canRun
-  | Compile           lhs.canRun = @d2.canRun
+  | Compiler          lhs.canRun = Nothing
+  | Execute           lhs.canRun = @d1.canRun
+  | Compile           lhs.canRun = @d1.canRun
 
 sem Diag_
   | Program           lhs.canCompile = Nothing
   | Platform          lhs.canCompile = Nothing
   | Interpreter       lhs.canCompile = Nothing
   | Compiler          lhs.canCompile = Just (@l1, @l2)
-  | Execute           lhs.canCompile = Nothing
-  | Compile           lhs.canCompile = @d2.canCompile
+  | Execute           lhs.canCompile = @d1.canCompile
+  | Compile           lhs.canCompile = @d1.canCompile
 
 -------------------------------------------------------------------------------
 -- Utilities
