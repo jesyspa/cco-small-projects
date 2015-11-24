@@ -2,6 +2,8 @@ imports
 {
 import CCO.Diag.DiagType
 import Data.Maybe
+import Control.Monad
+import Debug.Trace
 }
 
 -------------------------------------------------------------------------------
@@ -10,26 +12,54 @@ import Data.Maybe
 
 
 attr Diag Diag_
-  syn tp     :: self
+  syn canRunOn     :: {Maybe Platform}
+  syn canRun       :: {Maybe Language}
+  syn canCompile   :: {Maybe (Language, Language)}
+  inh inferred     :: DiagType
+  syn err          :: {Maybe [TypeError]}
 
-attr Diag_
-  syn err :: {Maybe TypeError}
-  inh ti :: DiagType
-
+sem Diag
+  | Diag              lhs.canRun = @d.canRun
+                      lhs.canRunOn = @d.canRunOn
+                      lhs.canCompile = @d.canCompile
+                      lhs.err = @d.err
+sem Diag_
+  | Program           lhs.err = tpProgram @lhs.inferred @l
+  | Platform          lhs.err = tpPlatform @lhs.inferred @m
+  | Interpreter       lhs.err = tpInterpreter @lhs.inferred @l @m
+  | Compiler          lhs.err = tpCompiler @lhs.inferred @l1 @m
+  | Execute           lhs.err = liftM2 (++) @d1.err @d2.err
+  | Compile           lhs.err = liftM2 (++) @d1.err @d2.err
 
 sem Diag_
-  | Program           lhs.err = Nothing
-  | Platform          lhs.err = Nothing
-  | Interpreter       lhs.err = Nothing
-  | Compiler          lhs.err = Nothing
-  | Execute           lhs.err = isExecutable (unWrap @d1.tp) (unWrap @d2.tp)
-  | Compile           lhs.err = isCompilable (unWrap @d1.tp) (unWrap @d2.tp)
+  | Program           lhs.canRunOn = Just @l
+  | Platform          lhs.canRunOn = Nothing
+  | Interpreter       lhs.canRunOn = Just @m
+  | Compiler          lhs.canRunOn = Just @m
+  | Execute           lhs.canRunOn = @d1.canRunOn
+  | Compile           lhs.canRunOn = @d1.canRunOn
 
 sem Diag_
-  | Execute           @d1.ti = runsOn (unWrap @d2.tp)
-                      @d2.ti = wantsToRun (unWrap @d1.tp)
-  | Compile           @d1.ti = nullType
-                      @d2.ti = nullType
+  | Program           lhs.canRun = Nothing
+  | Platform          lhs.canRun = Just @m
+  | Interpreter       lhs.canRun = Just @l
+  | Compiler          lhs.canRun = Just @l1
+  | Execute           lhs.canRun = @d2.canRun
+  | Compile           lhs.canRun = @d2.canRun
+
+sem Diag_
+  | Program           lhs.canCompile = Nothing
+  | Platform          lhs.canCompile = Nothing
+  | Interpreter       lhs.canCompile = Nothing
+  | Compiler          lhs.canCompile = Just (@l1, @l2)
+  | Execute           lhs.canCompile = Nothing
+  | Compile           lhs.canCompile = @d2.canCompile
+
+sem Diag_
+  | Execute           d1.inferred = nullType {canRun = @d2.canRun}
+                      d2.inferred = nullType {canRunOn = @d1.canRunOn}
+  | Compile           d1.inferred = nullType {canCompile = @d2.canCompile}
+                      d2.inferred = nullType {canRun = @d1.canRunOn}
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
@@ -38,29 +68,38 @@ sem Diag_
 type Language = String
 type Platform = String
 
-unWrap :: Diag -> Diag_
-unWrap (Diag pos d) = d
+tpProgram :: DiagType -> Language -> Maybe [TypeError]
+tpProgram d l = do
+    s <- trace "mbprog" $ canRun d
+    if s == l then return [GenericError s] else return [GenericError ""]
 
-runsOn :: Diag_ -> DiagType
-runsOn (Platform p m) = nullType {canRun = Just m}
-runsOn (Interpreter i l m) = nullType {canRun = Just l}
-runsOn (Compiler c l1 l2 m) = nullType {canRun = Just l}
+tpPlatform :: DiagType -> Platform -> Maybe [TypeError]
+tpPlatform d p = do
+    s <- canRunOn d
+    if s == p then Nothing else return [GenericError ""]
 
+tpInterpreter :: DiagType -> Language -> Platform -> Maybe [TypeError]
+tpInterpreter d l p = case canRun d of
+    Just s -> if s == l then Nothing else return [GenericError ""]
+    Nothing -> case canRunOn d of
+        Just s' -> if s' == p then Nothing else return [GenericError ""]
+        Nothing -> Nothing
 
-equalOrError :: (String, String) -> TypeError -> Maybe TypeError
-equalOrError (s1, s2) e = if s1 == s2 then Nothing else Just e
+tpCompiler :: DiagType -> Language -> Platform -> Maybe [TypeError]
+tpCompiler d l p = case canCompile d of
+    Just (l1, l2) -> if l1 == l then Nothing else return [GenericError ""]
+    Nothing -> case canRunOn d of
+        Just s' -> if s' == p then Nothing else return [GenericError ""]
+        Nothing -> Nothing
 
-isExecutable :: Diag_ -> Diag_ -> Maybe TypeError
-isExecutable (Program p l) (Interpreter i l' m) = (l, l') `equalOrError` (GenericError $ "Type mismatch. " ++ l ++ l')
-isExecutable (Interpreter i l m) (Platform m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
-isExecutable (Compiler i l1 l2 m) (Platform m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
-isExecutable (Execute d1 d2) _ = isExecutable (unWrap d1) (unWrap d2)
-isExecutable (Compile d1 d2) _ = isExecutable (unWrap d1) (unWrap d2)
-isExecutable _ _ = Just $ GenericError "Nonsense"
+testDiag :: Diag
+testDiag = Diag (undefined) (Execute (Diag (undefined) (Program "hello" "haskell")) (Diag (undefined) (Platform "osx")))
 
-isCompilable :: Diag_ -> Diag_ -> Maybe TypeError
-isCompilable (Program p l) (Compiler c l' l'' m) = (l, l') `equalOrError` (GenericError $ "Type mismatch. " ++ l ++ l')
-isCompilable (Interpreter i l m) (Compiler c l' l'' m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
-isCompilable (Compiler i l l2 m) (Compiler c l' l2' m') = (m, m') `equalOrError` (GenericError $ "Type mismatch. " ++ m ++ m')
-isCompilable _ _ = Just $ GenericError "Nonsense"
+simpleDiag = Diag (undefined) (Program "hello" "haskell")
+
+root = sem_Diag testDiag
+
+result = err_Syn_Diag (wrap_Diag root $ Inh_Diag nullType)
+
+typeExp = print (show result)
 }
