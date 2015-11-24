@@ -29,11 +29,13 @@ executable parse-tdiag
 executable tc-tdiag
   main-is:             TypeCheckTDiag.hs
   build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
+  other-modules:       CCO.Diag, CCO.Diag.AG, CCO.Diag.Base
   hs-source-dirs:      src
 
 executable tdiag2picture
   main-is:             TDiagToPicture.hs
   build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
+  other-modules:       CCO.Diag, CCO.Diag.AG, CCO.Diag.Base, CCO.Picture, CCO.Picture.AG
   hs-source-dirs:      src
 
 executable pp-picture
