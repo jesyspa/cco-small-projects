@@ -11,7 +11,7 @@ import CCO.Diag.DiagType (nullType)
 
 tcTDiag :: Component Diag Diag
 tcTDiag = component $ \diag -> do
-    let errs = maybe [] id $ err_Syn_Diag (wrap_Diag (sem_Diag diag) $ Inh_Diag nullType)
+    let errs = err_Syn_Diag $ wrap_Diag (sem_Diag diag) Inh_Diag
         msgs = map (Error . text . show) errs
     messages msgs
     return diag

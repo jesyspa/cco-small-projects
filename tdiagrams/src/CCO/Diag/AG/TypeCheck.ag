@@ -10,26 +10,20 @@ import Debug.Trace
 -- Type Checking
 -------------------------------------------------------------------------------
 
+type Translation = (Implementation, Implementation)
+type MImpl = maybe Implementation
+type MTrans = maybe Translation
+type Errors = [ TypeError ]
 
 attr Diag Diag_
-  syn canRunOn     :: {Maybe Platform}
-  syn canRun       :: {Maybe Language}
-  syn canCompile   :: {Maybe (Language, Language)}
-  inh inferred     :: DiagType
-  syn err          :: {Maybe [TypeError]}
+  syn canRunOn            :: MImpl
+  syn canRun              :: MImpl
+  syn canCompile          :: MTrans
+  syn err use {(++)} {[]} :: Errors
 
-sem Diag
-  | Diag              lhs.canRun = @d.canRun
-                      lhs.canRunOn = @d.canRunOn
-                      lhs.canCompile = @d.canCompile
-                      lhs.err = @d.err
 sem Diag_
-  | Program           lhs.err = tpProgram @lhs.inferred @l
-  | Platform          lhs.err = tpPlatform @lhs.inferred @m
-  | Interpreter       lhs.err = tpInterpreter @lhs.inferred @l @m
-  | Compiler          lhs.err = tpCompiler @lhs.inferred @l1 @m
-  | Execute           lhs.err = liftM2 (++) @d1.err @d2.err
-  | Compile           lhs.err = liftM2 (++) @d1.err @d2.err
+  | Execute           +err = (++) $ connect @d1.canRunOn @d2.canRun 
+  | Compile           +err = (++) $ connect @d1.canRunOn (fst <$> @d2.canCompile)
 
 sem Diag_
   | Program           lhs.canRunOn = Just @l
@@ -55,42 +49,18 @@ sem Diag_
   | Execute           lhs.canCompile = Nothing
   | Compile           lhs.canCompile = @d2.canCompile
 
-sem Diag_
-  | Execute           d1.inferred = nullType {canRun = @d2.canRun}
-                      d2.inferred = nullType {canRunOn = @d1.canRunOn}
-  | Compile           d1.inferred = nullType {canCompile = @d2.canCompile}
-                      d2.inferred = nullType {canRun = @d1.canRunOn}
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
 
 {
+type Implementation = String
 type Language = String
 type Platform = String
 
-tpProgram :: DiagType -> Language -> Maybe [TypeError]
-tpProgram d l = do
-    s <- trace "mbprog" $ canRun d
-    if s == l then return [GenericError s] else return [GenericError ""]
-
-tpPlatform :: DiagType -> Platform -> Maybe [TypeError]
-tpPlatform d p = do
-    s <- canRunOn d
-    if s == p then Nothing else return [GenericError ""]
-
-tpInterpreter :: DiagType -> Language -> Platform -> Maybe [TypeError]
-tpInterpreter d l p = case canRun d of
-    Just s -> if s == l then Nothing else return [GenericError ""]
-    Nothing -> case canRunOn d of
-        Just s' -> if s' == p then Nothing else return [GenericError ""]
-        Nothing -> Nothing
-
-tpCompiler :: DiagType -> Language -> Platform -> Maybe [TypeError]
-tpCompiler d l p = case canCompile d of
-    Just (l1, l2) -> if l1 == l then Nothing else return [GenericError ""]
-    Nothing -> case canRunOn d of
-        Just s' -> if s' == p then Nothing else return [GenericError ""]
-        Nothing -> Nothing
+connect :: MImpl -> MImpl -> [TypeError]
+connect (Just x) (Just y) | x == y = []
+connect _ _ = [GenericError ""]
 
 testDiag :: Diag
 testDiag = Diag (undefined) (Execute (Diag (undefined) (Program "hello" "haskell")) (Diag (undefined) (Platform "osx")))
@@ -99,7 +69,7 @@ simpleDiag = Diag (undefined) (Program "hello" "haskell")
 
 root = sem_Diag testDiag
 
-result = err_Syn_Diag (wrap_Diag root $ Inh_Diag nullType)
+result = err_Syn_Diag (wrap_Diag root $ Inh_Diag)
 
 typeExp = print (show result)
 }
