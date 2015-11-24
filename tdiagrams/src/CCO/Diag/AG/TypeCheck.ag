@@ -1,6 +1,5 @@
 imports
 {
-import CCO.Diag.DiagType
 import Data.Maybe
 import Control.Monad
 import Debug.Trace
@@ -22,7 +21,7 @@ attr Diag Diag_
   syn err use {(++)} {[]} :: Errors
 
 sem Diag_
-  | Execute           +err = (++) $ connect @d1.canRunOn @d2.canRun 
+  | Execute           +err = (++) $ connect @d1.canRunOn @d2.canRun
   | Compile           +err = (++) $ connect @d1.canRunOn (fst <$> @d2.canCompile)
 
 sem Diag_
@@ -59,8 +58,14 @@ type Language = String
 type Platform = String
 
 connect :: MImpl -> MImpl -> [TypeError]
-connect (Just x) (Just y) | x == y = []
-connect _ _ = [GenericError ""]
+connect (Just x) (Just y) | x == y    = []
+                          | otherwise = [GenericError $ "type mismatch: " ++ x ++ " vs " ++ y]
+connect (Just x) Nothing              = [GenericError $ "trying to do something with " ++ x ++ " and nothing"]
+connect Nothing (Just y)              = [GenericError $ "trying to do something with nothing and " ++ y]
+connect Nothing Nothing               = [GenericError ""]
+
+data TypeError = GenericError String
+               deriving (Eq, Ord, Read, Show)
 
 testDiag :: Diag
 testDiag = Diag (undefined) (Execute (Diag (undefined) (Program "hello" "haskell")) (Diag (undefined) (Platform "osx")))

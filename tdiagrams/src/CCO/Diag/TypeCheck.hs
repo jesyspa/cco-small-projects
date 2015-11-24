@@ -7,7 +7,6 @@ import CCO.Feedback      (Message(Error), messages)
 import CCO.Printing      (text)
 import CCO.Diag.Base     (Diag)
 import CCO.Diag.AG       (wrap_Diag, err_Syn_Diag, Inh_Diag(..), sem_Diag)
-import CCO.Diag.DiagType (nullType)
 
 tcTDiag :: Component Diag Diag
 tcTDiag = component $ \diag -> do
