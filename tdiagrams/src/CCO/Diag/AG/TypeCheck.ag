@@ -2,6 +2,7 @@ imports
 {
 import Data.Maybe
 import CCO.SourcePos
+import CCO.Diag.TypeError
 import Control.Monad
 import Debug.Trace
 }

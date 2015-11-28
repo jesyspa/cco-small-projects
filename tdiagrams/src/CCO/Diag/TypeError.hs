@@ -5,5 +5,5 @@ module CCO.Diag.TypeError (
 import CCO.SourcePos
 
 data TypeError = GenericError SourcePos String
-               deriving (Eq, Read)
+               deriving (Eq, Read, Show)
 
