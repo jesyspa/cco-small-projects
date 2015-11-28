@@ -10,7 +10,8 @@ import CCO.Diag.AG       (wrap_Diag, err_Syn_Diag, Inh_Diag(..), sem_Diag)
 
 tcTDiag :: Component Diag Diag
 tcTDiag = component $ \diag -> do
-    let errs = err_Syn_Diag $ wrap_Diag (sem_Diag diag) Inh_Diag
-        msgs = map (Error . text . show) errs
-    messages msgs
-    return diag
+  let
+    errs = err_Syn_Diag $ wrap_Diag (sem_Diag diag) $ Inh_Diag
+    msgs = map (Error . text . show ) errs
+  messages msgs
+  return diag
