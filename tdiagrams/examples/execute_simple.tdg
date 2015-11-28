@@ -1,0 +1,5 @@
+execute
+    program HelloWorld in x86
+on
+    platform x86
+end

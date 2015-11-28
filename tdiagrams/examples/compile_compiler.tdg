@@ -1,0 +1,5 @@
+compile
+    compiler GHC from Haskell to x86 in Haskell 
+with
+    compiler GHC from Haskell to x86 in Haskell 
+end

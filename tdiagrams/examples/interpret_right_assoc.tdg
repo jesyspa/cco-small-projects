@@ -1,0 +1,9 @@
+execute
+    program tc-tdiag in Haskell
+on
+    execute
+        interpreter GHCi for Haskell in x86
+    on
+        platform x86
+    end
+end
