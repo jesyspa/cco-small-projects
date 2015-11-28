@@ -1,0 +1,9 @@
+compile
+    compiler gcc from C to i686 in C
+with
+    compile
+        compiler gcc-bootstrap from C to i686 in ASM
+    with
+        compiler nasm from ASM to i686 in i686
+    end
+end

@@ -1,0 +1,9 @@
+compile
+    platform x86
+with
+    execute
+        interpreter GHCi for Haskell in x86
+    on
+        compiler GHC from Haskell to x86 in Haskell
+    end
+end
