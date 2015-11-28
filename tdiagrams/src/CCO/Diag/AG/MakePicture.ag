@@ -19,7 +19,7 @@ type PointPair = (Point, Point)
 type MPointPair = maybe PointPair
 
 attr Diag Diag_
-    syn translation :: Point
+    inh translation :: Point
     syn runU        :: MPoint
     syn runP        :: MPoint
     syn comU        :: MPointPair
@@ -32,40 +32,37 @@ todoPoint = undefined
 }
 
 sem Diag_
-    | Program       loc.translation = zero
-                    lhs.runU        = Just todoPoint
+    | Program       lhs.runU        = Just todoPoint
                        .runP        = Nothing
                        .comU        = Just todoPoint
                        .comP        = Nothing
-    | Platform      loc.translation = zero
-                    lhs.runU        = Nothing
+    | Platform      lhs.runU        = Nothing
                        .runP        = Just todoPoint
                        .comU        = Nothing
                        .comP        = Nothing
-    | Interpreter   loc.translation = zero
-                    lhs.runU        = Just todoPoint
+    | Interpreter   lhs.runU        = Just todoPoint
                        .runP        = Just todoPoint
                        .comU        = Just todoPoint
                        .comP        = Nothing
-    | Compiler      loc.translation = zero
-                    lhs.runU        = Just todoPoint
+    | Compiler      lhs.runU        = Just todoPoint
                        .runP        = Nothing
                        .comU        = Just todoPoint
                        .comP        = Just todoPoint
-    | Execute       loc.translation = undefined
+    | Execute       d1.translation  = undefined
+                    d2.translation  = undefined
                     lhs.runU        = undefined
                        .runP        = undefined
                        .comU        = undefined
                        .comP        = undefined
-    | Compile       loc.translation = undefined
+    | Compile       d1.translation  = undefined
+                    d2.translation  = undefined
                     lhs.runU        = undefined
                        .runP        = undefined
                        .comU        = undefined
                        .comP        = undefined
 
 sem Diag_
-    | *             lhs.translation = @loc.translation
-    | *             lhs.code = map (translateMany @loc.translation) @loc.code
+    | *             lhs.code = map (translateMany @lhs.translation) @loc.code
 
 sem Diag_
     | Program       loc.code = []
