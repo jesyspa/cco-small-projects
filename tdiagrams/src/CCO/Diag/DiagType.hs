@@ -4,6 +4,7 @@ module CCO.Diag.DiagType (
     , TypeError(..)
 ) where
 
+import CCO.SourcePos
 -- | Any object can support up to three operations, with each being
 -- permitted one "language".
 data DiagType = DiagType { canRunOn :: Maybe String, canRun :: Maybe String, canCompile :: Maybe (String, String)}
@@ -16,5 +17,8 @@ data DiagType = DiagType { canRunOn :: Maybe String, canRun :: Maybe String, can
 nullType :: DiagType
 nullType = DiagType Nothing Nothing Nothing
 
-data TypeError = GenericError String
-               deriving (Eq, Ord, Read, Show)
+data TypeError = GenericError SourcePos String
+               deriving (Eq, Read)
+
+instance Show TypeError where
+  show (GenericError pos err) = "Error at " ++ show pos ++ "\n" ++ err

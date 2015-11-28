@@ -2,6 +2,7 @@ imports
 {
 import CCO.Diag.DiagType
 import Data.Maybe
+import CCO.SourcePos
 import Control.Monad
 import Debug.Trace
 }
@@ -13,17 +14,26 @@ import Debug.Trace
 type Translation = (Implementation, Implementation)
 type MImpl = maybe Implementation
 type MTrans = maybe Translation
+type MErrMsg = maybe String
 type Errors = [ TypeError ]
 
 attr Diag Diag_
   syn canRunOn            :: MImpl
   syn canRun              :: MImpl
   syn canCompile          :: MTrans
+  syn errMsg              :: MErrMsg
   syn err use {(++)} {[]} :: Errors
 
+sem Diag
+  | Diag              +err = (++) $ reportErr @pos @d.errMsg
+
 sem Diag_
-  | Execute           +err = (++) $ connect @d1.canRunOn @d2.canRun 
-  | Compile           +err = (++) $ connect @d1.canRunOn (fst <$> @d2.canCompile)
+  | Execute           lhs.errMsg = connectExec @d1.canRunOn @d2.canRun
+  | Compile           lhs.errMsg = connectComp @d1.canRunOn (fst <$> @d2.canCompile)
+  | Program           lhs.errMsg = Nothing
+  | Platform          lhs.errMsg = Nothing
+  | Interpreter       lhs.errMsg = Nothing
+  | Compiler          lhs.errMsg = Nothing
 
 sem Diag_
   | Program           lhs.canRunOn = Just @l
@@ -47,7 +57,7 @@ sem Diag_
   | Interpreter       lhs.canCompile = Nothing
   | Compiler          lhs.canCompile = Just (@l1, @l2)
   | Execute           lhs.canCompile = Nothing
-  | Compile           lhs.canCompile = @d2.canCompile
+  | Compile           lhs.canCompile = @d1.canCompile
 
 -------------------------------------------------------------------------------
 -- Utilities
@@ -55,21 +65,54 @@ sem Diag_
 
 {
 type Implementation = String
-type Language = String
-type Platform = String
 
-connect :: MImpl -> MImpl -> [TypeError]
-connect (Just x) (Just y) | x == y = []
-connect _ _ = [GenericError ""]
+connectExec :: MImpl -> MImpl -> MErrMsg
+connectExec (Just x) (Just y) = if x == y then Nothing else Just $ "Can not run " ++ x ++ " on platform " ++ y
+connectExec _ _ = Just "This should succed since we are not imposing constraints"
 
-testDiag :: Diag
-testDiag = Diag (undefined) (Execute (Diag (undefined) (Program "hello" "haskell")) (Diag (undefined) (Platform "osx")))
+connectComp :: MImpl -> MImpl -> MErrMsg
+connectComp (Just x) (Just y) = if x == y then Nothing else Just $ "Can not compile " ++ x ++ " with a compiler for " ++ y
+connectComp _ _ = Just "This should succed since we are not imposing constraints"
 
+
+reportErr :: SourcePos -> MErrMsg -> [ TypeError ]
+reportErr p (Just e) = [GenericError p e]
+reportErr _ _ = []
+-- TESTS
+
+testDiag = Diag undefined (Execute (simpleDiag) (Diag (undefined) (Platform "osx")))
 simpleDiag = Diag (undefined) (Program "hello" "haskell")
-
 root = sem_Diag testDiag
 
-result = err_Syn_Diag (wrap_Diag root $ Inh_Diag)
+{-
+  compile
+   compiler gcc from C to i686 in C
+  with
+   compile
+     compiler gcc-bootstrap from C to i686 in ASM
+   with
+     compiler nasm from ASM to i686 in i686
+   end
+  end
+-}
 
-typeExp = print (show result)
+position1 = SourcePos Stdin $ Pos 1 1
+position2 = SourcePos Stdin $ Pos 1 2
+position3 = SourcePos Stdin $ Pos 1 3
+position4 = SourcePos Stdin $ Pos 1 1
+position5 = SourcePos Stdin $ Pos 1 2
+
+
+
+gcc = Diag position1 (Compiler "gcc" "C" "i686" "C")
+gccBoot = Diag position2 (Compiler "gcc-bootstrap" "A" "i686" "PASM")
+nasm = Diag position3 (Compiler "nasm" "ASM" "i686" "i686")
+
+ccomp = Diag position4 $ Compile gcc (Diag position5 $ Compile gccBoot nasm)
+
+
+
+test x = err_Syn_Diag (wrap_Diag (sem_Diag x) $ Inh_Diag)
+
+-- typeExp = print (show result)
 }
