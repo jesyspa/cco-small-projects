@@ -19,7 +19,6 @@ type PointPair = (Point, Point)
 type MPointPair = maybe PointPair
 
 attr Diag Diag_
-    inh translation :: Point
     syn runU        :: MPoint
     syn runP        :: MPoint
     syn comU        :: MPointPair
@@ -48,29 +47,27 @@ sem Diag_
                        .runP        = Nothing
                        .comU        = Just todoPoint
                        .comP        = Just todoPoint
-    | Execute       d1.translation  = undefined
-                    d2.translation  = undefined
-                    lhs.runU        = undefined
+    | Execute       lhs.runU        = undefined
                        .runP        = undefined
                        .comU        = undefined
                        .comP        = undefined
-    | Compile       d1.translation  = undefined
-                    d2.translation  = undefined
-                    lhs.runU        = undefined
+    | Compile       lhs.runU        = undefined
                        .runP        = undefined
                        .comU        = undefined
                        .comP        = undefined
 
 sem Diag_
-    | *             lhs.code = map (translateMany @lhs.translation) @loc.code
-
-sem Diag_
-    | Program       loc.code = []
-    | Platform      loc.code = []
-    | Interpreter   loc.code = []
-    | Compiler      loc.code = []
-    | Execute       loc.code = @d1.code ++ @d2.code
-    | Compile       loc.code = @d1.code ++ @d2.code
+    | Program       lhs.code = []
+    | Platform      lhs.code = []
+    | Interpreter   lhs.code = []
+    | Compiler      lhs.code = []
+    | Execute       lhs.code = map (translateMany @loc.d1trans) @d1.code ++ map (translateMany @loc.d2trans) @d2.code
+                    loc.d1trans = undefined
+                    loc.d2trans = undefined
+    | Compile       lhs.code = map (translateMany @loc.d1transL) @d1.code ++ map (translateMany @loc.d2trans) @d2.code ++ map (translateMany @loc.d1transR) @d1.code
+                    loc.d1transL = undefined
+                    loc.d1transR = undefined
+                    loc.d2trans = undefined
 
 
 {
