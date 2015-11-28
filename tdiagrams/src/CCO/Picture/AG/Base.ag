@@ -9,6 +9,8 @@ import Control.Applicative  (Applicative ((<*>)), (<$>))
 -- Syntax
 -------------------------------------------------------------------------------
 
+-- I can't be bothered to change things right now, but really it would have
+-- been nicer if we parametrised over Int and Double here.
 data Object
   | Line        slope :: {(Int, Int)}          len  :: {Double}
   | Makebox     dim   :: {(Double, Double)}    body :: {String}

@@ -1,0 +1,85 @@
+imports
+{
+import CCO.Diag.Figure
+import CCO.Picture.AG
+}
+
+include "Base.ag"
+
+-- U stands for "use", P stands for "provide"
+-- Programs, interpreters, and compilers use running connections
+-- Interpreters and platforms provide running connections
+-- Programs and interpreters use compilation connections
+-- Compilers provide compilation connections
+-- Compilation connections involve two points: the connection to use for
+-- to start the compilation and the connection to use to end it
+
+type MPoint = maybe Point
+type PointPair = (Point, Point)
+type MPointPair = maybe PointPair
+
+attr Diag Diag_
+    syn translation :: Point
+    syn runU        :: MPoint
+    syn runP        :: MPoint
+    syn comU        :: MPointPair
+    syn comP        :: MPointPair
+    syn code        :: Commands
+
+{
+todoPoint :: Point
+todoPoint = undefined
+}
+
+sem Diag_
+    | Program       loc.translation = zero
+                    lhs.runU        = Just todoPoint
+                       .runP        = Nothing
+                       .comU        = Just todoPoint
+                       .comP        = Nothing
+    | Platform      loc.translation = zero
+                    lhs.runU        = Nothing
+                       .runP        = Just todoPoint
+                       .comU        = Nothing
+                       .comP        = Nothing
+    | Interpreter   loc.translation = zero
+                    lhs.runU        = Just todoPoint
+                       .runP        = Just todoPoint
+                       .comU        = Just todoPoint
+                       .comP        = Nothing
+    | Compiler      loc.translation = zero
+                    lhs.runU        = Just todoPoint
+                       .runP        = Nothing
+                       .comU        = Just todoPoint
+                       .comP        = Just todoPoint
+    | Execute       loc.translation = undefined
+                    lhs.runU        = undefined
+                       .runP        = undefined
+                       .comU        = undefined
+                       .comP        = undefined
+    | Compile       loc.translation = undefined
+                    lhs.runU        = undefined
+                       .runP        = undefined
+                       .comU        = undefined
+                       .comP        = undefined
+
+sem Diag_
+    | *             lhs.translation = @loc.translation
+    | *             lhs.code = map (translateMany @loc.translation) @loc.code
+
+sem Diag_
+    | Program       loc.code = []
+    | Platform      loc.code = []
+    | Interpreter   loc.code = []
+    | Compiler      loc.code = []
+    | Execute       loc.code = @d1.code ++ @d2.code
+    | Compile       loc.code = @d1.code ++ @d2.code
+
+
+{
+translateMany :: Point -> Command -> Command
+translateMany = undefined
+
+
+}
+

@@ -1,21 +1,18 @@
-imports
-{
+module {CCO.Diag.AG.TypeCheck}{}{
 import Data.Maybe
 import CCO.SourcePos
 import CCO.Diag.TypeError
 import Control.Monad
 import Debug.Trace
+import CCO.Diag.AG.Base
+import CCO.Diag.AG.TypeCheckHelper
 }
+
+include "Base.ag"
 
 -------------------------------------------------------------------------------
 -- Type Checking
 -------------------------------------------------------------------------------
-
-type Translation = (Implementation, Implementation)
-type MImpl = maybe Implementation
-type MTrans = maybe Translation
-type Errors = [ TypeError ]
-type ErrorsAnn = [ TypeErrorAnn ]
 
 attr Diag Diag_
   syn canRunOn            :: MImpl
@@ -64,8 +61,6 @@ sem Diag_
 -------------------------------------------------------------------------------
 
 {
-type Implementation = String
-
 ifNothing :: Maybe a -> b -> [b]
 ifNothing (Just _) _ = []
 ifNothing Nothing b = [b]

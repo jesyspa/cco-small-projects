@@ -19,4 +19,6 @@ module CCO.Diag.Base (
   , Diag_ (..)     -- instances: Tree
 ) where
 
-import CCO.Diag.AG
+import CCO.Diag.AG.BaseHelper
+import CCO.Diag.AG.Base
+import CCO.Diag.AG.BaseInstances

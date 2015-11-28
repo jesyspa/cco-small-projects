@@ -2,12 +2,12 @@ module CCO.Diag.TypeCheck (
       tcTDiag
 ) where
 
-import CCO.Component      (Component, component)
-import CCO.Feedback       (Message(Error), messages)
-import CCO.Printing       (pp)
-import CCO.Diag.TypeError (TypeError(..), TypeErrorAnn(..))
-import CCO.Diag.Base      (Diag)
-import CCO.Diag.AG        (wrap_Diag, err_Syn_Diag, Inh_Diag(..), sem_Diag)
+import CCO.Component          (Component, component)
+import CCO.Feedback           (Message(Error), messages)
+import CCO.Printing           (pp)
+import CCO.Diag.TypeError     (TypeError(..), TypeErrorAnn(..))
+import CCO.Diag.Base          (Diag)
+import CCO.Diag.AG.TypeCheck  (wrap_Diag, err_Syn_Diag, Inh_Diag(..), sem_Diag)
 
 tcTDiag :: Component Diag Diag
 tcTDiag = component $ \diag -> do

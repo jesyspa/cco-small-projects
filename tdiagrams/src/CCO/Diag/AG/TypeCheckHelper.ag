@@ -1,0 +1,14 @@
+module {CCO.Diag.AG.TypeCheckHelper}{}{
+import CCO.Diag.TypeError
+}
+
+type Translation = (Implementation, Implementation)
+type MImpl = maybe Implementation
+type MTrans = maybe Translation
+type Errors = [ TypeError ]
+type ErrorsAnn = [ TypeErrorAnn ]
+
+
+{
+type Implementation = String
+}

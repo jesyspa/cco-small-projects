@@ -1,5 +1,14 @@
-file : "src/CCO/Diag/AG.ag"
-options : data, catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+file : "src/CCO/Diag/AG/Base.ag"
+options : data, haskellsyntax
+
+file : "src/CCO/Diag/AG/TypeCheck.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+
+file : "src/CCO/Diag/AG/TypeCheckHelper.ag"
+options : data, haskellsyntax
+
+file : "src/CCO/Diag/AG/MakePicture.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/Picture/AG.ag"
 options : data, catas, semfuns, signatures, pretty, wrappers, haskellsyntax
