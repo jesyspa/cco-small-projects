@@ -10,14 +10,6 @@ module CCO.Diag.Figure (
 
 import CCO.Diag.AG.MakePictureHelpers
 
--- Bottom-left and top-right points for all simple diagrams
-zero, trProgram, trPlatform, trInterpreter, trCompiler :: Point
-zero = (0, 0)
-trProgram = (65, 30)
-trPlatform = (50, 30)
-trInterpreter = (50, 30)
-trCompiler = (150, 30)
-
 -- | Plus and minus operators for points
 (|+|), (|-|) :: Point -> Point -> Point
 (x1, y1) |+| (x2, y2) = (x1 + x2, y1 + y2)
@@ -33,6 +25,7 @@ translate (x, y) (a, b) = (a + x, b + y)
 translatePair :: Point -> (Point, Point) -> (Point, Point)
 translatePair p (a, b) = (a |+| p, b |+| p)
 
+-- | Pointwise version of max and min
 maxPointwise, minPointwise :: Point -> Point -> Point
 maxPointwise (x1, y1) (x2, y2) = (x1 `max` x2, y1 `max` y2)
 minPointwise (x1, y1) (x2, y2) = (x1 `min` x2, y1 `min` y2)
@@ -59,3 +52,12 @@ cUCompiler :: (Point, Point)
 cUCompiler = ((100, 0), (50, 0))
 cPCompiler :: (Point, Point)
 cPCompiler = ((0, 20), (150, 20))
+
+zero :: Point
+zero = (0, 0)
+
+trProgram, trPlatform, trInterpreter, trCompiler :: Point
+trProgram = (65, 30)
+trPlatform = (50, 30)
+trInterpreter = (50, 30)
+trCompiler = (150, 30)
