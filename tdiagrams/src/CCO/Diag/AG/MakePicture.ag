@@ -14,15 +14,15 @@ include "Base.ag"
 -- Compilation connections involve two points: the connection to use for
 -- to start the compilation and the connection to use to end it
 
-type MPoint = maybe Point
+
 type PointPair = (Point, Point)
-type MPointPair = maybe PointPair
+
 
 attr Diag Diag_
-    syn runU        :: MPoint
-    syn runP        :: MPoint
-    syn comU        :: MPointPair
-    syn comP        :: MPointPair
+    syn runU        :: Point
+    syn runP        :: Point
+    syn comU        :: PointPair
+    syn comP        :: PointPair
     syn code        :: Commands
 
 {
