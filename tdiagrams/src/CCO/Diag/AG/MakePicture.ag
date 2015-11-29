@@ -34,7 +34,6 @@ todoPointPair = undefined
 }
 
 sem Diag_
-<<<<<<< HEAD
     | Program       lhs.runU        = rUProgram
                        .runP        = error "invalid input"
                        .comU        = cUProgram
