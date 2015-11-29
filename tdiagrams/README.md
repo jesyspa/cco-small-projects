@@ -107,6 +107,12 @@ and this one too
       compiler reverseGHC from x86 to Haskell in x86
     end
 
+Allowing these kind of programs posed a challenge regarding how to generate these complex pictures. To solve this, we adopted a slightly stronger formulation of the rule expressed in the project specification: when a composite diagram is itself used as a part of a composite diagram,
+executions and compilations are always to be performed on the synthesized result.
+
+The last diagram for example is rendered as a chain of execute diagrams which are first compiled
+from **Haskell** to **x86** and then recompiled back from **x86** to **Haskell**. the two compilers *GHC* and *reverseGHC* chain these diagrams together.
+
 #UUAG Usage
 
 We deviated somewhat from the way UUAG was used in the project template.  Rather than having a single AG file that is compiled and includes the rest, we have split data definitions from semantic functions, allowing multiple functions to be defined on the same data.  This does, unfortunately, involve creating a lot of helper modules, since we cannot define any (UUAG-level) data or type synonyms in the modules where we define the semantic functions.  Furthermore, we cannot define anything on the Haskell level in the modules where we define data, as these would otherwise be defined twice.
