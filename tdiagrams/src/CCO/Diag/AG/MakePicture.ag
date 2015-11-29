@@ -43,7 +43,7 @@ sem Diag_
                        .comU        = error "invalid input"
                        .comP        = error "invalid input"
     | Interpreter   lhs.runU        = rUInterpreter
-                       .runP        = rPInteger
+                       .runP        = rPInterpreter
                        .comU        = cUInterpreter
                        .comP        = error "invalid input"
     | Compiler      lhs.runU        = rUCompiler

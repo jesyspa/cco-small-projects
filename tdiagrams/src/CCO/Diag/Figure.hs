@@ -4,6 +4,7 @@ module CCO.Diag.Figure (
     , (|+|)
     , (|-|)
     , translate
+    , rUProgram, cUProgram, rPPlatform, rUInterpreter, rPInterpreter, cUInterpreter, rUCompiler, cUCompiler, cPCompiler
 ) where
 
 data Point = Point Double Double
