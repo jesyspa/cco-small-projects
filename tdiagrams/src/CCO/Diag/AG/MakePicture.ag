@@ -31,22 +31,22 @@ todoPoint = undefined
 }
 
 sem Diag_
-    | Program       lhs.runU        = Just todoPoint
-                       .runP        = Nothing
-                       .comU        = Just todoPoint
-                       .comP        = Nothing
-    | Platform      lhs.runU        = Nothing
-                       .runP        = Just todoPoint
-                       .comU        = Nothing
-                       .comP        = Nothing
-    | Interpreter   lhs.runU        = Just todoPoint
-                       .runP        = Just todoPoint
-                       .comU        = Just todoPoint
-                       .comP        = Nothing
-    | Compiler      lhs.runU        = Just todoPoint
-                       .runP        = Nothing
-                       .comU        = Just todoPoint
-                       .comP        = Just todoPoint
+    | Program       lhs.runU        = rUProgram
+                       .runP        = 0
+                       .comU        = cUProgram
+                       .comP        = 0
+    | Platform      lhs.runU        = 0
+                       .runP        = rPPlatform
+                       .comU        = 0
+                       .comP        = 0
+    | Interpreter   lhs.runU        = rUInterpreter
+                       .runP        = rPInterpreter
+                       .comU        = cUInterpreter
+                       .comP        = 0
+    | Compiler      lhs.runU        = rUCompiler
+                       .runP        = 0
+                       .comU        = cUCompiler
+                       .comP        = cPCompiler
     | Execute       lhs.runU        = undefined
                        .runP        = undefined
                        .comU        = undefined
@@ -76,4 +76,3 @@ translateMany = undefined
 
 
 }
-
