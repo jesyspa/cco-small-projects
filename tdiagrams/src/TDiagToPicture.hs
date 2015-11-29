@@ -9,7 +9,7 @@ import CCO.Diag.Figure ((|-|), toPair, Point(..))
 tdiag2picture :: Component Diag Picture
 tdiag2picture = arr $ \x ->
     let
-      tree = wrap_Diag (sem_Diag x) Inh_Diag Nothing
+      tree = wrap_Diag (sem_Diag x) $ Inh_Diag Nothing
       code = code_Syn_Diag tree
       blp = blp_Syn_Diag tree
       trp = trp_Syn_Diag tree
