@@ -26,6 +26,10 @@ attr Diag Diag_
     syn code        :: Commands
     syn blp         :: Point
     syn trp         :: Point
+    syn copy        :: self
+    syn compresult  :: self
+    syn comptarget  :: Ident
+    inh retarget    :: {Maybe Ident}
 
 {
 todoPoint :: Point
@@ -42,36 +46,43 @@ sem Diag_
                        .comP        = error "invalid input"
                        .blp         = zero
                        .trp         = trProgram
+                       .comptarget  = ""
     | Platform      lhs.runU        = error "invalid input"
                        .runP        = rPPlatform
                        .comU        = error "invalid input"
                        .comP        = error "invalid input"
                        .blp         = zero
                        .trp         = trPlatform
+                       .comptarget  = ""
     | Interpreter   lhs.runU        = rUInterpreter
                        .runP        = rPInterpreter
                        .comU        = cUInterpreter
                        .comP        = error "invalid input"
                        .blp         = zero
                        .trp         = trInterpreter
+                       .comptarget  = ""
     | Compiler      lhs.runU        = rUCompiler
                        .runP        = error "invalid input"
                        .comU        = cUCompiler
                        .comP        = cPCompiler
                        .blp         = zero
                        .trp         = trCompiler
+                       .comptarget  = @l2
     | Execute       lhs.runU        = @d2.runU
                        .runP        = @d1.runP |+| @loc.d1trans
                        .comU        = @d2.comU
                        .comP        = translatePair @loc.d1trans @d1.comP
                        .blp         = (@d1.blp |+| @loc.d1trans) `minPointwise` @d2.blp
                        .trp         = (@d1.trp |+| @loc.d1trans) `maxPointwise` @d2.trp
+                       .comptarget  = @d1.comptarget
     | Compile       lhs.runU        = @d1.runU |+| @loc.d1transR
                        .runP        = @d1.runP |+| @loc.d1transR
                        .comU        = translatePair @loc.d1transR @d1.comU
                        .comP        = translatePair @loc.d1transR @d1.comP
                        .blp         = (@loc.d1transL |+| @d1.blp) `minPointwise` @d2.blp `minPointwise` (@loc.d1transR |+| @d1.blp)
-                       .trp         = (@loc.d1transL |+| @d1.trp) `maxPointwise` @d2.trp `maxPointwise` (@loc.d1transR |+| @d1.trp)
+                       .trp         = (@loc.d1transL |+| @d1.trp) `maxPointwise` @d2.trp `maxPointwise` (@loc.d1transR |+| @loc.comptrp)
+                       .compresult  = let Diag _ d = @d1.copy in d
+                       .comptarget  = @d1.comptarget
 
 sem Diag_
     | Program       lhs.code = [ Put (7.5, 0)   $ Line (1, 0) 50
@@ -81,20 +92,23 @@ sem Diag_
                                , Put (57.5, 0)  $ Line (0, 1) 15
                                , Put (0, 30)    $ Line (1, 0) 65
                                , Put (7.5, 15)  $ Makebox (50, 15) @p
-                               , Put (7.5, 0)   $ Makebox (50, 15) @l
+                               , Put (7.5, 0)   $ Makebox (50, 15) @loc.name
                                ]
+                    loc.name = maybe @l id @lhs.retarget
     | Platform      lhs.code = [ Put (0, 15)    $ Line (5, -3) 25
                                , Put (25, 0)    $ Line (5, 3) 25
                                , Put (0, 15)    $ Line (0, 1) 15
                                , Put (0, 30)    $ Line (1, 0) 50
                                , Put (50, 30)   $ Line (0, -1) 15
-                               , Put (0, 15)    $ Makebox (50, 15) @m
+                               , Put (0, 15)    $ Makebox (50, 15) @loc.name
                                ]
+                    loc.name = maybe @m id @lhs.retarget
     | Interpreter   lhs.code = [ Put (0, 0)     $ Framebox (50, 30) ""
                                , Put (0, 20)    $ Makebox (50, 10) @i
                                , Put (0, 10)    $ Makebox (50, 10) @l
-                               , Put (0, 00)    $ Makebox (50, 10) @m
+                               , Put (0, 00)    $ Makebox (50, 10) @loc.name
                                ]
+                    loc.name = maybe @m id @lhs.retarget
     | Compiler      lhs.code = [ Put (50,0)    $ Line (0,1)  20
                                , Put (50,20)   $ Line (-1,0) 50
                                , Put (0,20)    $ Line (0,1) 10
@@ -107,14 +121,18 @@ sem Diag_
                                , Put (50,20)   $ Makebox (50,10) "$\\longrightarrow$"
                                , Put (100,20)  $ Makebox (50,10) @l2
                                , Put (50,10)   $ Makebox (50,10) @c
-                               , Put (50,0)    $ Makebox (50,10) @m
+                               , Put (50,0)    $ Makebox (50,10) @loc.name
                                ]
+                    loc.name = maybe @m id @lhs.retarget
     | Execute       lhs.code = map (translateCmd @loc.d1trans) @d1.code ++ @d2.code
                     loc.d1trans = @d2.runP |-| @d1.runU
 
-    | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @d1.code
+    | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @loc.compcode
+                    loc.comp = wrap_Diag (sem_Diag @d1.compresult) $ Inh_Diag (Just @d2.comptarget)
+                    loc.compcode = code_Syn_Diag @loc.comp
+                    loc.comptrp = trp_Syn_Diag @loc.comp
                     loc.d1transL = fst @d2.comP |-| fst @d1.comU
-                    loc.d1transR = snd @d2.comP |-| snd @d1.comU
+                    loc.d1transR = snd @d2.comP |-| snd (comU_Syn_Diag @loc.comp)
 
 {
 translateCmd ::  Point -> Command -> Command
