@@ -67,6 +67,6 @@ Finally, the actual type-checking is done when connecting diagrams via composite
 
 Error is a synthesized attribute which consists of a possibly empty list of TypeErrors. The connect function simply checks that the passed attributes are consistent with each other and produces an appropriate error message if this is not the case.
 
-For an Execute diagram we check that the value of canRunOn for the first component equals the value of canRun for the second.
-In the Compile diagram we check that the value of canRunOn for the first component matches the first element of the canCompile
+For an **Execute** diagram we check that the value of *canRunOn* for the first component equals the value of *canRun* for the second.
+In the **Compile** diagram we check that the value of *canRunOn* for the first component matches the first element of the *canCompile*
 tuple of the second component.
