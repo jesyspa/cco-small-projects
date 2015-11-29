@@ -2,7 +2,7 @@ module CCO.Diag.Figure (
       Point(..)
     , (|+|)
     , (|-|)
-    , translate
+    , translate, translatePair
     , rUProgram, cUProgram, rPPlatform, rUInterpreter, rPInterpreter, cUInterpreter, rUCompiler, cUCompiler, cPCompiler
 ) where
 
