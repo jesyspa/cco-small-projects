@@ -34,22 +34,23 @@ todoPointPair = undefined
 }
 
 sem Diag_
-    | Program       lhs.runU        = Point 7.5 0
+<<<<<<< HEAD
+    | Program       lhs.runU        = rUProgram
                        .runP        = error "invalid input"
-                       .comU        = (Point 57.5 0, Point 7.5 0)
+                       .comU        = cUProgram
                        .comP        = error "invalid input"
     | Platform      lhs.runU        = error "invalid input"
-                       .runP        = todoPoint
+                       .runP        = rPPlatform
                        .comU        = error "invalid input"
                        .comP        = error "invalid input"
-    | Interpreter   lhs.runU        = todoPoint
-                       .runP        = todoPoint
-                       .comU        = todoPointPair
+    | Interpreter   lhs.runU        = rUInterpreter
+                       .runP        = rPInteger
+                       .comU        = cUInterpreter
                        .comP        = error "invalid input"
-    | Compiler      lhs.runU        = todoPoint
+    | Compiler      lhs.runU        = rUCompiler
                        .runP        = error "invalid input"
-                       .comU        = todoPointPair
-                       .comP        = todoPointPair
+                       .comU        = cUCompiler
+                       .comP        = cPCompiler
     | Execute       lhs.runU        = @d2.runU
                        .runP        = @d1.runP |+| @loc.d1trans
                        .comU        = @d2.comU
@@ -109,4 +110,3 @@ translatePair p (a, b) = (a |+| p, b |+| p)
 translateCmd :: Point -> Command -> Command
 translateCmd p (Put pos obj) = Put (translate p pos) obj
 }
-
