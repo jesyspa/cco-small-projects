@@ -1,0 +1,6 @@
+module {CCO.Diag.AG.MakePictureHelpers}{}{
+import CCO.Diag.Figure
+}
+
+type PointPair = (Point, Point)
+

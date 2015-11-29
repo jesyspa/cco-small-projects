@@ -1,10 +1,14 @@
+module {CCO.Diag.AG.MakePicture}{}{}
 imports
 {
 import CCO.Diag.Figure
+import CCO.Diag.AG.Base
+import CCO.Diag.AG.MakePictureHelpers
 import CCO.Picture.AG
 }
 
 include "Base.ag"
+include "MakePictureHelpers.ag"
 
 -- U stands for "use", P stands for "provide"
 -- Programs, interpreters, and compilers use running connections
@@ -13,8 +17,6 @@ include "Base.ag"
 -- Compilers provide compilation connections
 -- Compilation connections involve two points: the connection to use for
 -- to start the compilation and the connection to use to end it
-
-type PointPair = (Point, Point)
 
 attr Diag Diag_
     syn runU        :: Point
@@ -32,12 +34,12 @@ todoPointPair = undefined
 }
 
 sem Diag_
-    | Program       lhs.runU        = todoPoint
+    | Program       lhs.runU        = Point 7.5 0
                        .runP        = error "invalid input"
-                       .comU        = todoPointPair
+                       .comU        = (Point 57.5 0, Point 7.5 0)
                        .comP        = error "invalid input"
     | Platform      lhs.runU        = error "invalid input"
-                       .runP        = todoPointPair
+                       .runP        = todoPoint
                        .comU        = error "invalid input"
                        .comP        = error "invalid input"
     | Interpreter   lhs.runU        = todoPoint
@@ -49,13 +51,13 @@ sem Diag_
                        .comU        = todoPointPair
                        .comP        = todoPointPair
     | Execute       lhs.runU        = @d2.runU
-                       .runP        = translate @loc.d1trans @d1.runP
+                       .runP        = @d1.runP |+| @loc.d1trans
                        .comU        = @d2.comU
-                       .comP        = translate @loc.d1trans @d1.comP
-    | Compile       lhs.runU        = translate @loc.d1transR @d1.runU
-                       .runP        = translate @loc.d1transR @d1.runP
-                       .comU        = translate @loc.d1transR @d1.comU
-                       .comP        = translate @loc.d1transR @d1.comP
+                       .comP        = translatePair @loc.d1trans @d1.comP
+    | Compile       lhs.runU        = @d1.runU |+| @loc.d1transR
+                       .runP        = @d1.runP |+| @loc.d1transR
+                       .comU        = translatePair @loc.d1transR @d1.comU
+                       .comP        = translatePair @loc.d1transR @d1.comP
 
 sem Diag_
     | Program       lhs.code = [ Put (7.5, 0)   $ Line (1, 0) 50
@@ -72,15 +74,14 @@ sem Diag_
                                , Put (0, 15)    $ Line (0, 1) 15
                                , Put (0, 30)    $ Line (1, 0) 50
                                , Put (50, 30)   $ Line (0, -1) 15
-                               , Put (0, 15)    $ MakeBox (50, 15) @m
+                               , Put (0, 15)    $ Makebox (50, 15) @m
                                ]
-    | Interpreter   lhs.code = [ Put (0, 0)     $ Framebox (50, 30)
+    | Interpreter   lhs.code = [ Put (0, 0)     $ Framebox (50, 30) ""
                                , Put (0, 20)    $ Makebox (50, 10) @i
                                , Put (0, 10)    $ Makebox (50, 10) @l
                                , Put (0, 00)    $ Makebox (50, 10) @m
                                ]
-    | Compiler      lhs.code = [
-                               , Put (50,0)    $ Line (0,1)  20
+    | Compiler      lhs.code = [ Put (50,0)    $ Line (0,1)  20
                                , Put (50,20)   $ Line (-1,0) 50
                                , Put (0,20)    $ Line (0,1) 10
                                , Put (0,30)    $ Line (1,0) 150
@@ -102,7 +103,10 @@ sem Diag_
 
 
 {
+translatePair :: Point -> (Point, Point) -> (Point, Point)
+translatePair p (a, b) = (a |+| p, b |+| p)
+
 translateCmd :: Point -> Command -> Command
-translateCmd p (Put pos obj) = Put (translate pos) obj
+translateCmd p (Put pos obj) = Put (translate p pos) obj
 }
 

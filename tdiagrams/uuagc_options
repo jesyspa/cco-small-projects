@@ -10,5 +10,8 @@ options : data, haskellsyntax
 file : "src/CCO/Diag/AG/MakePicture.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
+file : "src/CCO/Diag/AG/MakePictureHelpers.ag"
+options : data, haskellsyntax
+
 file : "src/CCO/Picture/AG.ag"
 options : data, catas, semfuns, signatures, pretty, wrappers, haskellsyntax

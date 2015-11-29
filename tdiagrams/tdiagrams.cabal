@@ -16,6 +16,7 @@ build-type:            Custom
 cabal-version:         >= 1.8
 extra-source-files:    AUTHORS, Makefile, src/CCO/Diag/AG/TypeCheck.ag,
                        src/CCO/Diag/AG/MakePicture.ag,
+                       src/CCO/Diag/AG/MakePictureHelpers.ag,
                        src/CCO/Diag/AG/Base.ag, src/CCO/Picture/AG.ag,
                        src/CCO/Picture/AG/Base.ag,
                        src/CCO/Picture/AG/Printing.ag
@@ -38,7 +39,7 @@ executable tdiag2picture
   main-is:             TDiagToPicture.hs
   build-depends:       base, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.Diag, CCO.Diag.Base, CCO.Picture, CCO.Picture.AG, CCO.Diag.Figure, CCO.Diag.AG.MakePicture,
-                       CCO.Diag.AG.Base
+                       CCO.Diag.AG.Base, CCO.Diag.AG.MakePictureHelpers
   hs-source-dirs:      src
 
 executable pp-picture
