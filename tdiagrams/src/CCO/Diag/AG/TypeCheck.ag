@@ -2,8 +2,6 @@ module {CCO.Diag.AG.TypeCheck}{}{
 import Data.Maybe
 import CCO.SourcePos
 import CCO.Diag.TypeError
-import Control.Monad
-import Debug.Trace
 import CCO.Diag.AG.Base
 import CCO.Diag.AG.TypeCheckHelper
 }
@@ -61,23 +59,24 @@ sem Diag_
 -------------------------------------------------------------------------------
 
 {
+-- | Utility function to check if a value is a Nothing and return the appropriate
+--  error if this is the case
 ifNothing :: Maybe a -> b -> [b]
 ifNothing (Just _) _ = []
 ifNothing Nothing b = [b]
 
+-- | This functions checks if the two implementations in an execute diagram are
+--  consistent.
 connectExec :: MImpl -> MImpl -> Errors
 connectExec (Just x) (Just y) | x == y = []
-                              | otherwise = return $ RuntimeMismatch x y
+                              | otherwise = return $ ExecutionMismatch x y
 connectExec a b = ifNothing a CannotBeRun ++ ifNothing b CannotRun
 
+  -- | This functions checks if the two implementations in a compile diagram are
+  --  consistent.
 connectComp :: MImpl -> MImpl -> Errors
 connectComp (Just x) (Just y) | x == y = []
                               | otherwise = return $ CompilerMismatch x y
 connectComp a b = ifNothing a CannotBeCompiled ++ ifNothing b CannotCompile
 
--- Test code moved to example/double_compile.tdg
-
-test x = err_Syn_Diag (wrap_Diag (sem_Diag x) $ Inh_Diag)
-
--- typeExp = print (show result)
 }
