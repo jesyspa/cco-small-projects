@@ -5,8 +5,9 @@ module CCO.Diag.Figure (
     , zero
     , toPair
     , translate, translatePair
-    , blProgram, trProgram , blPlatform , trPlatform , blInterpreter , trInterpreter , blCompiler , trCompiler
+    , trProgram, trPlatform, trInterpreter, trCompiler
     , rUProgram, cUProgram, rPPlatform, rUInterpreter, rPInterpreter, cUInterpreter, rUCompiler, cUCompiler, cPCompiler
+    , maxPointwise, minPointwise
 ) where
 
 data Point = Point Double Double
@@ -15,13 +16,9 @@ data Point = Point Double Double
 zero = Point 0 0
 
 
-blProgram = Point 7.5 0
-trProgram = Point 57.5 15
-blPlatform = Point 0 15
+trProgram = Point 65 30
 trPlatform = Point 50 30
-blInterpreter = Point 0 0
 trInterpreter = Point 50 30
-blCompiler = Point 50 0
 trCompiler = Point 150 30
 
 toPair (Point x y) = (x, y)
@@ -39,6 +36,11 @@ translate (Point x y) (a, b) = (a + x, b + y)
 --  position in Compile diagrams
 translatePair :: Point -> (Point, Point) -> (Point, Point)
 translatePair p (a, b) = (a |+| p, b |+| p)
+
+maxPointwise, minPointwise :: Point -> Point -> Point
+maxPointwise (Point x1 y1) (Point x2 y2) = Point (x1 `max` x2) (y1 `max` y2)
+minPointwise (Point x1 y1) (Point x2 y2) = Point (x1 `min` x2) (y1 `min` y2)
+
 -- Base points for simple diagrams
 rUProgram :: Point
 rUProgram = Point 7.5 0
