@@ -2,13 +2,29 @@ module CCO.Diag.Figure (
       Point(..)
     , (|+|)
     , (|-|)
+    , zero
+    , toPair
     , translate, translatePair
+    , blProgram, trProgram , blPlatform , trPlatform , blInterpreter , trInterpreter , blCompiler , trCompiler
     , rUProgram, cUProgram, rPPlatform, rUInterpreter, rPInterpreter, cUInterpreter, rUCompiler, cUCompiler, cPCompiler
 ) where
 
 data Point = Point Double Double
            deriving (Eq, Ord, Read, Show)
 
+zero = Point 0 0
+
+
+blProgram = Point 7.5 0
+trProgram = Point 57.5 15
+blPlatform = Point 0 15
+trPlatform = Point 50 30
+blInterpreter = Point 0 0
+trInterpreter = Point 50 30
+blCompiler = Point 50 0
+trCompiler = Point 150 30
+
+toPair (Point x y) = (x, y)
 -- | Plus and minus operators for points
 (|+|), (|-|) :: Point -> Point -> Point
 Point x1 y1 |+| Point x2 y2 = Point (x1 + x2) (y1 + y2)

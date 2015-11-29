@@ -24,6 +24,8 @@ attr Diag Diag_
     syn comU        :: PointPair
     syn comP        :: PointPair
     syn code        :: Commands
+    syn blp         :: Point
+    syn trp         :: Point
 
 {
 todoPoint :: Point
@@ -38,26 +40,38 @@ sem Diag_
                        .runP        = error "invalid input"
                        .comU        = cUProgram
                        .comP        = error "invalid input"
+                       .blp         = blProgram
+                       .trp         = trProgram
     | Platform      lhs.runU        = error "invalid input"
                        .runP        = rPPlatform
                        .comU        = error "invalid input"
                        .comP        = error "invalid input"
+                       .blp         = blPlatform
+                       .trp         = trPlatform
     | Interpreter   lhs.runU        = rUInterpreter
                        .runP        = rPInterpreter
                        .comU        = cUInterpreter
                        .comP        = error "invalid input"
+                       .blp         = blInterpreter
+                       .trp         = trInterpreter
     | Compiler      lhs.runU        = rUCompiler
                        .runP        = error "invalid input"
                        .comU        = cUCompiler
                        .comP        = cPCompiler
+                       .blp         = blCompiler
+                       .trp         = trCompiler
     | Execute       lhs.runU        = @d2.runU
                        .runP        = @d1.runP |+| @loc.d1trans
                        .comU        = @d2.comU
                        .comP        = translatePair @loc.d1trans @d1.comP
+                       .blp         = @d1.blp |+| @d2.blp
+                       .trp         = @d1.trp |+| @d2.trp
     | Compile       lhs.runU        = @d1.runU |+| @loc.d1transR
                        .runP        = @d1.runP |+| @loc.d1transR
                        .comU        = translatePair @loc.d1transR @d1.comU
                        .comP        = translatePair @loc.d1transR @d1.comP
+                       .blp         = @d1.blp |+| @d2.blp
+                       .trp         = @d1.trp |+| @d2.trp
 
 sem Diag_
     | Program       lhs.code = [ Put (7.5, 0)   $ Line (1, 0) 50
@@ -97,12 +111,12 @@ sem Diag_
                                ]
     | Execute       lhs.code = map (translateCmd @loc.d1trans) @d1.code ++ @d2.code
                     loc.d1trans = @d2.runP |-| @d1.runU
+
     | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @d1.code
                     loc.d1transL = fst @d2.comP |-| fst @d1.comU
                     loc.d1transR = snd @d2.comP |-| snd @d1.comU
 
-
 {
-translateCmd :: Point -> Command -> Command
+translateCmd ::  Point -> Command -> Command
 translateCmd p (Put pos obj) = Put (translate p pos) obj
 }

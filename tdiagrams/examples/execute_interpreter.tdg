@@ -1,0 +1,5 @@
+execute
+    program HelloWorld in haskell
+on
+    interpreter hugs for haskell in darwin
+end
