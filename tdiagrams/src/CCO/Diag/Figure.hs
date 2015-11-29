@@ -13,14 +13,8 @@ module CCO.Diag.Figure (
 data Point = Point Double Double
            deriving (Eq, Ord, Read, Show)
 
-zero = Point 0 0
-
-
-trProgram = Point 65 30
-trPlatform = Point 50 30
-trInterpreter = Point 50 30
-trCompiler = Point 150 30
-
+-- | Utility function to extract the pair of doubles that compose a point
+toPair :: Point -> (Double, Double)
 toPair (Point x y) = (x, y)
 -- | Plus and minus operators for points
 (|+|), (|-|) :: Point -> Point -> Point
@@ -37,6 +31,7 @@ translate (Point x y) (a, b) = (a + x, b + y)
 translatePair :: Point -> (Point, Point) -> (Point, Point)
 translatePair p (a, b) = (a |+| p, b |+| p)
 
+-- | Pointwise version of max and min
 maxPointwise, minPointwise :: Point -> Point -> Point
 maxPointwise (Point x1 y1) (Point x2 y2) = Point (x1 `max` x2) (y1 `max` y2)
 minPointwise (Point x1 y1) (Point x2 y2) = Point (x1 `min` x2) (y1 `min` y2)
@@ -63,3 +58,15 @@ cUCompiler :: (Point, Point)
 cUCompiler = (Point 100 0, Point 50 0)
 cPCompiler :: (Point, Point)
 cPCompiler = (Point 0 20, Point 150 20)
+
+zero :: Point
+zero = Point 0 0
+
+trProgram :: Point
+trProgram = Point 65 30
+trPlatform :: Point
+trPlatform = Point 50 30
+trInterpreter :: Point
+trInterpreter = Point 50 30
+trCompiler :: Point
+trCompiler = Point 150 30

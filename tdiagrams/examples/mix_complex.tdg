@@ -1,0 +1,13 @@
+execute
+  compile
+      compile
+          program Hello in Haskell
+      with
+          compiler GHC from Haskell to LLVM in Haskell
+      end
+  with
+      compiler LLVM from LLVM to x86 in C++
+  end
+on
+  platform x86
+end
