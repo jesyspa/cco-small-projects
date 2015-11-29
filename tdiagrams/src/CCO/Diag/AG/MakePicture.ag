@@ -96,8 +96,8 @@ sem Diag_
                                ]
                     loc.name = maybe @m id @lhs.retarget
     | Interpreter   lhs.code = [ Put (0, 0)     $ Framebox (50, 30) ""
-                               , Put (0, 20)    $ Makebox (50, 10) @i
-                               , Put (0, 10)    $ Makebox (50, 10) @l
+                               , Put (0, 20)    $ Makebox (50, 10) @l
+                               , Put (0, 10)    $ Makebox (50, 10) @i
                                , Put (0, 00)    $ Makebox (50, 10) @loc.name
                                ]
                     loc.name = maybe @m id @lhs.retarget
@@ -118,6 +118,7 @@ sem Diag_
                     loc.name = maybe @m id @lhs.retarget
     | Execute       lhs.code = map (translateCmd @loc.d1trans) @d1.code ++ @d2.code
                     loc.d1trans = @d2.runP |-| @d1.runU
+                    d1.retarget = Nothing
 
     | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @loc.compcode
                     loc.comp = wrap_Diag (sem_Diag @d1.compresult) $ Inh_Diag (Just @d2.comptarget)
