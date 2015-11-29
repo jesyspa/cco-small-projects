@@ -98,8 +98,8 @@ sem Diag_
     | Execute       lhs.code = map (translateCmd @loc.d1trans) @d1.code ++ @d2.code
                     loc.d1trans = @d2.runP |-| @d1.runU
     | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @d1.code
-                    loc.d1transL = fst @d1.comU |-| fst @d2.comP
-                    loc.d1transR = snd @d1.comU |-| snd @d2.comP
+                    loc.d1transL = fst @d2.comP |-| fst @d1.comU
+                    loc.d1transR = snd @d2.comP |-| snd @d1.comU
 
 
 {

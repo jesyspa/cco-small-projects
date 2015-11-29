@@ -33,7 +33,7 @@ rPPlatform :: Point
 rPPlatform = Point 0 30
 
 rUInterpreter :: Point
-rUInterpreter = Point 0  0
+rUInterpreter = Point 0 0
 rPInterpreter :: Point
 rPInterpreter = Point 0 30
 cUInterpreter :: (Point, Point)
