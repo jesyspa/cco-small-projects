@@ -103,9 +103,6 @@ sem Diag_
 
 
 {
-translatePair :: Point -> (Point, Point) -> (Point, Point)
-translatePair p (a, b) = (a |+| p, b |+| p)
-
 translateCmd :: Point -> Command -> Command
 translateCmd p (Put pos obj) = Put (translate p pos) obj
 }

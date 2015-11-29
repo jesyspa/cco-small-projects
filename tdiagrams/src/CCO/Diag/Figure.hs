@@ -1,6 +1,5 @@
 module CCO.Diag.Figure (
       Point(..)
-    , zero
     , (|+|)
     , (|-|)
     , translate
@@ -10,16 +9,21 @@ module CCO.Diag.Figure (
 data Point = Point Double Double
            deriving (Eq, Ord, Read, Show)
 
-zero :: Point
-zero = Point 0 0
-
+-- | Plus and minus operators for points
 (|+|), (|-|) :: Point -> Point -> Point
 Point x1 y1 |+| Point x2 y2 = Point (x1 + x2) (y1 + y2)
 Point x1 y1 |-| Point x2 y2 = Point (x1 - x2) (y1 - y2)
 
+-- | Calculate the translation of a single point, this is used to recalculate the
+--  position in Execute diagrams
 translate :: Point -> (Double, Double) -> (Double, Double)
 translate (Point x y) (a, b) = (a + x, b + y)
 
+-- | Calculate the translation of a pair of points, this is used to recalculate the
+--  position in Compile diagrams
+translatePair :: Point -> (Point, Point) -> (Point, Point)
+translatePair p (a, b) = (a |+| p, b |+| p)
+-- Base points for simple diagrams
 rUProgram :: Point
 rUProgram = Point 7.5 0
 cUProgram :: (Point, Point)
@@ -31,13 +35,13 @@ rPPlatform = Point 0 30
 rUInterpreter :: Point
 rUInterpreter = Point 0  0
 rPInterpreter :: Point
-rPInterpreter = Point 30 50
+rPInterpreter = Point 0 30
 cUInterpreter :: (Point, Point)
-cUInterpreter = (Point 0 50, Point 0 0)
+cUInterpreter = (Point 50 0, Point 0 0)
 
 rUCompiler :: Point
 rUCompiler = Point 50 0
 cUCompiler :: (Point, Point)
 cUCompiler = (Point 100 0, Point 50 0)
 cPCompiler :: (Point, Point)
-cPCompiler = (Point 0 30, Point 100 30)
+cPCompiler = (Point 0 20, Point 150 20)
