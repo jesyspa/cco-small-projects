@@ -103,3 +103,6 @@ and this one too
     with
       compiler reverseGHC from x86 to Haskell in x86
     end
+
+Allowing these kind of programs posed a challenge regarding how to generate these complex pictures. To solve this, we adopted a slightly stronger formulation of the rule expressed in the project specification: when a composite diagram is itself used as a part of a composite diagram,
+executions and compilations are always to be performed on the synthesized result.
