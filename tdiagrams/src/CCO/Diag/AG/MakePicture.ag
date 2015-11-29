@@ -14,66 +14,63 @@ include "Base.ag"
 -- Compilation connections involve two points: the connection to use for
 -- to start the compilation and the connection to use to end it
 
-type MPoint = maybe Point
 type PointPair = (Point, Point)
-type MPointPair = maybe PointPair
 
 attr Diag Diag_
-    syn runU        :: MPoint
-    syn runP        :: MPoint
-    syn comU        :: MPointPair
-    syn comP        :: MPointPair
+    syn runU        :: Point
+    syn runP        :: Point
+    syn comU        :: PointPair
+    syn comP        :: PointPair
     syn code        :: Commands
 
 {
 todoPoint :: Point
 todoPoint = undefined
+
+todoPointPair :: PointPair
+todoPointPair = undefined
 }
 
 sem Diag_
-    | Program       lhs.runU        = Just todoPoint
-                       .runP        = Nothing
-                       .comU        = Just todoPoint
-                       .comP        = Nothing
-    | Platform      lhs.runU        = Nothing
-                       .runP        = Just todoPoint
-                       .comU        = Nothing
-                       .comP        = Nothing
-    | Interpreter   lhs.runU        = Just todoPoint
-                       .runP        = Just todoPoint
-                       .comU        = Just todoPoint
-                       .comP        = Nothing
-    | Compiler      lhs.runU        = Just todoPoint
-                       .runP        = Nothing
-                       .comU        = Just todoPoint
-                       .comP        = Just todoPoint
-    | Execute       lhs.runU        = undefined
-                       .runP        = undefined
-                       .comU        = undefined
-                       .comP        = undefined
-    | Compile       lhs.runU        = undefined
-                       .runP        = undefined
-                       .comU        = undefined
-                       .comP        = undefined
+    | Program       lhs.runU        = todoPoint
+                       .runP        = error "invalid input"
+                       .comU        = todoPointPair
+                       .comP        = error "invalid input"
+    | Platform      lhs.runU        = error "invalid input"
+                       .runP        = todoPointPair
+                       .comU        = error "invalid input"
+                       .comP        = error "invalid input"
+    | Interpreter   lhs.runU        = todoPoint
+                       .runP        = todoPoint
+                       .comU        = todoPointPair
+                       .comP        = error "invalid input"
+    | Compiler      lhs.runU        = todoPoint
+                       .runP        = error "invalid input"
+                       .comU        = todoPointPair
+                       .comP        = todoPointPair
+    | Execute       lhs.runU        = translate @loc.d2trans @d2.runU
+                       .runP        = translate @loc.d1trans @d1.runP
+                       .comU        = translate @loc.d2trans @d2.comU
+                       .comP        = translate @loc.d1trans @d1.comP
+    | Compile       lhs.runU        = translate @loc.d1transR @d1.runU
+                       .runP        = translate @loc.d1transR @d1.runP
+                       .comU        = translate @loc.d1transR @d1.comU
+                       .comP        = translate @loc.d1transR @d1.comP
 
 sem Diag_
     | Program       lhs.code = []
     | Platform      lhs.code = []
     | Interpreter   lhs.code = []
     | Compiler      lhs.code = []
-    | Execute       lhs.code = map (translateMany @loc.d1trans) @d1.code ++ map (translateMany @loc.d2trans) @d2.code
-                    loc.d1trans = undefined
-                    loc.d2trans = undefined
-    | Compile       lhs.code = map (translateMany @loc.d1transL) @d1.code ++ map (translateMany @loc.d2trans) @d2.code ++ map (translateMany @loc.d1transR) @d1.code
-                    loc.d1transL = undefined
-                    loc.d1transR = undefined
-                    loc.d2trans = undefined
+    | Execute       lhs.code = map (translateCmd @loc.d1trans) @d1.code ++ @d2.code
+                    loc.d1trans = @d2.runP |-| @d1.runU
+    | Compile       lhs.code = map (translateCmd @loc.d1transL) @d1.code ++ @d2.code ++ map (translateCmd @loc.d1transR) @d1.code
+                    loc.d1transL = fst @d1.comU |-| fst @d2.comP
+                    loc.d1transR = snd @d1.comU |-| snd @d2.comP
 
 
 {
-translateMany :: Point -> Command -> Command
-translateMany = undefined
-
-
+translateCmd :: Point -> Command -> Command
+translateCmd p (Put pos obj) = Put (translate pos) obj
 }
 
