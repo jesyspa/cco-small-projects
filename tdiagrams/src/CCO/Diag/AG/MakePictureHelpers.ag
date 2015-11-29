@@ -1,6 +1,8 @@
-module {CCO.Diag.AG.MakePictureHelpers}{}{
-import CCO.Diag.Figure
-}
+module {CCO.Diag.AG.MakePictureHelpers}{}{}
+
+-- Initially, Point was a datatype, but since we always just use it as pair
+-- anyway, we might as well make it a type synonym.
+type Point = (Double, Double)
 
 type PointPair = (Point, Point)
 

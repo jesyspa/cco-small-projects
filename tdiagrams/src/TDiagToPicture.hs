@@ -4,7 +4,7 @@ import CCO.Diag       (Diag)
 import CCO.Picture    (Picture(..))
 import Control.Arrow  (Arrow (arr), (>>>))
 import CCO.Diag.AG.MakePicture
-import CCO.Diag.Figure ((|-|), toPair, Point(..))
+import CCO.Diag.Figure ((|-|), zero)
 
 tdiag2picture :: Component Diag Picture
 tdiag2picture = arr $ \x ->
@@ -13,8 +13,7 @@ tdiag2picture = arr $ \x ->
       code = code_Syn_Diag tree
       blp = blp_Syn_Diag tree
       trp = trp_Syn_Diag tree
-      offset = trp |-| blp
-
-    in Picture (toPair offset) $ map (translateCmd (Point 0 0 |-| blp)) code
+      figureSize = trp |-| blp
+    in Picture figureSize $ map (translateCmd $ zero |-| blp) code
 
 main = ioWrap (parser >>> component toTree >>> tdiag2picture >>> arr fromTree >>> printer)

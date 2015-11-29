@@ -31,14 +31,6 @@ attr Diag Diag_
     syn comptarget  :: Ident
     inh retarget    :: {Maybe Ident}
 
-{
-todoPoint :: Point
-todoPoint = undefined
-
-todoPointPair :: PointPair
-todoPointPair = undefined
-}
-
 sem Diag_
     | Program       lhs.runU        = rUProgram
                        .runP        = error "invalid input"
