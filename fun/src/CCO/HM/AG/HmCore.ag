@@ -2,20 +2,43 @@ module {CCO.HM.AG.HmCore}{}{}
 {
 import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
-import qualified CCO.Core.AG.Base as Core
+import qualified CCO.Core.AG.Base as C
+import Data.List
+import Control.Applicative ((<|>))
+import Data.Maybe
 }
 
 include "Base.ag"
 
 attr Tm Tm_
-  syn code :: {Core.Exp}
-  syn bindings use {++} {[]} :: {Core.BindL}
+  syn code :: {C.Exp}
+  syn bindings use {++} {[]} :: {[(Var, C.Bind)]}
+  inh gsymbols :: {[Var]}
+  inh symbols :: {[[Var]]}
+  inh inLambda :: {Bool}
 
 sem Tm_
-  | Nat  lhs.code     = undefined
-  | Var  lhs.code     = undefined
+  | *    loc.res      = \x -> resolve x @lhs.gsymbols @lhs.symbols
+  | Nat  lhs.code     = C.SExp $ C.Int @i
+  | Var  lhs.code     = C.SExp $ C.Var $ @loc.res @x
   | Lam  lhs.code     = undefined
+         lhs.bindings = []
   | App  lhs.code     = undefined
-  | Let  lhs.code     = undefined
-         lhs.bindings = undefined
+  | Let  lhs.code     = @t2.code
+         lhs.bindings = [(@x, C.Bind (@loc.res @x) @t1.code)] ++ @t1.bindings ++ @t2.bindings
+
+{
+
+resolve :: Var -> [Var] -> [[Var]] -> C.Ref
+resolve x gs s = fromJust $ findLoc x s <|> findGlob x gs
+
+findGlob :: Var -> [Var] -> Maybe C.Ref
+findGlob x s = C.Glob <$> elemIndex x s
+
+findLoc :: Var -> [[Var]] -> Maybe C.Ref
+findLoc x gs = do
+  s <- find (x `elem`) gs
+  C.Loc <$> elemIndex s gs <*> elemIndex x s
+
+}
 
