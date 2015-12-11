@@ -1,0 +1,21 @@
+module {CCO.HM.AG.HmCore}{}{}
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
+import qualified CCO.Core.AG.Base as Core
+}
+
+include "Base.ag"
+
+attr Tm Tm_
+  syn code :: {Core.Exp}
+  syn bindings use {++} {[]} :: {Core.BindL}
+
+sem Tm_
+  | Nat  lhs.code     = undefined
+  | Var  lhs.code     = undefined
+  | Lam  lhs.code     = undefined
+  | App  lhs.code     = undefined
+  | Let  lhs.code     = undefined
+         lhs.bindings = undefined
+
