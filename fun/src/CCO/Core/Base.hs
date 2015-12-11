@@ -14,18 +14,18 @@
 
 module CCO.Core.Base (
     -- * Syntax
-    Ref (Glob, Loc)                     
+    Ref (Glob, Loc)
   , RefL
-  , SExp (Var, Int)                     
+  , SExp (Var, Int)
   , SExpL
   , Exp (SExp, Lam, App, Let, Prim, Node, Case, Dbg)
   , ExpL
-  , Bind (Bind)                         
+  , Bind (Bind)
   , BindL
-  , Mod (Mod)                           
+  , Mod (Mod)
 ) where
 
-import CCO.Core.AG
+import CCO.Core.AG.Base
 import CCO.Tree                   (Tree (fromTree, toTree))
 import qualified CCO.Tree as T    (ATerm (App))
 import CCO.Tree.Parser            (parseTree, app, arg)

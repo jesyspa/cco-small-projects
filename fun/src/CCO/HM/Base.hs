@@ -19,7 +19,8 @@ module CCO.HM.Base (
   , Tm_ (Var, Nat, Lam, App, Let)       -- instances: Tree
 ) where
 
-import CCO.HM.AG
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
 import CCO.Tree                   (Tree (fromTree, toTree))
 import qualified CCO.Tree as T    (ATerm (App))
 import CCO.Tree.Parser            (parseTree, app, arg)

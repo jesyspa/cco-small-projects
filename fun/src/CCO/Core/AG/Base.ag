@@ -1,7 +1,4 @@
-imports
-{
-import qualified UHC.Light.Compiler.CoreRun.API as CR
-}
+module {CCO.Core.AG.Base}{}{}
 
 -------------------------------------------------------------------------------
 -- Syntax

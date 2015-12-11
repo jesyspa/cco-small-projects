@@ -1,15 +1,13 @@
+module{CCO.HM.AG.Base}{}{}
 imports
 {
 import CCO.SourcePos
+import CCO.HM.AG.BaseHelpers
 }
 
 -------------------------------------------------------------------------------
 -- Syntax
 -------------------------------------------------------------------------------
-
-{
-type Var = String    -- ^ Type of variables.
-}
 
 data Tm
   | Tm  pos :: {SourcePos}  t :: Tm_

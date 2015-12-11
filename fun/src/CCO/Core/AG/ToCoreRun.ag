@@ -1,8 +1,11 @@
-imports
+module {CCO.Core.AG.ToCoreRun}{}{}
 {
+import CCO.Core.AG.Base
 import           UHC.Light.Compiler.Base.API
 import qualified UHC.Light.Compiler.CoreRun.API as CR
 }
+
+include "Base.ag"
 
 -------------------------------------------------------------------------------
 -- CoreRun generation
@@ -37,7 +40,7 @@ sem Exp
   | Dbg  loc    .   crexp   =   CR.mkDbg @info
 
 sem Exp
-  | * 	 lhs	.	crexpl	=	[@crexp]
+  | *    lhs    .   crexpl  =   [@crexp]
 
 attr BindL Bind
   syn crbindl use {++} {[]} :: {[CR.Bind]}
