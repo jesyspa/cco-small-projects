@@ -4,6 +4,7 @@ imports
 import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
 import CCO.HM.AG.ANormal
+import Data.List
 }
 
 include "Base.ag"
@@ -12,19 +13,22 @@ attr Tm_ Tm
   syn code :: {AExp}
   syn bindings use {++} {[]} :: {[(Var, AExp)]}
   chn counter :: Int
+  syn freevars use {`union`} {[]} :: {[Var]}
 
 sem Tm_
   | Nat   lhs.code      = AVal $ ANat  @i
   | Var   lhs.code      = AVal $ AVar  @x
+          lhs.freevars  = [@x]
   | Lam   lhs.code      = ALam [@x] $ wrapBinds @t1.code @t1.bindings
           lhs.bindings  = []
-  -- The next case is unfinished.  We should extend the bindings if v @t2.code isn't a simple value
+          +freevars     = delete @x
   | App   lhs.code      = AApp @t1.code (AVar @loc.fresh)
           loc.num :: uniqueref counter
           loc.fresh     = "$e_" ++ show @loc.num
           +bindings     = (:) (@loc.fresh, @t2.code)
   | Let   lhs.code      = @t2.code
           lhs.bindings  = @t2.bindings ++ [(@x, @t1.code)] ++ @t1.bindings
+          +freevars     = delete @x
   | If    loc.c1        = wrapBinds @t1.code @t1.bindings
           loc.c2        = wrapBinds @t2.code @t2.bindings
           loc.num :: uniqueref counter

@@ -15,7 +15,7 @@ builtins = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
           -- We could have done as Lisp does and made False = Nil, but the assignment requires
           -- this choice of tags, so we've got True = Nil.
           bCons  = ("Cons",  ALam ["$b_head", "$b_tail"] $ AExp $ AAlloc 0 [AVar "$b_head", AVar "$b_tail"])
-          bNil   = ("Nil",   AVal $ AVar "True")
+          bNil   = ("Nil",   AAlloc 1 [])
           -- Thanks to the way we represent Cons and Nil, isNil can be the identity function.
           -- This is, of course, rather questionable from the point of view of garbage collection
           -- and efficient memory usage.
@@ -28,5 +28,6 @@ toANormal = component $ \tm -> do
     let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm 0)
         binds = bindings_Syn_Tm wtm
         code = code_Syn_Tm wtm
-    return $ wrapBinds code (binds ++ builtins)
+        vars = freevars_Syn_Tm wtm
+    return $ wrapBinds code (binds ++ filter (flip elem vars . fst) builtins)
 
