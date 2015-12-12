@@ -9,7 +9,7 @@ import CCO.Component
 import Control.Arrow ((>>>))
 
 builtins :: [(Var, AExp)]
-builtins = [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
+builtins = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
     where bFalse = ("False", AAlloc 0 [])
           bTrue  = ("True",  AAlloc 1 [])
           -- We could have done as Lisp does and made False = Nil, but the assignment requires
@@ -25,8 +25,8 @@ builtins = [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
 
 toANormal :: Component Tm ATm
 toANormal = component $ \tm -> do
-    let wtm = wrap_Tm (sem_Tm tm) Inh_Tm
+    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm 0)
         binds = bindings_Syn_Tm wtm
         code = code_Syn_Tm wtm
-    return $ wrapBinds code (builtins ++ binds)
+    return $ wrapBinds code (binds ++ builtins)
 
