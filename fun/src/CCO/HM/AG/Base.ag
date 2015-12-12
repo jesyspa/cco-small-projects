@@ -12,6 +12,8 @@ import CCO.HM.AG.BaseHelpers
 data Tm
   | Tm  pos :: {SourcePos}  t :: Tm_
 
+type Tms = [Tm]
+
 data Tm_
   | Nat  i :: {Int}
   | Var  x :: {Var}
@@ -19,3 +21,4 @@ data Tm_
   | App  t1 :: Tm  t2 :: Tm
   | Let  x :: {Var}  t1 :: Tm  t2 :: Tm
   | If   c :: Tm  t1 :: Tm  t2 :: Tm
+  | Prim op :: {String} args :: {[Var]}

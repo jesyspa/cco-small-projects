@@ -1,0 +1,3 @@
+let plus = \x. \y. prim "primAddInt" x y in
+    plus 2 3
+ni

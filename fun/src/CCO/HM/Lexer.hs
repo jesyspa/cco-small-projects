@@ -92,7 +92,7 @@ nat_ = (Nat . read) <$> some digit
 
 -- | A 'Lexer' that recognises 'Spec' tokens.
 spec_ :: Lexer Token
-spec_ = Spec <$> anyCharFrom "()=\\."
+spec_ = Spec <$> anyCharFrom "()=\\.\""
 
 -- | The 'Lexer' for the language.
 lexer :: Lexer Token

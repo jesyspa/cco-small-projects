@@ -40,6 +40,7 @@ sem AExp
            -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
            lhs.code        = C.Case @c.code [@t2.code, @t1.code]
   | AAlloc lhs.code        = C.Node @t @vs.code
+  | APrim  lhs.code        = C.Prim @op @vs.code
 
 sem ATm
   | ALet   lhs.code        = @t.code

@@ -9,11 +9,16 @@ import Data.List
 
 include "Base.ag"
 
-attr Tm_ Tm
-  syn code :: {AExp}
+attr Tm_ Tm Tms
   syn bindings use {++} {[]} :: {[(Var, AExp)]}
   chn counter :: Int
   syn freevars use {`union`} {[]} :: {[Var]}
+
+attr Tm_ Tm
+  syn code :: {AExp}
+
+attr Tms
+  syn code use {:} {[]} :: {[AExp]}
 
 sem Tm_
   | Nat   lhs.code      = AVal $ ANat  @i
@@ -35,6 +40,9 @@ sem Tm_
           loc.fresh     = "$e_" ++ show @loc.num
           lhs.code      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
           lhs.bindings  = [(@loc.fresh, @c.code)] ++ @c.bindings
+  -- Convert to ANormal form.
+  | Prim  lhs.code      = APrim @op (map AVar @args)
+          lhs.freevars  = @args
 
 {
 wrapBinds :: AExp -> [(Var, AExp)] -> ATm
