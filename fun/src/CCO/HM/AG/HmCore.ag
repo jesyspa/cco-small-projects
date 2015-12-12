@@ -10,6 +10,7 @@ include "ANormal.ag"
 
 attr ATm AExp AVal
   inh context :: {Context}
+  inh tagPosition :: {Bool}
 
 attr AVal
   syn code :: {C.SExp}
@@ -21,19 +22,22 @@ attr ATm
   syn bindings use {++} {[]} :: {[C.Bind]}
 
 sem AVal
-  | ANat lhs.code     = C.Int @i
-  | AVar lhs.code     = C.Var $ resolve @x @lhs.context
+  | ANat  lhs.code        = C.Int @i
+  | AVar  lhs.code        = C.Var $ (if @lhs.tagPosition then C.Tag else id) $ resolve @x @lhs.context
 
-sem AExp
-  | AVal lhs.code     = C.SExp @v.code
-  | AApp lhs.code     = C.App @e.code [@v.code]
-  | ALam loc.context  = push @x $ pushFrame @lhs.context
-         lhs.code     = C.Lam [resolve @x @loc.context] @t.code
-         lhs.bindings = []
+sem AExp 
+  | AVal  lhs.code        = C.SExp @v.code
+  | ABool lhs.code        = C.Node (if @b then 1 else 0) []
+  | AApp  lhs.code        = C.App @e.code [@v.code]
+  | ALam  loc.context     = push @x $ pushFrame @lhs.context
+          lhs.code        = C.Lam [resolve @x @loc.context] @t.code
+  | AIf   c  .tagPosition = True
+          -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
+          lhs.code        = C.Case @c.code [@t2.code, @t1.code]
 
 sem ATm
-  | ALet lhs.code     = @t.code
-         t  .context  = @loc.context
-         loc.context  = push @x @lhs.context
-         lhs.bindings = [C.Bind (resolve @x @loc.context) @e.code] ++ @t.bindings
+  | ALet  lhs.code        = @t.code
+          t  .context     = @loc.context
+          loc.context     = push @x @lhs.context
+          lhs.bindings    = [C.Bind (resolve @x @loc.context) @e.code] ++ @t.bindings
 

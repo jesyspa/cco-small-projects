@@ -14,7 +14,9 @@ data AVal
 
 data AExp
   | AVal   v :: AVal
+  | ABool  b :: {Bool}
   | AApp   e :: AExp   v :: AVal
+  | AIf    c :: AVal   t1 :: ATm  t2 :: ATm
   | ALam   x :: {Var}  t :: ATm
 
 data ATm

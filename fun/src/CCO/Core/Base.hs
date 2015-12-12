@@ -53,10 +53,12 @@ instance Tree SExp where
 
 instance Tree Ref where
   fromTree (Glob  o)  = T.App "Glob" [fromTree o]
-  fromTree (Loc d o)  = T.App "Loc" [fromTree d, fromTree o]
+  fromTree (Loc d o)  = T.App "Loc"  [fromTree d, fromTree o]
+  fromTree (Tag   o)  = T.App "Tag"  [fromTree o]
 
   toTree = parseTree [ app "Glob" (Glob <$> arg)
                      , app "Loc"  (Loc  <$> arg <*> arg)
+                     , app "Tag"  (Tag  <$> arg)
                      ]
 
 instance Tree Exp where

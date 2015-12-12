@@ -17,7 +17,7 @@ module CCO.HM.Parser (
     parser    -- :: Component String Tm
 ) where
 
-import CCO.HM.Base                     (Var, Tm (Tm), Tm_ (Var, Nat, Lam, App, Let))
+import CCO.HM.Base                     (Var, Tm (Tm), Tm_ (..))
 import CCO.HM.Lexer                    (Token, lexer, keyword, var, nat, spec)
 import CCO.Component                   (Component)
 import qualified CCO.Component as C    (parser)
@@ -45,10 +45,15 @@ pTm = (\pos x t1 -> Tm pos (Lam x t1)) <$>
         sourcePos <* spec '\\' <*> var <* spec '.' <*> pTm <|>
       (\pos ts -> foldl1 (\t1 t2 -> Tm pos (App t1 t2)) ts) <$>
         sourcePos <*> some
-          (  (\pos x -> Tm pos (Nat x)) <$> sourcePos <*> nat <|>
-             (\pos x -> Tm pos (Var x)) <$> sourcePos <*> var <|>
-             (\pos x t1 t2 -> Tm pos (Let x t1 t2)) <$>
-               sourcePos <* keyword "let" <*> var <* spec '=' <*> pTm <*
-               keyword "in" <*> pTm <* keyword "ni" <|>
-              spec '(' *> pTm <* spec ')'
+          (  (\pos x -> Tm pos $ Nat x) <$> sourcePos <*> nat <|>
+             (\pos x -> Tm pos $ Var x) <$> sourcePos <*> var <|>
+             (\pos x t1 t2 -> Tm pos $ Let x t1 t2) <$>
+               sourcePos <* keyword "let" <*> var <* spec '=' <*> pTm <* keyword "in" <*> pTm <* keyword "ni" <|>
+              spec '(' *> pTm <* spec ')' <|>
+             (\pos c t1 t2 -> Tm pos $ If c t1 t2) <$>
+               sourcePos <* keyword "if" <*> pTm <* keyword "then" <*> pTm <* keyword "else" <*> pTm <* keyword "fi" <|>
+             (\pos -> Tm pos $ Bool True) <$>
+               sourcePos <* keyword "True" <|>
+             (\pos -> Tm pos $ Bool False) <$>
+               sourcePos <* keyword "False"
           )

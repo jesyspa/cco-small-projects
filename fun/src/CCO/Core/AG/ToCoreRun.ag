@@ -3,6 +3,8 @@ module {CCO.Core.AG.ToCoreRun}{}{}
 import CCO.Core.AG.Base
 import           UHC.Light.Compiler.Base.API
 import qualified UHC.Light.Compiler.CoreRun.API as CR
+-- We need to use some things that aren't supported by the API, such as referencing a tag.
+import qualified UHC.Light.Compiler.CoreRun.API.Internal as CRI
 }
 
 include "Base.ag"
@@ -54,6 +56,7 @@ attr RefL Ref
 sem Ref
   | Glob  lhs   .   crrefl  =   [CR.mkModRef @offset]
   | Loc   lhs   .   crrefl  =   [CR.mkLocDifRef @levdiff @offset]
+  | Tag   lhs   .   crrefl  =   map CRI.RRef_Tag @ref.crrefl
 
 
 -------------------------------------------------------------------------------

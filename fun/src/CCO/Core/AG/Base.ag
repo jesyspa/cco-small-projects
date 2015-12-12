@@ -12,6 +12,7 @@ data Ref
   | Glob offset     :: {Int}
   | Loc  levdiff    :: {Int}
          offset     :: {Int}
+  | Tag  ref        :: Ref
 
 type RefL = [Ref]
 
