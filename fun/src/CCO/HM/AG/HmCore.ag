@@ -24,8 +24,6 @@ sem AVal
   | ANat lhs.code     = C.Int @i
   | AVar lhs.code     = C.Var $ resolve @x @lhs.context
 
--- The way bindings are looked up doesn't work right now.
-
 sem AExp
   | AVal lhs.code     = C.SExp @v.code
   | AApp lhs.code     = C.App @e.code [@v.code]
