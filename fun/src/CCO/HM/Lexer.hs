@@ -79,7 +79,7 @@ layout_ = ignore (some (anyCharFrom " \n\t"))
 -- | A 'Lexer' that recognises 'Keyword' tokens.
 keyword_ :: Lexer Token
 keyword_ = fmap Keyword $ oneOf $ map string keywords
-    where keywords = ["in", "let", "ni", "if", "then", "else", "fi", "True", "False", "prim"]
+    where keywords = ["in", "let", "ni", "if", "then", "else", "prim"]
           oneOf = foldr1 (<|>)
 
 -- | A 'Lexer' that recognises 'Var' tokens.

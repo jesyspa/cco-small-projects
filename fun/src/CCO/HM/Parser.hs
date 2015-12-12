@@ -51,9 +51,5 @@ pTm = (\pos x t1 -> Tm pos (Lam x t1)) <$>
                sourcePos <* keyword "let" <*> var <* spec '=' <*> pTm <* keyword "in" <*> pTm <* keyword "ni" <|>
               spec '(' *> pTm <* spec ')' <|>
              (\pos c t1 t2 -> Tm pos $ If c t1 t2) <$>
-               sourcePos <* keyword "if" <*> pTm <* keyword "then" <*> pTm <* keyword "else" <*> pTm <* keyword "fi" <|>
-             (\pos -> Tm pos $ Bool True) <$>
-               sourcePos <* keyword "True" <|>
-             (\pos -> Tm pos $ Bool False) <$>
-               sourcePos <* keyword "False"
+               sourcePos <* keyword "if" <*> pTm <* keyword "then" <*> pTm <* keyword "else" <*> pTm
           )

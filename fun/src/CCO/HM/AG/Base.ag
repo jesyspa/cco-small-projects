@@ -15,7 +15,6 @@ data Tm
 data Tm_
   | Nat  i :: {Int}
   | Var  x :: {Var}
-  | Bool b :: {Bool}
   | Lam  x :: {Var}  t1 :: Tm
   | App  t1 :: Tm  t2 :: Tm
   | Let  x :: {Var}  t1 :: Tm  t2 :: Tm

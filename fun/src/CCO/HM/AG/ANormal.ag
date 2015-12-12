@@ -9,16 +9,18 @@ import CCO.HM.AG.BaseHelpers
 -------------------------------------------------------------------------------
 
 data AVal
-  | ANat   i :: {Int}
-  | AVar   x :: {Var}
+  | ANat     i :: {Int}
+  | AVar     x :: {Var}
+
+type AVals = [AVal]
 
 data AExp
-  | AVal   v :: AVal
-  | ABool  b :: {Bool}
-  | AApp   e :: AExp   v :: AVal
-  | AIf    c :: AVal   t1 :: ATm  t2 :: ATm
-  | ALam   x :: {Var}  t :: ATm
+  | AVal     v :: AVal
+  | AApp     e :: AExp   v :: AVal
+  | AIf      c :: AVal   t1 :: ATm  t2 :: ATm
+  | ALam     x :: {Var}  t :: ATm
+  | AAlloc   t :: {Int}  vs :: AVals
 
 data ATm
-  | AExp   e :: AExp
-  | ALet   x :: {Var}  e :: AExp t :: ATm
+  | AExp     e :: AExp
+  | ALet     x :: {Var}  e :: AExp t :: ATm

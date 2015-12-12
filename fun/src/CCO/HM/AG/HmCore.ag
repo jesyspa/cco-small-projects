@@ -8,12 +8,17 @@ import qualified CCO.Core.AG.Base as C
 
 include "ANormal.ag"
 
-attr ATm AExp AVal
+attr ATm AExp AVal AVals
   inh context :: {Context}
+  -- Really, we'd like to specify that we only care about tagPosition in the case of AVals.  However, that's not
+  -- practical because then we have to specify it on all values, while it's actually only very rarely true.
   inh tagPosition :: {Bool}
 
 attr AVal
   syn code :: {C.SExp}
+
+attr AVals
+  syn code use {:} {[]} :: {[C.SExp]}
 
 attr ATm AExp
   syn code :: {C.Exp}
@@ -22,22 +27,22 @@ attr ATm
   syn bindings use {++} {[]} :: {[C.Bind]}
 
 sem AVal
-  | ANat  lhs.code        = C.Int @i
-  | AVar  lhs.code        = C.Var $ (if @lhs.tagPosition then C.Tag else id) $ resolve @x @lhs.context
+  | ANat   lhs.code        = C.Int @i
+  | AVar   lhs.code        = C.Var $ (if @lhs.tagPosition then C.Tag else id) $ resolve @x @lhs.context
 
-sem AExp 
-  | AVal  lhs.code        = C.SExp @v.code
-  | ABool lhs.code        = C.Node (if @b then 1 else 0) []
-  | AApp  lhs.code        = C.App @e.code [@v.code]
-  | ALam  loc.context     = push @x $ pushFrame @lhs.context
-          lhs.code        = C.Lam [resolve @x @loc.context] @t.code
-  | AIf   c  .tagPosition = True
-          -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
-          lhs.code        = C.Case @c.code [@t2.code, @t1.code]
+sem AExp
+  | AVal   lhs.code        = C.SExp @v.code
+  | AApp   lhs.code        = C.App @e.code [@v.code]
+  | ALam   loc.context     = push @x $ pushFrame @lhs.context
+           lhs.code        = C.Lam [resolve @x @loc.context] @t.code
+  | AIf    c  .tagPosition = True
+           -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
+           lhs.code        = C.Case @c.code [@t2.code, @t1.code]
+  | AAlloc lhs.code        = C.Node @t @vs.code
 
 sem ATm
-  | ALet  lhs.code        = @t.code
-          t  .context     = @loc.context
-          loc.context     = push @x @lhs.context
-          lhs.bindings    = [C.Bind (resolve @x @loc.context) @e.code] ++ @t.bindings
+  | ALet   lhs.code        = @t.code
+           t  .context     = @loc.context
+           loc.context     = push @x @lhs.context
+           lhs.bindings    = [C.Bind (resolve @x @loc.context) @e.code] ++ @t.bindings
 
