@@ -18,7 +18,7 @@ attr ATm AExp
   syn code :: {C.Exp}
 
 attr ATm
-  syn bindings use {++} {[]} :: {[(Var, C.Bind)]}
+  syn bindings use {++} {[]} :: {[C.Bind]}
 
 sem AVal
   | ANat lhs.code     = C.Int @i
@@ -35,5 +35,5 @@ sem AExp
 sem ATm
   | ALet lhs.code     = @t.code
          t  .context  = push @x @lhs.context
-         lhs.bindings = [(@x, C.Bind (resolve @x @lhs.context) @e.code)] ++ @t.bindings
+         lhs.bindings = [C.Bind (nextPos @lhs.context) @e.code] ++ @t.bindings
 

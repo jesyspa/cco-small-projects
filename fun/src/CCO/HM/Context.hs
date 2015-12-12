@@ -1,8 +1,10 @@
 module CCO.HM.Context (
-      Context(..)
+      empty
+    , Context
     , resolve
     , push
     , pushFrame
+    , nextPos
 ) where
 
 import CCO.HM.AG.BaseHelpers
@@ -14,11 +16,14 @@ import Data.Maybe
 data Context = Context { locals :: [[Var]], globals :: [Var] }
              deriving (Eq, Ord, Read, Show)
 
+empty :: Context
+empty = Context [] []
+
 resolve :: Var -> Context -> C.Ref
 resolve x (Context ls gs) = fromJust $ findLoc x ls <|> findGlob x gs
 
 findGlob :: Var -> [Var] -> Maybe C.Ref
-findGlob x gs = C.Glob <$> elemIndex x gs
+findGlob x gs = C.Glob <$> elemIndex x (reverse gs)
 
 findLoc :: Var -> [[Var]] -> Maybe C.Ref
 findLoc x ls = do
@@ -32,3 +37,7 @@ push x (Context (l:ls) gs) = Context ((x:l):ls) gs
 
 pushFrame :: Context -> Context
 pushFrame (Context ls gs) = Context ([]:ls) gs
+
+nextPos :: Context -> C.Ref
+nextPos (Context [] gs) = C.Glob $ length gs
+nextPos (Context (l:ls) _) = C.Loc (length ls) (length l)

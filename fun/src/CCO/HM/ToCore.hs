@@ -11,10 +11,7 @@ import CCO.Core.AG.Base
 
 toCore :: Component ATm Mod
 toCore = component $ \atm -> do
-    let inh = Inh_ATm { context_Inh_ATm = Context [] bindNames }
+    let inh = Inh_ATm { context_Inh_ATm = empty }
         wtm = wrap_ATm (sem_ATm atm) inh
-        binds :: [(Var, Bind)]
         binds = bindings_Syn_ATm wtm
-        bindNames = map fst binds
-        bindVals = map snd binds
-    return $ Mod (code_Syn_ATm wtm) bindVals
+    return $ Mod (code_Syn_ATm wtm) binds
