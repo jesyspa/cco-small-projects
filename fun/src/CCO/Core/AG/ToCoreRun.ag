@@ -57,6 +57,7 @@ sem Ref
   | Glob  lhs   .   crrefl  =   [CR.mkModRef @offset]
   | Loc   lhs   .   crrefl  =   [CR.mkLocDifRef @levdiff @offset]
   | Tag   lhs   .   crrefl  =   map CRI.RRef_Tag @ref.crrefl
+  | Field lhs   .   crrefl  =   map (\x -> CRI.RRef_Fld x @offset) @ref.crrefl
 
 
 -------------------------------------------------------------------------------

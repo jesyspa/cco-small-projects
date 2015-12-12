@@ -24,7 +24,6 @@ sem Tm_
   | If    loc.c1        = wrapBinds @t1.code @t1.bindings
           loc.c2        = wrapBinds @t2.code @t2.bindings
   -- The same must be done here
-  -- In fact, even more, as we need to be sure we are getting a variable.
           lhs.code      = let AVal v = @c.code in AIf v @loc.c1 @loc.c2
           lhs.bindings  = []
 

@@ -5,43 +5,45 @@ module {CCO.Core.AG.Base}{}{}
 -------------------------------------------------------------------------------
 
 data Mod
-  | Mod  main  :: Exp
-         binds :: BindL
+  | Mod    main  :: Exp
+           binds :: BindL
 
 data Ref
-  | Glob offset     :: {Int}
-  | Loc  levdiff    :: {Int}
-         offset     :: {Int}
-  | Tag  ref        :: Ref
+  | Glob   offset     :: {Int}
+  | Loc    levdiff    :: {Int}
+           offset     :: {Int}
+  | Tag    ref        :: Ref
+  | Field  ref        :: Ref
+           offset     :: {Int}
 
 type RefL = [Ref]
 
 data SExp
-  | Int  i :: {Int}
-  | Var  x :: Ref
+  | Int    i :: {Int}
+  | Var    x :: Ref
 
 type SExpL = [SExp]
 
 data Exp
-  | SExp sexp :: SExp
-  | Lam  args :: RefL
-         body :: Exp
-  | App  func :: Exp
-         args :: SExpL
-  | Prim func :: {String}
-         args :: SExpL
-  | Node tag  :: {Int}
-         args :: SExpL
-  | Case sexp :: SExp
-         alts :: ExpL
-  | Let  bind :: Bind
-         body :: Exp
-  | Dbg  info :: {String}
+  | SExp   sexp :: SExp
+  | Lam    args :: RefL
+           body :: Exp
+  | App    func :: Exp
+           args :: SExpL
+  | Prim   func :: {String}
+           args :: SExpL
+  | Node   tag  :: {Int}
+           args :: SExpL
+  | Case   sexp :: SExp
+           alts :: ExpL
+  | Let    bind :: Bind
+           body :: Exp
+  | Dbg    info :: {String}
 
 type ExpL = [Exp]
   
 data Bind
-  | Bind x    :: Ref
-         xexp :: Exp
+  | Bind   x    :: Ref
+           xexp :: Exp
 
 type BindL = [Bind]

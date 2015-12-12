@@ -29,6 +29,7 @@ attr ATm
 sem AVal
   | ANat   lhs.code        = C.Int @i
   | AVar   lhs.code        = C.Var $ (if @lhs.tagPosition then C.Tag else id) $ resolve @x @lhs.context
+  | AField lhs.code        = C.Var $ C.Field (resolve @x @lhs.context) @i
 
 sem AExp
   | AVal   lhs.code        = C.SExp @v.code
