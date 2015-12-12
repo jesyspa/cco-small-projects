@@ -18,8 +18,8 @@ data Context = Context { locals :: [[Var]], globals :: [Var] }
 empty :: Context
 empty = Context [] []
 
-resolve :: Var -> Context -> C.Ref
-resolve x (Context ls gs) = maybe (error $ "undefined: " ++ x) id $ findLoc x ls <|> findGlob x gs
+resolve :: Context -> Var -> C.Ref
+resolve (Context ls gs) x = maybe (error $ "undefined: " ++ x) id $ findLoc x ls <|> findGlob x gs
 
 findGlob :: Var -> [Var] -> Maybe C.Ref
 findGlob x gs = C.Glob <$> elemIndex x (reverse gs)

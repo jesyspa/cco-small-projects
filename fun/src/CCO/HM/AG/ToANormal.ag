@@ -40,7 +40,6 @@ sem Tm_
           loc.fresh     = "$e_" ++ show @loc.num
           lhs.code      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
           lhs.bindings  = [(@loc.fresh, @c.code)] ++ @c.bindings
-  -- Convert to ANormal form.
   | Prim  lhs.code      = APrim @op (map AVar @args)
           lhs.freevars  = @args
 

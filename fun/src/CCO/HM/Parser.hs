@@ -55,6 +55,8 @@ pTm = (\pos x t1 -> Tm pos (Lam x t1)) <$>
                -- We regard primitive operation names simply as variable names.
                -- In practice, we may want to generalise this, but given we know what three operations are
                -- supported, this seems reasonable.
+               -- Note that we syntactically enforce that all arguments to primitive operations be variable.
+               -- This is fairly restrictive but simplifies everything a great deal.
              (\pos op args -> Tm pos $ Prim op args) <$>
                sourcePos <* keyword "prim" <* spec '"' <*> var <* spec '"' <*> many var
           )

@@ -13,5 +13,4 @@ toCore :: Component ATm Mod
 toCore = component $ \atm -> do
     let inh = Inh_ATm { context_Inh_ATm = empty, tagPosition_Inh_ATm = False }
         wtm = wrap_ATm (sem_ATm atm) inh
-        binds = bindings_Syn_ATm wtm
-    return $ Mod (code_Syn_ATm wtm) binds
+    return $ Mod (code_Syn_ATm wtm) []
