@@ -15,7 +15,7 @@ attr Tm_ Tm
 sem Tm_
   | Nat   lhs.code      = AVal $ ANat  @i
   | Var   lhs.code      = AVal $ AVar  @x
-  | Lam   lhs.code      = ALam @x $ wrapBinds @t1.code @t1.bindings
+  | Lam   lhs.code      = ALam [@x] $ wrapBinds @t1.code @t1.bindings
           lhs.bindings  = []
   -- The next case is unfinished.  We should extend the bindings if v @t2.code isn't a simple value
   | App   lhs.code      = let AVal v = @t2.code in AApp @t1.code v
