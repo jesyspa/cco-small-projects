@@ -38,6 +38,7 @@ data Exp
            alts :: ExpL
   | Let    bind :: Bind
            body :: Exp
+  | Tail   body :: Exp
   | Dbg    info :: {String}
 
 type ExpL = [Exp]

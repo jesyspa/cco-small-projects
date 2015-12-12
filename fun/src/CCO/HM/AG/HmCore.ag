@@ -12,7 +12,8 @@ attr ATm AExp AVal AVals
   inh context :: {Context}
   -- Really, we'd like to specify that we only care about tagPosition in the case of AVals.  However, that's not
   -- practical because then we have to specify it on all values, while it's actually only very rarely true.
-  inh tagPosition :: {Bool}
+  inh isTag :: {Bool}
+  inh isTail :: {Bool}
 
 attr AVal
   syn code :: {C.SExp}
@@ -25,22 +26,26 @@ attr ATm AExp
 
 sem AVal
   | ANat   lhs.code        = C.Int @i
-  | AVar   lhs.code        = C.Var $ (if @lhs.tagPosition then C.Tag else id) $ resolve @lhs.context @x
+  | AVar   lhs.code        = C.Var $ (if @lhs.isTag then C.Tag else id) $ resolve @lhs.context @x
   | AField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
 
 sem AExp
   | AVal   lhs.code        = C.SExp @v.code
+           +code           = if @lhs.isTail then C.Tail else id
   | AApp   lhs.code        = C.App @e.code [@v.code]
+           e  .isTail      = False
   | ALam   loc.context     = foldr push (pushFrame @lhs.context) (reverse @xs)
            lhs.code        = C.Lam (map (resolve @loc.context) @xs) @t.code
-  | AIf    c  .tagPosition = True
+           t  .isTail      = True
+  | AIf    c  .isTag       = True
            -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
            lhs.code        = C.Case @c.code [@t2.code, @t1.code]
-  | AAlloc lhs.code        = C.Node @t @vs.code
+  | AAlloc lhs.code        = C.Node @tag @vs.code
   | APrim  lhs.code        = C.Prim @op @vs.code
 
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code
+           e  .isTail      = False
            t  .context     = @loc.context
            loc.context     = push @x @lhs.context
 

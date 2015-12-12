@@ -71,6 +71,7 @@ instance Tree Exp where
   fromTree (Node tg as)   = T.App "Node" [fromTree tg, fromTree as]
   fromTree (Case se as)   = T.App "Case" [fromTree se, fromTree as]
   fromTree (Let  bn bd)   = T.App "Let"  [fromTree bn, fromTree bd]
+  fromTree (Tail bd   )   = T.App "Tail" [fromTree bd]
   fromTree (Dbg  i    )   = T.App "Dbg"  [fromTree i]
 
   toTree = parseTree [ app "SExp" (SExp <$> arg        )
@@ -80,6 +81,7 @@ instance Tree Exp where
                      , app "Node" (Node <$> arg <*> arg)
                      , app "Case" (Case <$> arg <*> arg)
                      , app "Let"  (Let  <$> arg <*> arg)
+                     , app "Tail" (Tail <$> arg        )
                      , app "Dbg"  (Dbg  <$> arg        )
                      ]
 

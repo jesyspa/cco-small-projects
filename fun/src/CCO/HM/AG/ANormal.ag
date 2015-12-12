@@ -20,7 +20,7 @@ data AExp
   | AApp     e :: AExp   v :: AVal
   | AIf      c :: AVal   t1 :: ATm  t2 :: ATm
   | ALam     xs :: {[Var]}  t :: ATm
-  | AAlloc   t :: {Int}  vs :: AVals
+  | AAlloc   tag :: {Int}  vs :: AVals
   | APrim    op :: {String} vs :: AVals
 
 data ATm

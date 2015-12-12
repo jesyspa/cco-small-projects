@@ -11,6 +11,6 @@ import CCO.Core.AG.Base
 
 toCore :: Component ATm Mod
 toCore = component $ \atm -> do
-    let inh = Inh_ATm { context_Inh_ATm = empty, tagPosition_Inh_ATm = False }
+    let inh = Inh_ATm { context_Inh_ATm = empty, isTag_Inh_ATm = False, isTail_Inh_ATm = True }
         wtm = wrap_ATm (sem_ATm atm) inh
     return $ Mod (code_Syn_ATm wtm) []
