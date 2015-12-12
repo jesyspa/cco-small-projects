@@ -1,4 +1,6 @@
 cabal.sandbox.config
 dist/
 .*.swp
+fun/tests/*.tcrr
+fun/tests/*.out
 .cabal-sandbox
