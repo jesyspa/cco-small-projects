@@ -29,7 +29,8 @@ sem AVal
 sem AExp
   | AVal lhs.code     = C.SExp @v.code
   | AApp lhs.code     = C.App @e.code [@v.code]
-  | ALam lhs.code     = undefined
+  | ALam loc.context  = push @x $ pushFrame @lhs.context
+         lhs.code     = C.Lam [resolve @x @loc.context] @t.code
          lhs.bindings = []
 
 sem ATm
