@@ -34,6 +34,7 @@ sem AExp
            +code           = if @lhs.isTail then C.Tail else id
   | AApp   lhs.code        = C.App @e.code [@v.code]
            e  .isTail      = False
+           +code           = if @lhs.isTail then C.Tail else id
   | ALam   loc.context     = foldr push (pushFrame @lhs.context) (reverse @xs)
            lhs.code        = C.Lam (map (resolve @loc.context) @xs) @t.code
            t  .isTail      = True
