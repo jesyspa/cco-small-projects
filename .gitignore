@@ -3,4 +3,5 @@ dist/
 .*.swp
 fun/tests/*.tcrr
 fun/tests/*.out
+fun/tests/*.*-aterm
 .cabal-sandbox
