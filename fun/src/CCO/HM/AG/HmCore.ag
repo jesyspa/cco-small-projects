@@ -34,6 +34,7 @@ sem AExp
 
 sem ATm
   | ALet lhs.code     = @t.code
-         t  .context  = push @x @lhs.context
-         lhs.bindings = [C.Bind (nextPos @lhs.context) @e.code] ++ @t.bindings
+         t  .context  = @loc.context
+         loc.context  = push @x @lhs.context
+         lhs.bindings = [C.Bind (resolve @x @loc.context) @e.code] ++ @t.bindings
 

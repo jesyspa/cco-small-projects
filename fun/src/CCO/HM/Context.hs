@@ -4,7 +4,6 @@ module CCO.HM.Context (
     , resolve
     , push
     , pushFrame
-    , nextPos
 ) where
 
 import CCO.HM.AG.BaseHelpers
@@ -37,7 +36,3 @@ push x (Context (l:ls) gs) = Context ((x:l):ls) gs
 
 pushFrame :: Context -> Context
 pushFrame (Context ls gs) = Context ([]:ls) gs
-
-nextPos :: Context -> C.Ref
-nextPos (Context [] gs) = C.Glob $ length gs
-nextPos (Context (l:ls) _) = C.Loc (length ls) (length l)
