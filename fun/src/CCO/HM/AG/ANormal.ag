@@ -1,0 +1,22 @@
+module{CCO.HM.AG.ANormal}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+}
+
+-------------------------------------------------------------------------------
+-- AST
+-------------------------------------------------------------------------------
+
+data AVal
+  | ANat   i :: {Int}
+  | AVar   x :: {Var}
+
+data AExp
+  | AVal   v :: AVal
+  | AApp   e :: AExp   v :: AVal
+  | ALam   x :: {Var}  t :: ATm
+
+data ATm
+  | AExp   e :: AExp
+  | ALet   x :: {Var}  e :: AExp t :: ATm

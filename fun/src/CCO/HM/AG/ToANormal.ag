@@ -1,0 +1,29 @@
+module{CCO.HM.AG.ToANormal}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
+import CCO.HM.AG.ANormal
+}
+
+include "Base.ag"
+
+attr Tm_ Tm
+  syn code :: {AExp}
+  syn bindings use {++} {[]} :: {[(Var, AExp)]}
+
+sem Tm_
+  | Nat   lhs.code      = AVal $ ANat @i
+  | Var   lhs.code      = AVal $ AVar @x
+  | Lam   lhs.code      = ALam @x $ wrapBinds @t1.code @t1.bindings
+          lhs.bindings  = []
+  -- The next case is unfinished.  We should extend the bindings if v @t2.code isn't a simple value
+  | App   lhs.code      = let AVal v = @t2.code in AApp @t1.code v
+  | Let   lhs.code      = @t2.code
+          lhs.bindings  = @t1.bindings ++ [(@x, @t1.code)] ++ @t2.bindings
+
+{
+wrapBinds :: AExp -> [(Var, AExp)] -> ATm
+wrapBinds = foldr (uncurry ALet) . AExp
+}
+

@@ -32,7 +32,8 @@ executable parse-hm
 executable hmcr
   main-is:             HmCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
-  other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.HmCore
+  other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.HmCore,
+                       CCO.HM.Context, CCO.HM.AG.ANormal, CCO.HM.ToANormal, CCO.HM.ToCore, CCO.HM.AG.ToANormal
   hs-source-dirs:      src
 
 executable pp-core

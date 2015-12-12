@@ -1,7 +1,13 @@
 file : "src/CCO/HM/AG/Base.ag"
 options : data, haskellsyntax
 
+file : "src/CCO/HM/AG/ANormal.ag"
+options : data, haskellsyntax
+
 file : "src/CCO/HM/AG/HmCore.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+
+file : "src/CCO/HM/AG/ToANormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/Core/AG/Base.ag"
