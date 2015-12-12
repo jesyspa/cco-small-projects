@@ -7,6 +7,9 @@ options : data, haskellsyntax
 file : "src/CCO/HM/AG/HmCore.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
+file : "src/CCO/HM/AG/Sanitize.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+
 file : "src/CCO/HM/AG/ToANormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 

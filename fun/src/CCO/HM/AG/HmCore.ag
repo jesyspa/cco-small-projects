@@ -47,6 +47,7 @@ sem AExp
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code
            e  .isTail      = False
+           e  .context     = @loc.context
            t  .context     = @loc.context
            loc.context     = push @x @lhs.context
 

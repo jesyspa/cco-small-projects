@@ -51,7 +51,7 @@ pTm = (\pos x t1 -> Tm pos (Lam x t1)) <$>
                sourcePos <* keyword "let" <*> var <* spec '=' <*> pTm <* keyword "in" <*> pTm <* keyword "ni" <|>
               spec '(' *> pTm <* spec ')' <|>
              (\pos c t1 t2 -> Tm pos $ If c t1 t2) <$>
-               sourcePos <* keyword "if" <*> pTm <* keyword "then" <*> pTm <* keyword "else" <*> pTm <|>
+               sourcePos <* keyword "if" <*> pTm <* keyword "then" <*> pTm <* keyword "else" <*> pTm <* keyword "fi" <|>
                -- We regard primitive operation names simply as variable names.
                -- In practice, we may want to generalise this, but given we know what three operations are
                -- supported, this seems reasonable.

@@ -1,0 +1,72 @@
+module{CCO.HM.AG.Sanitize}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
+import CCO.HM.Builtins (builtinList)
+import Data.Maybe
+import Data.List
+}
+
+include "Base.ag"
+
+{
+type Table = [(Var, Var)]
+}
+
+attr Tm_ Tm Tms
+  inh context :: {Table}
+  chn counter :: Int
+  syn freevars use {`union`} {[]} :: {[Var]}
+
+attr Tm
+  syn code :: {Tm}
+
+attr Tm_
+  syn code :: {Tm_}
+
+attr Tms
+  syn code use {:} {[]} :: {[Tm]}
+
+sem Tm
+  | Tm    lhs.code      = Tm @pos @t.code
+
+sem Tm_
+  | Nat   lhs.code      = Nat @i
+  | Var   loc.result    = searchTable @lhs.context @x
+          lhs.code      = Var $ fst @loc.result
+          lhs.freevars  = snd @loc.result
+  | Lam   loc.num :: uniqueref counter
+          t1 .context   = newVar @x @loc.num @lhs.context
+          lhs.code      = Lam (freshen @x @loc.num) @t1.code
+  | App   lhs.code      = App @t1.code @t2.code
+  | Let   loc.num :: uniqueref counter
+          lhs.code      = Let (freshen @x @loc.num) @t1.code @t2.code
+          loc.newTable  = newVar @x @loc.num @lhs.context
+          t1 .context   = @loc.newTable
+          t2 .context   = @loc.newTable
+  | If    lhs.code      = If @c.code @t1.code @t2.code
+  | Prim  loc.num       = @lhs.counter
+          lhs.counter   = @loc.num + length @args
+          loc.args'     = map (searchTable @lhs.context) @args
+          lhs.code      = Prim @op (map fst @loc.args')
+          lhs.freevars  = concatMap snd @loc.args'
+
+{
+
+newVar :: Var -> Int -> Table -> Table
+newVar x i t = (x, freshen x i) : t
+
+freshen :: Var -> Int -> Var
+freshen x i = "$u_" ++ show i ++ "_" ++ x
+
+searchTable :: Table -> Var -> (Var, [Var])
+searchTable t v = case lookup v t of
+                    Just v' -> (v', [])
+                    Nothing -> (v, [v])
+
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+}
+
+
