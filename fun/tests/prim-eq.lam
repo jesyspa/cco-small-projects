@@ -1,0 +1,6 @@
+let eq = \x. \y. prim "primEqInt" x y in
+    if eq 0 1
+    then 6
+    else 5
+    fi
+ni
