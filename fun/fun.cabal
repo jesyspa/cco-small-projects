@@ -26,7 +26,7 @@ executable parse-hm
   main-is:             ParseHM.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.HM, CCO.HM.Base, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Lexer,
-                       CCO.HM.Parser
+                       CCO.HM.Parser, CheapPrinter
   hs-source-dirs:      src
 
 executable hmcr
@@ -37,7 +37,7 @@ executable hmcr
                        CCO.HM.AG.Sanitize, CCO.HM.Builtins, CCO.HM.Sanitize, CCO.HM.AG.AddLaziness,
                        CCO.HM.AG.AnnotateTailCalls, CCO.HM.AnnotateTailCalls, CCO.HM.Table,
                        CCO.HM.AG.AddForcing, CCO.HM.AddForcing, CCO.HM.ToBNormal, CCO.HM.AG.ToBNormal,
-                       CCO.HM.AG.BNormal, CCO.HM.AG.BNormalUtils
+                       CCO.HM.AG.BNormal, CCO.HM.AG.BNormalUtils, CheapPrinter
   hs-source-dirs:      src
 
 executable pp-core
