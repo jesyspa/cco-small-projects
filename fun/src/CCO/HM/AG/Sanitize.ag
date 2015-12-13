@@ -39,7 +39,7 @@ sem Tm_
   | App   lhs.code      = App @t1.code @t2.code
   | Let   loc.num :: uniqueref counter
           lhs.code      = Let (freshen @x @loc.num) @t1.code @t2.code
-          lhs.locals    = newVar @x @loc.num (@t1.locals ++ @t2.locals)
+          lhs.locals    = newVar @x @loc.num @t2.locals
   | If    lhs.code      = If @c.code @t1.code @t2.code
   | Prim  loc.num       = @lhs.counter
           lhs.counter   = @loc.num + length @args

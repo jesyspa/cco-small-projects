@@ -1,8 +1,7 @@
 module CCO.HM.Context (
-      empty
+      newContext
     , Context
     , resolve
-    , push
     , pushFrame
 ) where
 
@@ -15,24 +14,20 @@ import Data.Maybe
 data Context = Context { locals :: [[Var]], globals :: [Var] }
              deriving (Eq, Ord, Read, Show)
 
-empty :: Context
-empty = Context [] []
+newContext :: [Var] -> Context
+newContext = Context []
 
 resolve :: Context -> Var -> C.Ref
 resolve (Context ls gs) x = maybe (error $ "undefined: " ++ x) id $ findLoc x ls <|> findGlob x gs
 
 findGlob :: Var -> [Var] -> Maybe C.Ref
-findGlob x gs = C.Glob <$> elemIndex x (reverse gs)
+findGlob x gs = C.Glob <$> elemIndex x gs
 
 findLoc :: Var -> [[Var]] -> Maybe C.Ref
 findLoc x ls = do
   s <- find (x `elem`) ls
-  -- This is ridiculously inefficient but works for now
-  C.Loc <$> elemIndex s ls <*> elemIndex x (reverse s)
+  C.Loc <$> elemIndex s ls <*> elemIndex x s
 
-push :: Var -> Context -> Context
-push x (Context [] gs) = Context [] (x:gs)
-push x (Context (l:ls) gs) = Context ((x:l):ls) gs
+pushFrame :: [Var] -> Context -> Context
+pushFrame xs (Context ls gs) = Context (xs:ls) gs
 
-pushFrame :: Context -> Context
-pushFrame (Context ls gs) = Context ([]:ls) gs

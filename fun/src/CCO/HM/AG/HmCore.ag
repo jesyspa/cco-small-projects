@@ -22,6 +22,7 @@ attr AVals
 
 attr ATm AExp
   syn code :: {C.Exp}
+  syn locals use {++} {[]} :: {[Var]}
 
 sem AVal
   | ANat   lhs.code        = C.Int @i
@@ -31,7 +32,9 @@ sem AVal
 sem AExp
   | AVal   lhs.code        = C.SExp @v.code
   | AApp   lhs.code        = C.App @e.code [@v.code]
-  | ALam   loc.context     = foldr push (pushFrame @lhs.context) (reverse @xs)
+  | ALam   loc.context     = pushFrame @loc.locals @lhs.context
+           loc.locals      = @xs ++ @t.locals
+           lhs.locals      = []
            lhs.code        = C.Lam (map (resolve @loc.context) @xs) @t.code
   | AIf    c  .isTag       = True
            -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
@@ -41,8 +44,6 @@ sem AExp
   | AForce lhs.code        = C.Eval @e.code
 
 sem ATm
-  | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code
-           e  .context     = @loc.context
-           t  .context     = @loc.context
-           loc.context     = push @x @lhs.context
+  | ALet   lhs.code        = C.Let (C.Bind (resolve @lhs.context @x) @e.code) @t.code
+           lhs.locals      = @x : @t.locals
 
