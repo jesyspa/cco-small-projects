@@ -19,7 +19,6 @@ data AExp
   | AVal     v :: AVal
   | AApp     e :: AExp   v :: AVal
   | ALam     xs :: {[Var]}  t :: ATm
-  | AIf      c :: AVal   t1 :: ATm  t2 :: ATm
   | AAlloc   tag :: {Int}  vs :: AVals
   | APrim    op :: {String} vs :: AVals
   | AForce   e :: AExp
@@ -28,3 +27,5 @@ data AExp
 data ATm
   | AExp     e :: AExp
   | ALet     x :: {Var}  e :: AExp t :: ATm
+  | AIf      c :: AVal   t1 :: ATm  t2 :: ATm
+

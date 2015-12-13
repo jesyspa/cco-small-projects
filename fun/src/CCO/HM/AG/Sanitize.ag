@@ -3,24 +3,20 @@ imports
 {
 import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
-import CCO.HM.Builtins (builtinList)
+import CCO.HM.Table
 import Data.Maybe
 import Data.List
 }
 
 include "Base.ag"
 
-{
-type Table = [(Var, Var)]
-}
-
-attr Tm_ Tm Tms
+attr Tm_ Tm
   inh context :: {Table}
   chn counter :: Int
   syn freevars use {`union`} {[]} :: {[Var]}
-  syn locals use {++} {[]} :: {[(Var, Var)]}
+  syn locals use {++} {[]} :: {Table}
 
-attr Tm Tm_ Tms
+attr Tm Tm_
   syn code :: self
 
 sem Tm
@@ -33,14 +29,19 @@ sem Tm_
           lhs.freevars  = snd @loc.result
   | Lam   loc.num :: uniqueref counter
           t1 .context   = @loc.locals ++ @lhs.context
-          lhs.code      = Lam (freshen @x @loc.num) @t1.code
-          loc.locals    = newVar @x @loc.num @t1.locals
-          lhs.locals    = []
+          loc.fvar      = freshen @x @loc.num
+          lhs.code      = Lam @loc.fvar @t1.code
+          loc.locals    = newVar @x @loc.fvar @t1.locals
+          lhs.locals    = emptyTable
   | App   lhs.code      = App @t1.code @t2.code
   | Let   loc.num :: uniqueref counter
-          lhs.code      = Let (freshen @x @loc.num) @t1.code @t2.code
-          lhs.locals    = newVar @x @loc.num @t2.locals
+          loc.fvar      = freshen @x @loc.num
+          lhs.code      = Let @loc.fvar @t1.code @t2.code
+          lhs.locals    = newVar @x @loc.fvar @t2.locals
   | If    lhs.code      = If @c.code @t1.code @t2.code
+          lhs.locals    = @c.locals
+          t1 . context  = @t1.locals ++ @lhs.context
+          t2 . context  = @t2.locals ++ @lhs.context
   | Prim  loc.num       = @lhs.counter
           lhs.counter   = @loc.num + length @args
           loc.args'     = map (searchTable @lhs.context) @args
@@ -48,17 +49,8 @@ sem Tm_
           lhs.freevars  = concatMap snd @loc.args'
 
 {
-
-newVar :: Var -> Int -> Table -> Table
-newVar x i t = (x, freshen x i) : t
-
 freshen :: Var -> Int -> Var
 freshen x i = "$u_" ++ show i ++ "_" ++ x
-
-searchTable :: Table -> Var -> (Var, [Var])
-searchTable t v = case lookup v t of
-                    Just v' -> (v', [])
-                    Nothing -> (v, [v])
 
 nextUnique :: Int -> (Int, Int)
 nextUnique u = (u+1, u)

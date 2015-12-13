@@ -13,37 +13,5 @@ include "ANormal.ag"
 attr AVal AVals AExp ATm
   syn code :: self
 
-attr AExp ATm
-  chn counter :: Int
-
-attr AExp
-  syn bindings use {++} {[]} :: {[(Var, AExp)]}
-
-sem AExp
-  | AVal    lhs.code      = AVal @v.code
-  | AApp    lhs.code      = AApp @e.code @v.code
-  | ALam    lhs.code      = ALam @xs @t.code
-  | AIf     loc.num :: uniqueref counter
-            loc.fvar      = forcedVar @loc.num
-            lhs.code      = AIf (AVar @loc.fvar) @t1.code @t2.code
-            lhs.bindings  = [(@loc.fvar, AForce $ AVal @c.code)]
-  | AAlloc  lhs.code      = AAlloc @tag @vs.code
-  | APrim   loc.num       = @lhs.counter
-            lhs.counter   = @loc.num + length @vs.code
-            loc.args'     = zip (map forcedVar [@loc.num..]) @vs.code
-            lhs.code      = APrim @op $ map (AVar . fst) @loc.args'
-            lhs.bindings  = map (\(v, v') -> (v, AForce $ AVal v')) @loc.args'
-  | AForce  lhs.code      = AForce @e.code
-
-sem ATm
-  | AExp    lhs.code      = wrapBinds @e.code @e.bindings
-  | ALet    lhs.code      = ALet @x @e.code @t.code
-
-
 {
-forcedVar :: Int -> Var
-forcedVar i = "$f_" ++ show i
-
-nextUnique :: Int -> (Int, Int)
-nextUnique u = (u+1, u)
 }

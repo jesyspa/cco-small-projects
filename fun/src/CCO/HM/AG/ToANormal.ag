@@ -10,38 +10,47 @@ import Data.List
 
 include "Base.ag"
 
-attr Tm_ Tm Tms
+attr Tm_ Tm
   syn bindings use {++} {[]} :: {[(Var, AExp)]}
+  syn tbindings use {++} {[]} :: {[(Var, AExp)]}
   chn counter :: Int
   syn freevars use {`union`} {[]} :: {[Var]}
 
 attr Tm_ Tm
   syn code :: {AExp}
-
-attr Tms
-  syn code use {:} {[]} :: {[AExp]}
+  syn term :: {ATm}
 
 sem Tm_
-  | Nat   lhs.code      = AVal $ ANat  @i
-  | Var   lhs.code      = AVal $ AVar  @x
+  | Nat Var Lam App Prim
+          lhs.code      = @loc.code
+          lhs.term      = AExp @loc.code
+  | Nat   loc.code      = AVal $ ANat  @i
+  | Var   loc.code      = AVal $ AVar  @x
           lhs.freevars  = [@x]
-  | Lam   lhs.code      = ALam [@x] $ wrapBinds @t1.code @t1.bindings
+  | Lam   loc.code      = ALam [@x] $ wrapBinds' @t1.code @t1.bindings
           lhs.bindings  = []
+          lhs.tbindings = []
           +freevars     = delete @x
-  | App   lhs.code      = AApp @t1.code (AVar @loc.fresh)
+  | App   loc.code      = AApp @t1.code (AVar @loc.fresh)
           loc.num :: uniqueref counter
           loc.fresh     = "$e_" ++ show @loc.num
           +bindings     = (:) (@loc.fresh, @t2.code)
+          +tbindings    = (:) (@loc.fresh, @t2.code)
   | Let   lhs.code      = @t2.code
+          lhs.term      = ALet @x @t1.code @t2.term
           lhs.bindings  = @t2.bindings ++ [(@x, @t1.code)] ++ @t1.bindings
+          lhs.tbindings = @t2.tbindings ++ @t1.bindings
           +freevars     = delete @x
-  | If    loc.c1        = wrapBinds @t1.code @t1.bindings
-          loc.c2        = wrapBinds @t2.code @t2.bindings
+  | If    loc.c1        = wrapBinds @t1.term @t1.tbindings
+          loc.c2        = wrapBinds @t2.term @t2.tbindings
           loc.num :: uniqueref counter
           loc.fresh     = "$e_" ++ show @loc.num
-          lhs.code      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
+          loc.term      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
+          lhs.code      = ALam [] @loc.term
+          lhs.term      = @loc.term
           lhs.bindings  = [(@loc.fresh, @c.code)] ++ @c.bindings
-  | Prim  lhs.code      = APrim @op (map AVar @args)
+          lhs.tbindings = @c.bindings
+  | Prim  loc.code      = APrim @op (map AVar @args)
           lhs.freevars  = @args
 
 {

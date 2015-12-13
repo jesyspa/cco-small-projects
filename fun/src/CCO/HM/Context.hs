@@ -3,6 +3,7 @@ module CCO.HM.Context (
     , Context
     , resolve
     , pushFrame
+    , appendToFrame
 ) where
 
 import CCO.HM.AG.BaseHelpers
@@ -31,3 +32,6 @@ findLoc x ls = do
 pushFrame :: [Var] -> Context -> Context
 pushFrame xs (Context ls gs) = Context (xs:ls) gs
 
+appendToFrame :: [Var] -> Context -> Context
+appendToFrame xs (Context [] gs) = Context [] (gs ++ xs)
+appendToFrame xs (Context (l:ls) gs) = Context ((l ++ xs):ls) gs

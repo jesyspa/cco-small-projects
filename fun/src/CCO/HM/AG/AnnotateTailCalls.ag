@@ -15,13 +15,24 @@ attr AVal AVals ATm AExp
   syn code :: self
 
 sem AExp
-  | AVal   +code           = if @lhs.isTail then ATail else id
+  | AVal   +code           = maybeMkTail @lhs.isTail
   | AApp   e  .isTail      = False
-           +code           = if @lhs.isTail then ATail else id
+           +code           = maybeMkTail @lhs.isTail
+  | AAlloc +code           = maybeMkTail @lhs.isTail
+  | APrim  +code           = maybeMkTail @lhs.isTail
   | ALam   t  .isTail      = True
   | AForce e  .isTail      = False
-           +code           = if @lhs.isTail then ATail else id
+           +code           = maybeMkTail @lhs.isTail
 
 sem ATm
+  | AExp   e  .isTail      = True
   | ALet   e  .isTail      = False
+           t  .isTail      = True
+  | AIf    t1 .isTail      = True
+           t2 .isTail      = True
 
+{
+maybeMkTail :: Bool -> AExp -> AExp
+maybeMkTail True = ATail
+maybeMkTail False = id
+}
