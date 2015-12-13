@@ -4,20 +4,23 @@ options : data, haskellsyntax
 file : "src/CCO/HM/AG/ANormal.ag"
 options : data, haskellsyntax
 
+file : "src/CCO/Core/AG/Base.ag"
+options : data, haskellsyntax
+
 file : "src/CCO/HM/AG/HmCore.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/HM/AG/Sanitize.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
-file : "src/CCO/HM/AG/AddLaziness.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
-
 file : "src/CCO/HM/AG/ToANormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
-file : "src/CCO/Core/AG/Base.ag"
-options : data, haskellsyntax
+file : "src/CCO/HM/AG/AddLaziness.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+
+file : "src/CCO/HM/AG/AnnotateTailCalls.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/Core/AG/ToCoreRun.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax

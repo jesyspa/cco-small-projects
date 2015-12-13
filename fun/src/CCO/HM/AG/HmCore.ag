@@ -13,7 +13,6 @@ attr ATm AExp AVal AVals
   -- Really, we'd like to specify that we only care about tagPosition in the case of AVals.  However, that's not
   -- practical because then we have to specify it on all values, while it's actually only very rarely true.
   inh isTag :: {Bool}
-  inh isTail :: {Bool}
 
 attr AVal
   syn code :: {C.SExp}
@@ -31,25 +30,18 @@ sem AVal
 
 sem AExp
   | AVal   lhs.code        = C.SExp @v.code
-           +code           = if @lhs.isTail then C.Tail else id
   | AApp   lhs.code        = C.App @e.code [@v.code]
-           e  .isTail      = False
-           +code           = if @lhs.isTail then C.Tail else id
   | ALam   loc.context     = foldr push (pushFrame @lhs.context) (reverse @xs)
            lhs.code        = C.Lam (map (resolve @loc.context) @xs) @t.code
-           t  .isTail      = True
   | AIf    c  .isTag       = True
            -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
            lhs.code        = C.Case @c.code [@t2.code, @t1.code]
   | AAlloc lhs.code        = C.Node @tag @vs.code
   | APrim  lhs.code        = C.Prim @op @vs.code
   | AForce lhs.code        = C.Eval @e.code
-           e  .isTail      = False
-           +code           = if @lhs.isTail then C.Tail else id
 
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code
-           e  .isTail      = False
            e  .context     = @loc.context
            t  .context     = @loc.context
            loc.context     = push @x @lhs.context

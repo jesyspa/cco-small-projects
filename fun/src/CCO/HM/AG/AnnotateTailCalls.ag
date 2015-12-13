@@ -1,0 +1,27 @@
+module {CCO.HM.AG.AnnotateTailCalls}{}{}
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.ANormal
+import CCO.HM.Context
+import qualified CCO.Core.AG.Base as C
+}
+
+include "ANormal.ag"
+
+attr ATm AExp
+  inh isTail :: {Bool}
+
+attr AVal AVals ATm AExp
+  syn code :: self
+
+sem AExp
+  | AVal   +code           = if @lhs.isTail then ATail else id
+  | AApp   e  .isTail      = False
+           +code           = if @lhs.isTail then ATail else id
+  | ALam   t  .isTail      = True
+  | AForce e  .isTail      = False
+           +code           = if @lhs.isTail then ATail else id
+
+sem ATm
+  | ALet   e  .isTail      = False
+

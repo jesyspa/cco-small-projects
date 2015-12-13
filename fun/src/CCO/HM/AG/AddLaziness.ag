@@ -10,31 +10,27 @@ import Data.List
 
 include "ANormal.ag"
 
-attr AVal AVals
-  syn copy :: self
+attr AVal AVals AExp ATm
+  syn code :: self
 
 attr AExp ATm
   chn counter :: Int
 
 attr AExp
-  syn code :: {AExp}
   syn bindings use {++} {[]} :: {[(Var, AExp)]}
 
-attr ATm
-  syn code :: {ATm}
-
 sem AExp
-  | AVal    lhs.code      = AVal @v.copy
-  | AApp    lhs.code      = AApp @e.code @v.copy
+  | AVal    lhs.code      = AVal @v.code
+  | AApp    lhs.code      = AApp @e.code @v.code
   | ALam    lhs.code      = ALam @xs @t.code
   | AIf     loc.num :: uniqueref counter
             loc.fvar      = forcedVar @loc.num
             lhs.code      = AIf (AVar @loc.fvar) @t1.code @t2.code
-            lhs.bindings  = [(@loc.fvar, AForce $ AVal @c.copy)]
-  | AAlloc  lhs.code      = AAlloc @tag @vs.copy
+            lhs.bindings  = [(@loc.fvar, AForce $ AVal @c.code)]
+  | AAlloc  lhs.code      = AAlloc @tag @vs.code
   | APrim   loc.num       = @lhs.counter
-            lhs.counter   = @loc.num + length @vs.copy
-            loc.args'     = zip (map forcedVar [@loc.num..]) @vs.copy
+            lhs.counter   = @loc.num + length @vs.code
+            loc.args'     = zip (map forcedVar [@loc.num..]) @vs.code
             lhs.code      = APrim @op $ map (AVar . fst) @loc.args'
             lhs.bindings  = map (\(v, v') -> (v, AForce $ AVal v')) @loc.args'
   | AForce  lhs.code      = AForce @e.code

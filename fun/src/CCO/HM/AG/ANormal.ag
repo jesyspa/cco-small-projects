@@ -23,6 +23,7 @@ data AExp
   | AAlloc   tag :: {Int}  vs :: AVals
   | APrim    op :: {String} vs :: AVals
   | AForce   e :: AExp
+  | ATail    e :: AExp
 
 data ATm
   | AExp     e :: AExp
