@@ -18,15 +18,10 @@ attr Tm_ Tm Tms
   inh context :: {Table}
   chn counter :: Int
   syn freevars use {`union`} {[]} :: {[Var]}
+  syn locals use {++} {[]} :: {[(Var, Var)]}
 
-attr Tm
-  syn code :: {Tm}
-
-attr Tm_
-  syn code :: {Tm_}
-
-attr Tms
-  syn code use {:} {[]} :: {[Tm]}
+attr Tm Tm_ Tms
+  syn code :: self
 
 sem Tm
   | Tm    lhs.code      = Tm @pos @t.code
@@ -37,14 +32,14 @@ sem Tm_
           lhs.code      = Var $ fst @loc.result
           lhs.freevars  = snd @loc.result
   | Lam   loc.num :: uniqueref counter
-          t1 .context   = newVar @x @loc.num @lhs.context
+          t1 .context   = @loc.locals ++ @lhs.context
           lhs.code      = Lam (freshen @x @loc.num) @t1.code
+          loc.locals    = newVar @x @loc.num @t1.locals
+          lhs.locals    = []
   | App   lhs.code      = App @t1.code @t2.code
   | Let   loc.num :: uniqueref counter
           lhs.code      = Let (freshen @x @loc.num) @t1.code @t2.code
-          loc.newTable  = newVar @x @loc.num @lhs.context
-          t1 .context   = @loc.newTable
-          t2 .context   = @loc.newTable
+          lhs.locals    = newVar @x @loc.num (@t1.locals ++ @t2.locals)
   | If    lhs.code      = If @c.code @t1.code @t2.code
   | Prim  loc.num       = @lhs.counter
           lhs.counter   = @loc.num + length @args

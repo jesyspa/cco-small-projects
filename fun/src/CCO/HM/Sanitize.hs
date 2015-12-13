@@ -12,9 +12,10 @@ import Control.Monad
 
 sanitize :: Component Tm Tm
 sanitize = component $ \tm -> do
-    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm [] 0)
+    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm locals 0)
         code = code_Syn_Tm wtm
         fv = freevars_Syn_Tm wtm
         unresolved = fv \\ builtinList
+        locals = locals_Syn_Tm wtm
     when (not $ null unresolved) $ trace_ $ "Unresolved symbols: " ++ show unresolved
     return code
