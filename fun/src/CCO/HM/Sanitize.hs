@@ -6,7 +6,6 @@ import CCO.HM.AG.Sanitize
 import CCO.HM.AG.Base
 import CCO.HM.Builtins (builtinList)
 import CCO.Component
-import CCO.Feedback
 import Data.List
 import Control.Monad
 

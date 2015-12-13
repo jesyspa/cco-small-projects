@@ -13,7 +13,7 @@ emptyTable :: Table
 emptyTable = []
 
 newVar :: Var -> Var -> Table -> Table
-newVar x x' t = (x, x') : t
+newVar x x' t = t ++ [(x, x')]
 
 searchTable :: Table -> Var -> (Var, [Var])
 searchTable t v = case lookup v t of
