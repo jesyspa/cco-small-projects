@@ -7,9 +7,8 @@ import CCO.HM.AG.AnnotateTailCalls
 import CCO.HM.AG.BaseHelpers
 import CCO.HM.Context
 import CCO.Component
+import Control.Arrow (arr)
 import CCO.Core.AG.Base
 
 annotateTailCalls :: Component BRoot BRoot
-annotateTailCalls = component $ \br -> do
-    let wbr = wrap_BRoot (sem_BRoot br) Inh_BRoot
-    return $ code_Syn_BRoot wbr
+annotateTailCalls = arr sem_BRoot

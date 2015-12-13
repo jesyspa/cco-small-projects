@@ -9,8 +9,7 @@ import CCO.Component
 import CCO.Feedback
 import Data.List
 import Control.Monad
+import Control.Arrow (arr)
 
 addLaziness :: Component BRoot BRoot
-addLaziness = component $ \tm -> do
-    let wtm = wrap_BRoot (sem_BRoot tm) Inh_BRoot
-    return $ code_Syn_BRoot wtm
+addLaziness = arr sem_BRoot

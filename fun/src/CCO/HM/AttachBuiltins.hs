@@ -6,8 +6,8 @@ import CCO.HM.AG.BNormal
 import CCO.HM.AG.AttachBuiltins
 import CCO.HM.Builtins
 import CCO.Component
+import Control.Arrow (arr)
 
 attachBuiltins :: Component BRoot BRoot
-attachBuiltins = component $ \br -> do
-     return $ code_Syn_BRoot $ wrap_BRoot (sem_BRoot br) Inh_BRoot
+attachBuiltins = arr sem_BRoot
 

@@ -17,16 +17,16 @@ file : "src/CCO/HM/AG/ToBNormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/HM/AG/AttachBuiltins.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/HM/AG/AddLaziness.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/HM/AG/AddForcing.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/HM/AG/AnnotateTailCalls.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/Core/AG/ToCoreRun.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
