@@ -2,43 +2,47 @@ module{CCO.HM.AG.AddLaziness}{}{}
 imports
 {
 import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.Base
+import CCO.HM.AG.ANormal
+import CCO.HM.AG.ANormalUtils
 import Data.Maybe
 import Data.List
 }
 
-include "Base.ag"
+include "ANormal.ag"
 
-attr Tm Tm_ Tms
+attr AVal AVals
+  syn copy :: self
+
+attr AExp ATm
   chn counter :: Int
 
-attr Tm
-  syn code :: {Tm}
+attr AExp
+  syn code :: {AExp}
+  syn bindings use {++} {[]} :: {[(Var, AExp)]}
 
-attr Tm_
-  syn code :: {Tm_}
+attr ATm
+  syn code :: {ATm}
 
-attr Tms
-  syn code use {:} {[]} :: {[Tm]}
+sem AExp
+  | AVal    lhs.code      = AVal @v.copy
+  | AApp    lhs.code      = AApp @e.code @v.copy
+  | ALam    lhs.code      = ALam @xs @t.code
+  | AIf     loc.num :: uniqueref counter
+            loc.fvar      = forcedVar @loc.num
+            lhs.code      = AIf (AVar @loc.fvar) @t1.code @t2.code
+            lhs.bindings  = [(@loc.fvar, AForce $ AVal @c.copy)]
+  | AAlloc  lhs.code      = AAlloc @tag @vs.copy
+  | APrim   loc.num       = @lhs.counter
+            lhs.counter   = @loc.num + length @vs.copy
+            loc.args'     = zip (map forcedVar [@loc.num..]) @vs.copy
+            lhs.code      = APrim @op $ map (AVar . fst) @loc.args'
+            lhs.bindings  = map (\(v, v') -> (v, AForce $ AVal v')) @loc.args'
+  | AForce  lhs.code      = AForce @e.code
 
-sem Tm
-  | Tm    lhs.code      = Tm @pos @t.code
+sem ATm
+  | AExp    lhs.code      = wrapBinds @e.code @e.bindings
+  | ALet    lhs.code      = ALet @x @e.code @t.code
 
-sem Tm_
-  | Nat   lhs.code      = Nat @i
-  | Var   lhs.code      = Var @x
-  | Lam   lhs.code      = Lam @x @t1.code
-  | App   lhs.code      = Thunk $ toTm $ App @t1.code @t2.code
-  | Let   lhs.code      = Let @x @t1.code @t2.code
-  | If    loc.num :: uniqueref counter
-          loc.fvar      = forcedVar @loc.num
-          lhs.code      = Let @loc.fvar (toTm $ Force @c.code) $ toTm $ If (toTm $ Var @loc.fvar) @t1.code @t2.code
-  | Prim  loc.num       = @lhs.counter
-          lhs.counter   = @loc.num + length @args
-          loc.args'     = zip (map forcedVar [@loc.num..]) @args
-          lhs.code      = foldr (\(v, v') t -> Let v (toTm $ Var v') $ toTm t) (Prim @op $ map fst @loc.args') @loc.args'
-  | Force lhs.code      = Force @t.code
-  | Thunk lhs.code      = Thunk @t.code
 
 {
 forcedVar :: Int -> Var
@@ -46,7 +50,4 @@ forcedVar i = "$f_" ++ show i
 
 nextUnique :: Int -> (Int, Int)
 nextUnique u = (u+1, u)
-
-toTm :: Tm_ -> Tm
-toTm = Tm undefined
 }

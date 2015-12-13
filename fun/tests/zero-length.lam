@@ -1,0 +1,4 @@
+let plus = \x. \y. prim "primAddInt" x y in
+let length = \xs. if isNil xs then 0 else plus 1 (length (tail xs)) fi in
+    length Nil
+ni ni

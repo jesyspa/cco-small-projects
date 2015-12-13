@@ -1,0 +1,3 @@
+let length = \xs. if isNil xs then 5 else length (tail xs) fi in
+    length (Cons 1 Nil)
+ni

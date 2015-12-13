@@ -51,9 +51,6 @@ sem Tm_
           loc.args'     = map (searchTable @lhs.context) @args
           lhs.code      = Prim @op (map fst @loc.args')
           lhs.freevars  = concatMap snd @loc.args'
-  -- These rules are never actually applied, as no force or thunk instances exist here.
-  | Force lhs.code      = Force @t.code
-  | Thunk lhs.code      = Thunk @t.code
 
 {
 

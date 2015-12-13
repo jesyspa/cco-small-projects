@@ -1,0 +1,5 @@
+let xs = Cons 5 Nil in
+let ys = tail xs in
+let y = if isNil ys then 5 else 6 fi in
+    y
+ni ni ni

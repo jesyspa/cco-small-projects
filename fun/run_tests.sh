@@ -15,10 +15,19 @@ function run_test {
     return $?
 }
 
-for tfile in tests/*.lam; do
-    run_test ${tfile%.lam}
+if [[ $1 ]]; then
+    run_test $1
     rc=$?
     if [[ $rc != 0 ]]; then
-        echo "Test failed:" $tfile "with code" $rc
+        echo "Test failed:" $1 "with code" $rc
     fi
-done
+else
+    for tfile in tests/*.lam; do
+        run_test ${tfile%.lam}
+        rc=$?
+        if [[ $rc != 0 ]]; then
+            echo "Test failed:" $tfile "with code" $rc
+        fi
+    done
+fi
+

@@ -12,4 +12,4 @@ import CCO.Component
 import Control.Arrow ((>>>))
 
 compile :: Component Tm Mod
-compile = sanitize >>> addLaziness >>> toANormal >>> toCore
+compile = sanitize >>> toANormal >>> addLaziness >>> toCore

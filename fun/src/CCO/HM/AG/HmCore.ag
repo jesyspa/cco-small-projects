@@ -44,6 +44,8 @@ sem AExp
   | AAlloc lhs.code        = C.Node @tag @vs.code
   | APrim  lhs.code        = C.Prim @op @vs.code
   | AForce lhs.code        = C.Eval @e.code
+           e  .isTail      = False
+           +code           = if @lhs.isTail then C.Tail else id
 
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code

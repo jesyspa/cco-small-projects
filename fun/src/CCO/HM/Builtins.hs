@@ -20,7 +20,7 @@ builtins = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
           -- Thanks to the way we represent Cons and Nil, isNil can be the identity function.
           -- This is, of course, rather questionable from the point of view of garbage collection
           -- and efficient memory usage.
-          bIsNil = ("isNil", ALam ["$b_list"] $ AExp $ AForce $ AVal $ AVar "$b_list")
+          bIsNil = ("isNil", ALam ["$b_list"] $ AExp $ AVal $ AVar "$b_list")
           bHead  = ("head",  ALam ["$b_list"] $ ALet "$b_flist" (AForce $ AVal $ AVar "$b_list") $ AExp $ AVal $ AField "$b_flist" 0)
           bTail  = ("tail",  ALam ["$b_list"] $ ALet "$b_flist" (AForce $ AVal $ AVar "$b_list") $ AExp $ AVal $ AField "$b_flist" 1)
 

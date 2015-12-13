@@ -22,5 +22,3 @@ data Tm_
   | Let    x :: {Var}  t1 :: Tm  t2 :: Tm
   | If     c :: Tm  t1 :: Tm  t2 :: Tm
   | Prim   op :: {String} args :: {[Var]}
-  | Thunk  t :: Tm
-  | Force  t :: Tm
