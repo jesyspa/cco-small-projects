@@ -1,9 +1,6 @@
 file : "src/CCO/HM/AG/Base.ag"
 options : data, haskellsyntax
 
-file : "src/CCO/HM/AG/ANormal.ag"
-options : data, haskellsyntax
-
 file : "src/CCO/HM/AG/BNormal.ag"
 options : data, haskellsyntax
 
