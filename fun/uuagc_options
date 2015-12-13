@@ -19,7 +19,7 @@ options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 file : "src/CCO/HM/AG/ToBNormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
-file : "src/CCO/HM/AG/ToANormal.ag"
+file : "src/CCO/HM/AG/AttachBuiltins.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/HM/AG/AddLaziness.ag"

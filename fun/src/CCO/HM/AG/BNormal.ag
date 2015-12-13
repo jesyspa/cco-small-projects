@@ -12,6 +12,7 @@ data BVal
   | BNat     i :: {Int}
   | BVar     x :: {Var}
   | BTag     x :: {Var}
+  | BField   x :: {Var}  i :: {Int}
 
 type BVals = [BVal]
 
@@ -20,7 +21,10 @@ data BExp
   | BApp     v1 :: BVal  v2 :: BVal
   | BLam     x :: {Var}  b :: BBind
   | BPrim    op :: {String} vs :: BVals
+  | BAlloc   tag :: {Int} vs :: BVals
   | BWrap    b :: BBind
+  | BForce   e :: BExp
+  | BTail    e :: BExp
 
 type Binding = (Var, BExp)
 type Bindings = [Binding]

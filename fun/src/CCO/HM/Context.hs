@@ -15,8 +15,8 @@ import Data.Maybe
 data Context = Context { locals :: [[Var]], globals :: [Var] }
              deriving (Eq, Ord, Read, Show)
 
-newContext :: [Var] -> Context
-newContext = Context []
+newContext :: Context
+newContext = Context [] []
 
 resolve :: Context -> Var -> C.Ref
 resolve (Context ls gs) x = maybe (error $ "undefined: " ++ x) id $ findLoc x ls <|> findGlob x gs

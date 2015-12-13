@@ -5,8 +5,8 @@ module CCO.HM.Compiler (
 import CCO.HM.Base
 import CCO.Core.Base
 import CCO.HM.Sanitize
-import CCO.HM.ToANormal
 import CCO.HM.ToBNormal
+import CCO.HM.AttachBuiltins
 import CCO.HM.AddLaziness
 import CCO.HM.AddForcing
 import CCO.HM.AnnotateTailCalls
@@ -15,4 +15,4 @@ import CCO.Component
 import Control.Arrow ((>>>))
 
 compile :: Component Tm Mod
-compile = sanitize >>> toBNormal >>> toANormal >>> toCore
+compile = sanitize >>> toBNormal >>> attachBuiltins >>> toCore

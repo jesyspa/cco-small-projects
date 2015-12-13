@@ -1,6 +1,7 @@
 module CCO.HM.AG.BNormalUtils (
       wrap
     , extend
+    , extendBind
 ) where
 
 import CCO.HM.AG.BNormal
@@ -14,3 +15,5 @@ extend :: Var -> Either BTm BExp -> Bindings -> Bindings
 extend x (Left  tm)  bs = [(x, BWrap (BBind bs tm))]
 extend x (Right exp) bs = [(x, exp)] ++ bs
 
+extendBind :: Bindings -> BBind -> BBind
+extendBind bs (BBind bs' t) = BBind (bs ++ bs') t

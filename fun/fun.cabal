@@ -33,7 +33,7 @@ executable hmcr
   main-is:             HmCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.HmCore,
-                       CCO.HM.Context, CCO.HM.AG.ANormal, CCO.HM.ToANormal, CCO.HM.ToCore, CCO.HM.AG.ToANormal,
+                       CCO.HM.Context, CCO.HM.AG.ANormal, CCO.HM.AttachBuiltins, CCO.HM.ToCore, CCO.HM.AG.AttachBuiltins,
                        CCO.HM.AG.Sanitize, CCO.HM.Builtins, CCO.HM.Sanitize, CCO.HM.AG.AddLaziness,
                        CCO.HM.AG.ANormalUtils, CCO.HM.AG.AnnotateTailCalls, CCO.HM.AnnotateTailCalls, CCO.HM.Table,
                        CCO.HM.ANormal, CCO.HM.AG.AddForcing, CCO.HM.AddForcing, CCO.HM.ToBNormal, CCO.HM.AG.ToBNormal,

@@ -1,0 +1,31 @@
+module{CCO.HM.AG.AttachBuiltins}{}{}
+imports
+{
+import CCO.HM.AG.BNormal
+import CCO.HM.AG.BNormalUtils
+import CCO.HM.Builtins
+import Data.List
+}
+
+include "BNormal.ag"
+
+attr BTm BBind BExp BVal BVals Binding Bindings
+  syn freevars use {`union`} {[]} :: {[Var]}
+  syn code :: self
+
+attr BRoot
+  syn code :: self
+
+sem BRoot
+  | BRoot   lhs.code      = BRoot $ extendBind (filter (flip elem @b.freevars . fst) builtins) @b.code
+
+sem BVal
+  | BVar    lhs.freevars  = [@x]
+  | BTag    lhs.freevars  = [@x]
+
+sem BExp
+  | BLam    +freevars     = delete @x
+
+sem BBind
+  | BBind   +freevars     = flip (\\) $ fmap fst @es.code
+

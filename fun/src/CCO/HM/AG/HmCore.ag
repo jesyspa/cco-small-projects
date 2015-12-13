@@ -1,57 +1,68 @@
 module {CCO.HM.AG.HmCore}{}{}
 {
 import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.ANormal
+import CCO.HM.AG.BNormal
 import CCO.HM.Context
 import qualified CCO.Core.AG.Base as C
 }
 
-include "ANormal.ag"
+include "BNormal.ag"
 
-attr ATm AExp AVal AVals
+attr BTm BExp BVal BVals BBind Binding Bindings
   inh context :: {Context}
 
-attr AVal
+attr BVal
   syn code :: {C.SExp}
 
-attr AVals
+attr BVals
   syn code use {:} {[]} :: {[C.SExp]}
 
-attr ARoot
+attr BRoot
   syn code :: {C.Mod}
 
-attr ATm AExp
+attr BTm BExp BBind
   syn code :: {C.Exp}
-  syn locals use {++} {[]} :: {[Var]}
 
-sem ARoot
-  | ARoot  t  .context     = newContext @t.locals
-           lhs.code        = C.Mod @t.code []
+attr Bindings
+  syn code use {:} {[]}:: {[C.Bind]}
+  syn boundVars use {:} {[]} :: {[Var]}
 
-sem AVal
-  | ANat   lhs.code        = C.Int @i
-  | AVar   lhs.code        = C.Var $ resolve @lhs.context @x
-  | ATag   lhs.code        = C.Var $ C.Tag $ resolve @lhs.context @x
-  | AField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
+attr Binding
+  syn code use {++} {[]}:: {C.Bind}
+  syn boundVars :: {Var}
 
-sem AExp
-  | AVal   lhs.code        = C.SExp @v.code
-  | AApp   lhs.code        = C.App @e.code [@v.code]
-  | ALam   loc.context     = pushFrame @loc.locals @lhs.context
-           loc.locals      = @xs ++ @t.locals
-           lhs.locals      = []
-           lhs.code        = C.Lam (map (resolve @loc.context) @xs) @t.code
-  | AAlloc lhs.code        = C.Node @tag @vs.code
-  | APrim  lhs.code        = C.Prim @op @vs.code
-  | AForce lhs.code        = C.Eval @e.code
-  | ATail  lhs.code        = C.Tail @e.code
+sem BRoot
+  | BRoot  lhs.code        = C.Mod @b.code []
+           b  .context     = newContext
 
-sem ATm
-  | ALet   lhs.code        = C.Let (C.Bind (resolve @lhs.context @x) @e.code) @t.code
-           lhs.locals      = @x : @t.locals
-  | AIf    -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
-           lhs.code        = C.Case @c.code [@t2.code, @t1.code]
-           t1 .context     = appendToFrame @t1.locals @lhs.context
-           t2 .context     = appendToFrame @t2.locals @lhs.context
-           lhs.locals      = []
+sem BVal
+  | BNat   lhs.code        = C.Int @i
+  | BVar   lhs.code        = C.Var $ resolve @lhs.context @x
+  | BTag   lhs.code        = C.Var $ C.Tag $ resolve @lhs.context @x
+  | BField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
+
+sem BExp
+  | BVal   lhs.code        = C.SExp @v.code
+  | BApp   lhs.code        = C.App (C.SExp @v1.code) [@v2.code]
+  | BLam   loc.context     = pushFrame [@x] @lhs.context
+           lhs.code        = C.Lam [resolve @loc.context @x] @b.code
+           b  .context     = @loc.context
+  | BAlloc lhs.code        = C.Node @tag @vs.code
+  | BPrim  lhs.code        = C.Prim @op @vs.code
+  | BForce lhs.code        = C.Eval @e.code
+  | BTail  lhs.code        = C.Tail @e.code
+
+sem BTm
+  | BIf    -- The order is flipped here, since b2 corresponds to False (0) and b1 corresponds to True (1)
+           lhs.code        = C.Case @c.code [@b2.code, @b1.code]
+
+sem BBind
+  | BBind  loc.context     = appendToFrame @es.boundVars @lhs.context
+           lhs.code        = foldr C.Let @t.code @es.code
+           t  .context     = @loc.context
+           es .context     = @loc.context
+
+sem Binding
+  | Tuple  lhs.code        = C.Bind (resolve @lhs.context @x1) @x2.code
+           lhs.boundVars   = @x1
 
