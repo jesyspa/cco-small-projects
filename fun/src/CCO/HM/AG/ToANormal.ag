@@ -1,60 +1,59 @@
 module{CCO.HM.AG.ToANormal}{}{}
 imports
 {
-import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.Base
+import CCO.HM.AG.BNormal
 import CCO.HM.AG.ANormal
 import CCO.HM.AG.ANormalUtils
+import CCO.HM.Builtins
 import Data.List
 }
 
-include "Base.ag"
+include "BNormal.ag"
 
-attr Tm_ Tm
-  syn bindings use {++} {[]} :: {[(Var, AExp)]}
-  syn tbindings use {++} {[]} :: {[(Var, AExp)]}
-  chn counter :: Int
+attr BTm BBind BExp BVal BVals Binding Bindings
   syn freevars use {`union`} {[]} :: {[Var]}
 
-attr Tm_ Tm
+attr BVal
+  syn code :: {AVal}
+
+attr BVals
+  syn code use {:} {[]} :: {AVals}
+
+attr BExp
   syn code :: {AExp}
-  syn term :: {ATm}
 
-sem Tm_
-  | Nat Var Lam App Prim
-          lhs.code      = @loc.code
-          lhs.term      = AExp @loc.code
-  | Nat   loc.code      = AVal $ ANat  @i
-  | Var   loc.code      = AVal $ AVar  @x
-          lhs.freevars  = [@x]
-  | Lam   loc.code      = ALam [@x] $ wrapBinds' @t1.code @t1.bindings
-          lhs.bindings  = []
-          lhs.tbindings = []
-          +freevars     = delete @x
-  | App   loc.code      = AApp @t1.code (AVar @loc.fresh)
-          loc.num :: uniqueref counter
-          loc.fresh     = "$e_" ++ show @loc.num
-          +bindings     = (:) (@loc.fresh, @t2.code)
-          +tbindings    = (:) (@loc.fresh, @t2.code)
-  | Let   lhs.code      = @t2.code
-          lhs.term      = ALet @x @t1.code @t2.term
-          lhs.bindings  = @t2.bindings ++ [(@x, @t1.code)] ++ @t1.bindings
-          lhs.tbindings = @t2.tbindings ++ @t1.bindings
-          +freevars     = delete @x
-  | If    loc.c1        = wrapBinds @t1.term @t1.tbindings
-          loc.c2        = wrapBinds @t2.term @t2.tbindings
-          loc.num :: uniqueref counter
-          loc.fresh     = "$e_" ++ show @loc.num
-          loc.term      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
-          lhs.code      = ALam [] @loc.term
-          lhs.term      = @loc.term
-          lhs.bindings  = [(@loc.fresh, @c.code)] ++ @c.bindings
-          lhs.tbindings = @c.bindings
-  | Prim  loc.code      = APrim @op (map AVar @args)
-          lhs.freevars  = @args
+attr BTm BBind
+  syn code :: {ATm}
 
-{
-nextUnique :: Int -> (Int, Int)
-nextUnique u = (u+1, u)
-}
+attr BRoot
+  syn code :: {ARoot}
 
+attr Binding Bindings
+  syn code use {++} {[]} :: {[(Var, AExp)]}
+
+sem BRoot
+  | BRoot   lhs.code      = ARoot $ wrapBinds @b.code $ filter (flip elem @b.freevars . fst) builtins
+
+sem BVal
+  | BNat    lhs.code      = ANat @i
+  | BVar    lhs.code      = AVar @x
+            lhs.freevars  = [@x]
+
+sem BExp
+  | BVal    lhs.code      = AVal @v.code
+  | BApp    lhs.code      = AApp (AVal @v1.code) @v2.code
+  | BLam    lhs.code      = ALam [@x] @b.code
+            +freevars     = delete @x
+  | BPrim   lhs.code      = APrim @op @vs.code
+  | BWrap   lhs.code      = AForce $ ALam [] @b.code
+
+sem BBind
+  | BBind   lhs.code      = foldr (uncurry ALet) @t.code (reverse @es.code)
+            +freevars     = flip (\\) $ fmap fst @es.code
+
+sem BTm
+  | BExp    lhs.code      = AExp @e.code
+  | BIf     lhs.code      = AIf @c.code @b1.code @b2.code
+
+sem Binding
+  | Tuple   lhs.code      = [(@x1, @x2.code)]

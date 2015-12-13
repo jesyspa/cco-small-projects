@@ -3,6 +3,7 @@ module CCO.HM.ANormal (
     , AVals
     , AExp(..)
     , ATm(..)
+    , ARoot(..)
 ) where
 
 import CCO.HM.AG.ANormal

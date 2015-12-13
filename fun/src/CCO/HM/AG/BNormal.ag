@@ -1,0 +1,35 @@
+module{CCO.HM.AG.BNormal}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+}
+
+------------------------------------------------------------------------
+-- AST
+------------------------------------------------------------------------
+
+data BVal
+  | BNat     i :: {Int}
+  | BVar     x :: {Var}
+
+type BVals = [BVal]
+
+data BExp
+  | BVal     v :: BVal
+  | BApp     v1 :: BVal  v2 :: BVal
+  | BLam     x :: {Var}  b :: BBind
+  | BPrim    op :: {String} vs :: BVals
+  | BWrap    b :: BBind
+
+type Binding = (Var, BExp)
+type Bindings = [Binding]
+
+data BBind
+  | BBind    es :: Bindings  t :: BTm
+
+data BTm
+  | BExp     e :: BExp
+  | BIf      c :: BVal   b1 :: BBind  b2 :: BBind
+
+data BRoot
+  | BRoot    b :: BBind

@@ -36,7 +36,8 @@ executable hmcr
                        CCO.HM.Context, CCO.HM.AG.ANormal, CCO.HM.ToANormal, CCO.HM.ToCore, CCO.HM.AG.ToANormal,
                        CCO.HM.AG.Sanitize, CCO.HM.Builtins, CCO.HM.Sanitize, CCO.HM.AG.AddLaziness,
                        CCO.HM.AG.ANormalUtils, CCO.HM.AG.AnnotateTailCalls, CCO.HM.AnnotateTailCalls, CCO.HM.Table,
-                       CCO.HM.ANormal, CCO.HM.AG.AddForcing, CCO.HM.AddForcing
+                       CCO.HM.ANormal, CCO.HM.AG.AddForcing, CCO.HM.AddForcing, CCO.HM.ToBNormal, CCO.HM.AG.ToBNormal,
+                       CCO.HM.AG.BNormal, CCO.HM.AG.BNormalUtils
   hs-source-dirs:      src
 
 executable pp-core

@@ -20,9 +20,17 @@ attr AVal
 attr AVals
   syn code use {:} {[]} :: {[C.SExp]}
 
+attr ARoot
+  syn code :: {C.Mod}
+
 attr ATm AExp
   syn code :: {C.Exp}
   syn locals use {++} {[]} :: {[Var]}
+
+sem ARoot
+  | ARoot  t  .context     = newContext @t.locals
+           t  .isTag       = False
+           lhs.code        = C.Mod @t.code []
 
 sem AVal
   | ANat   lhs.code        = C.Int @i

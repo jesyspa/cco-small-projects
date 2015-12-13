@@ -4,7 +4,6 @@ module CCO.HM.Builtins (
 ) where
 
 import CCO.HM.AG.ANormal
-import CCO.HM.AG.ToANormal
 import CCO.HM.Base
 import CCO.Component
 import Control.Arrow ((>>>))

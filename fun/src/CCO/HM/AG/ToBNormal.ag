@@ -1,0 +1,52 @@
+module{CCO.HM.AG.ToBNormal}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
+import CCO.HM.AG.BNormal
+import CCO.HM.AG.BNormalUtils
+import Data.List
+}
+
+include "Base.ag"
+
+attr Tm_ Tm
+  syn bindings use {++} {[]} :: Bindings
+  chn counter :: Int
+
+attr Tm_ Tm
+  syn code :: {Either BTm BExp}
+
+sem Tm_
+  | Nat   lhs.code      = Right $ BVal $ BNat  @i
+  | Var   lhs.code      = Right $ BVal $ BVar  @x
+  | Lam   lhs.code      = Right $ BLam @x $ wrap @t1.code @t1.bindings
+          lhs.bindings  = []
+  | App   loc.code      = Right $ BApp (BVar $ fst @loc.norm1) (BVar $ fst @loc.norm2)
+          loc.num1 :: uniqueref counter
+          loc.num2 :: uniqueref counter
+          loc.norm1     = normalize @t1.code @loc.num1 @t1.bindings
+          loc.norm2     = normalize @t2.code @loc.num2 @t2.bindings
+          lhs.bindings  = snd @loc.norm1 ++ snd @loc.norm2
+  | Let   lhs.code      = @t2.code
+          lhs.bindings  = extend @x @t1.code @t1.bindings ++ @t2.bindings
+  | If    loc.c1        = wrap @t1.code @t1.bindings
+          loc.c2        = wrap @t2.code @t2.bindings
+          loc.num :: uniqueref counter
+          loc.norm      = normalize @c.code @loc.num @c.bindings
+          lhs.code      = Left $ BIf (BVar $ fst @loc.norm) @loc.c1 @loc.c2
+          lhs.bindings  = snd @loc.norm
+  | Prim  loc.code      = Right $ BPrim @op (map BVar @args)
+
+{
+toVar :: Int -> Var
+toVar i = "$e_" ++ show i
+
+normalize :: Either BTm BExp -> Int -> Bindings -> (Var, Bindings)
+normalize (Right (BVal (BVar x)))  _ bs = (x, bs)
+normalize e i bs = (toVar i, extend (toVar i) e bs)
+
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+}
+
