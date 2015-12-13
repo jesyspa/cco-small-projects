@@ -6,7 +6,8 @@ import CCO.HM.AG.Sanitize
 import CCO.HM.AG.Base
 import CCO.HM.Builtins (builtinList)
 import CCO.Component
-import CCO.Feedback
+import CCO.Feedback    (Message(Error), messages)
+import CCO.Printing           (pp)
 import Data.List
 import Control.Monad
 
@@ -17,5 +18,7 @@ sanitize = component $ \tm -> do
         fv = freevars_Syn_Tm wtm
         unresolved = fv \\ builtinList
         locals = locals_Syn_Tm wtm
-    when (not $ null unresolved) $ trace_ $ "Unresolved symbols: " ++ show unresolved
+        errs = map (Error . pp) unresolved
+    --when (not $ null unresolved) $ trace_ $ "Unresolved symbols: " ++ show unresolved
+    messages errs
     return code

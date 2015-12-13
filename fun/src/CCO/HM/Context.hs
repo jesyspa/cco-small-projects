@@ -19,7 +19,7 @@ newContext :: Context
 newContext = Context [] []
 
 resolve :: Context -> Var -> C.Ref
-resolve (Context ls gs) x = maybe (error $ "undefined: " ++ x) id $ findLoc x ls <|> findGlob x gs
+resolve (Context ls gs) x = fromMaybe (error $ "undefined: " ++ x) $ findLoc x ls <|> findGlob x gs
 
 findGlob :: Var -> [Var] -> Maybe C.Ref
 findGlob x gs = C.Glob <$> elemIndex x gs
