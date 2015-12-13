@@ -10,9 +10,6 @@ include "ANormal.ag"
 
 attr ATm AExp AVal AVals
   inh context :: {Context}
-  -- Really, we'd like to specify that we only care about tagPosition in the case of AVals.  However, that's not
-  -- practical because then we have to specify it on all values, while it's actually only very rarely true.
-  inh isTag :: {Bool}
 
 attr AVal
   syn code :: {C.SExp}
@@ -29,12 +26,12 @@ attr ATm AExp
 
 sem ARoot
   | ARoot  t  .context     = newContext @t.locals
-           t  .isTag       = False
            lhs.code        = C.Mod @t.code []
 
 sem AVal
   | ANat   lhs.code        = C.Int @i
-  | AVar   lhs.code        = C.Var $ (if @lhs.isTag then C.Tag else id) $ resolve @lhs.context @x
+  | AVar   lhs.code        = C.Var $ resolve @lhs.context @x
+  | ATag   lhs.code        = C.Var $ C.Tag $ resolve @lhs.context @x
   | AField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
 
 sem AExp
@@ -52,8 +49,7 @@ sem AExp
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @lhs.context @x) @e.code) @t.code
            lhs.locals      = @x : @t.locals
-  | AIf    c  .isTag       = True
-           -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
+  | AIf    -- The order is flipped here, since t2 corresponds to False (0) and t1 corresponds to True (1)
            lhs.code        = C.Case @c.code [@t2.code, @t1.code]
            t1 .context     = appendToFrame @t1.locals @lhs.context
            t2 .context     = appendToFrame @t2.locals @lhs.context

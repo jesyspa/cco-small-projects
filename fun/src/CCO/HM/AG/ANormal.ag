@@ -11,6 +11,7 @@ import CCO.HM.AG.BaseHelpers
 data AVal
   | ANat     i :: {Int}
   | AVar     x :: {Var}
+  | ATag     x :: {Var}
   | AField   x :: {Var}  i :: {Int}
 
 type AVals = [AVal]

@@ -38,6 +38,8 @@ sem BVal
   | BNat    lhs.code      = ANat @i
   | BVar    lhs.code      = AVar @x
             lhs.freevars  = [@x]
+  | BTag    lhs.code      = ATag @x
+            lhs.freevars  = [@x]
 
 sem BExp
   | BVal    lhs.code      = AVal @v.code
@@ -45,7 +47,7 @@ sem BExp
   | BLam    lhs.code      = ALam [@x] @b.code
             +freevars     = delete @x
   | BPrim   lhs.code      = APrim @op @vs.code
-  | BWrap   lhs.code      = AForce $ ALam [] @b.code
+  | BWrap   lhs.code      = ALam [] @b.code
 
 sem BBind
   | BBind   lhs.code      = foldr (uncurry ALet) @t.code (reverse @es.code)

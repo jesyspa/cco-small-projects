@@ -11,6 +11,7 @@ import CCO.HM.AG.BaseHelpers
 data BVal
   | BNat     i :: {Int}
   | BVar     x :: {Var}
+  | BTag     x :: {Var}
 
 type BVals = [BVal]
 
