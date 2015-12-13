@@ -11,7 +11,6 @@ import CCO.HM.AG.BaseHelpers
 data BVal
   | BNat     i :: {Int}
   | BVar     x :: {Var}
-  | BTag     x :: {Var}
   | BField   x :: {Var}  i :: {Int}
 
 type BVals = [BVal]
@@ -34,7 +33,7 @@ data BBind
 
 data BTm
   | BExp     e :: BExp
-  | BIf      c :: BVal   b1 :: BBind  b2 :: BBind
+  | BIf      x :: {Var}  b1 :: BBind  b2 :: BBind
 
 data BRoot
   | BRoot    b :: BBind

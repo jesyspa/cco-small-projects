@@ -34,7 +34,7 @@ sem Tm_
           loc.c2        = wrap @t2.code @t2.bindings
           loc.num :: uniqueref counter
           loc.norm      = normalize @c.code @loc.num @c.bindings
-          lhs.code      = Left $ BIf (BTag $ fst @loc.norm) @loc.c1 @loc.c2
+          lhs.code      = Left $ BIf (fst @loc.norm) @loc.c1 @loc.c2
           lhs.bindings  = snd @loc.norm
   | Prim  loc.code      = Right $ BPrim @op (map BVar @args)
 

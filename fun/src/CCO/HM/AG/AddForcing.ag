@@ -39,8 +39,8 @@ sem BExp
 sem BTm
   | BIf     loc.num :: uniqueref counter
             loc.fvar      = forcedVar @loc.num
-            lhs.code      = BIf (BVar @loc.fvar) @b1.code @b2.code
-            lhs.bindings  = [(@loc.fvar, BForce $ BVal @c.code)]
+            lhs.code      = BIf @loc.fvar @b1.code @b2.code
+            lhs.bindings  = [(@loc.fvar, BForce $ BVal $ BVar @x)]
 
 sem BBind
   | BBind   +code         = extendBind @t.bindings

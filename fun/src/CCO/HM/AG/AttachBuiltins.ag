@@ -21,10 +21,12 @@ sem BRoot
 
 sem BVal
   | BVar    lhs.freevars  = [@x]
-  | BTag    lhs.freevars  = [@x]
 
 sem BExp
   | BLam    +freevars     = delete @x
+
+sem BTm
+  | BIf     +freevars     = union [@x]
 
 sem BBind
   | BBind   +freevars     = flip (\\) $ fmap fst @es.code

@@ -38,7 +38,6 @@ sem BRoot
 sem BVal
   | BNat   lhs.code        = C.Int @i
   | BVar   lhs.code        = C.Var $ resolve @lhs.context @x
-  | BTag   lhs.code        = C.Var $ C.Tag $ resolve @lhs.context @x
   | BField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
 
 sem BExp
@@ -56,7 +55,7 @@ sem BExp
 
 sem BTm
   | BIf    -- The order is flipped here, since b2 corresponds to False (0) and b1 corresponds to True (1)
-           lhs.code        = C.Case @c.code [@b2.code, @b1.code]
+           lhs.code        = C.Case (C.Var $ C.Tag $ resolve @lhs.context @x) [@b2.code, @b1.code]
 
 sem BBind
   | BBind  loc.context     = appendToFrame @es.boundVars @lhs.context
