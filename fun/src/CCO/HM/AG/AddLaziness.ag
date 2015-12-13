@@ -13,3 +13,26 @@ include "BNormal.ag"
 attr BRoot BTm BBind BExp BVal BVals Binding Bindings
   syn code :: self
 
+attr BTm BBind BExp
+  inh lazyPos :: {Bool}
+
+sem BRoot
+  | BRoot  b  .lazyPos = False
+
+sem BExp
+  | BVal   +code       = maybeWrap @lhs.lazyPos
+  | BApp   +code       = maybeWrap @lhs.lazyPos
+  | BLam   b  .lazyPos = False
+  | BPrim  +code       = maybeWrap @lhs.lazyPos
+  | BAlloc +code       = maybeWrap @lhs.lazyPos
+  | BWrap  b  .lazyPos = False
+  | BForce e  .lazyPos = False
+
+sem Binding
+  | Tuple  x2 .lazyPos = True
+
+{
+maybeWrap :: Bool -> BExp -> BExp
+maybeWrap True = BWrap . BBind [] . BExp
+maybeWrap False = id
+}

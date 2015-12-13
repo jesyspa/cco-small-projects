@@ -20,7 +20,7 @@ attr BExp BTm BBind
   inh forced :: {Bool}
 
 attr BExp BTm
-  syn bindings use {++} {[]} :: {[(Var, BExp)]}
+  syn bindings use {++} {[]} :: {Bindings}
 
 sem BRoot
   | BRoot   b  .forced    = True
