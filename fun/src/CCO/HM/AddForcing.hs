@@ -3,15 +3,14 @@ module CCO.HM.AddForcing (
 ) where
 
 import CCO.HM.AG.AddForcing
-import CCO.HM.AG.ANormal
-import CCO.HM.AG.ANormalUtils
+import CCO.HM.AG.BNormal
+import CCO.HM.AG.BNormalUtils
 import CCO.Component
 import CCO.Feedback
 import Data.List
 import Control.Monad
 
-addForcing :: Component AExp ATm
-addForcing = component $ \tm -> do
-    let wtm = wrap_AExp (sem_AExp tm) (Inh_AExp 0 True)
-        code = code_Syn_AExp wtm
-    return $ AExp $ AForce code
+addForcing :: Component BRoot BRoot
+addForcing = component $ \br -> do
+    let wbr = wrap_BRoot (sem_BRoot br) Inh_BRoot
+    return $ code_Syn_BRoot wbr

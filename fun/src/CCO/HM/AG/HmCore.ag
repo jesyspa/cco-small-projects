@@ -49,6 +49,8 @@ sem BExp
            b  .context     = @loc.context
   | BAlloc lhs.code        = C.Node @tag @vs.code
   | BPrim  lhs.code        = C.Prim @op @vs.code
+  | BWrap  lhs.code        = C.Lam [] @b.code
+           b  .context     = pushFrame [] @lhs.context
   | BForce lhs.code        = C.Eval @e.code
   | BTail  lhs.code        = C.Tail @e.code
 

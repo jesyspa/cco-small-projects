@@ -2,52 +2,59 @@ module{CCO.HM.AG.AddForcing}{}{}
 imports
 {
 import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.ANormal
-import CCO.HM.AG.ANormalUtils
+import CCO.HM.AG.BNormal
+import CCO.HM.AG.BNormalUtils
 import Data.Maybe
 import Data.List
 }
 
-include "ANormal.ag"
+include "BNormal.ag"
 
-attr AVal AVals AExp ATm
+attr BRoot BTm BBind BExp BVal BVals Binding Bindings
   syn code :: self
 
-attr AExp ATm
+attr BTm BBind BExp BVal BVals Binding Bindings
   chn counter :: Int
+
+attr BExp BTm BBind
   inh forced :: {Bool}
 
-attr AExp
-  syn bindings use {++} {[]} :: {[(Var, AExp)]}
+attr BExp BTm
+  syn bindings use {++} {[]} :: {[(Var, BExp)]}
 
-sem AExp
-  | AVal    lhs.code      = maybeForce @lhs.forced $ AVal @v.code
-  | AApp    lhs.code      = maybeForce @lhs.forced $ AApp @e.code @v.code
-            v  .forced    = False
-  | ALam    lhs.code      = ALam @xs @t.code
-            t  .forced    = True
-  | AAlloc  lhs.code      = AAlloc @tag @vs.code
-  | APrim   loc.num       = @lhs.counter
+sem BRoot
+  | BRoot   b  .forced    = True
+            b  .counter   = 0
+
+sem BExp
+  | BVal    +code         = maybeForce @lhs.forced
+  | BApp    +code         = maybeForce @lhs.forced
+  | BLam    b  .forced    = True
+  | BPrim   loc.num       = @lhs.counter
             lhs.counter   = @loc.num + length @vs.code
             loc.args'     = zip (map forcedVar [@loc.num..]) @vs.code
-            lhs.code      = APrim @op $ map (AVar . fst) @loc.args'
-            lhs.bindings  = map (\(v, v') -> (v, AForce $ AVal v')) @loc.args'
-  | AForce  lhs.code      = AForce @e.code
+            lhs.code      = BPrim @op $ map (BVar . fst) @loc.args'
+            lhs.bindings  = map (\(v, v') -> (v, BForce $ BVal v')) @loc.args'
 
-sem ATm
-  | AExp    lhs.code      = wrapBinds' @e.code @e.bindings
-  | ALet    lhs.code      = wrapBinds (ALet @x @e.code @t.code) @e.bindings
-  | AIf     loc.num :: uniqueref counter
+sem BTm
+  | BIf     loc.num :: uniqueref counter
             loc.fvar      = forcedVar @loc.num
-            lhs.code      = ALet @loc.fvar (AForce $ AVal @c.code) $ AIf (AVar @loc.fvar) @t1.code @t2.code
+            lhs.code      = BIf (BVar @loc.fvar) @b1.code @b2.code
+            lhs.bindings  = [(@loc.fvar, BForce $ BVal @c.code)]
+
+sem BBind
+  | BBind   +code         = extendBind @t.bindings
+
+sem Binding
+  | Tuple   x2 .forced    = False
 
 
 {
 forcedVar :: Int -> Var
 forcedVar i = "$f_" ++ show i
 
-maybeForce :: Bool -> AExp -> AExp
-maybeForce True = AForce
+maybeForce :: Bool -> BExp -> BExp
+maybeForce True = BForce
 maybeForce False = id
 
 nextUnique :: Int -> (Int, Int)

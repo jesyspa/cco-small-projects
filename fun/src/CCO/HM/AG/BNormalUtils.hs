@@ -13,7 +13,7 @@ wrap (Right exp) bs = BBind bs (BExp exp)
 
 extend :: Var -> Either BTm BExp -> Bindings -> Bindings
 extend x (Left  tm)  bs = [(x, BWrap (BBind bs tm))]
-extend x (Right exp) bs = [(x, exp)] ++ bs
+extend x (Right exp) bs = bs ++ [(x, exp)]
 
 extendBind :: Bindings -> BBind -> BBind
 extendBind bs (BBind bs' t) = BBind (bs ++ bs') t

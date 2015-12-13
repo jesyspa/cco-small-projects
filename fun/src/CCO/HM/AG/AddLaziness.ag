@@ -2,16 +2,14 @@ module{CCO.HM.AG.AddLaziness}{}{}
 imports
 {
 import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.ANormal
-import CCO.HM.AG.ANormalUtils
+import CCO.HM.AG.BNormal
+import CCO.HM.AG.BNormalUtils
 import Data.Maybe
 import Data.List
 }
 
-include "ANormal.ag"
+include "BNormal.ag"
 
-attr AVal AVals AExp ATm
+attr BRoot BTm BBind BExp BVal BVals Binding Bindings
   syn code :: self
 
-{
-}
