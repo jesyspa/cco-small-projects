@@ -15,10 +15,12 @@ data Tm
 type Tms = [Tm]
 
 data Tm_
-  | Nat  i :: {Int}
-  | Var  x :: {Var}
-  | Lam  x :: {Var}  t1 :: Tm
-  | App  t1 :: Tm  t2 :: Tm
-  | Let  x :: {Var}  t1 :: Tm  t2 :: Tm
-  | If   c :: Tm  t1 :: Tm  t2 :: Tm
-  | Prim op :: {String} args :: {[Var]}
+  | Nat    i :: {Int}
+  | Var    x :: {Var}
+  | Lam    x :: {Var}  t1 :: Tm
+  | App    t1 :: Tm  t2 :: Tm
+  | Let    x :: {Var}  t1 :: Tm  t2 :: Tm
+  | If     c :: Tm  t1 :: Tm  t2 :: Tm
+  | Prim   op :: {String} args :: {[Var]}
+  | Thunk  t :: Tm
+  | Force  t :: Tm

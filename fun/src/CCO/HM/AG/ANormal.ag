@@ -22,6 +22,7 @@ data AExp
   | ALam     xs :: {[Var]}  t :: ATm
   | AAlloc   tag :: {Int}  vs :: AVals
   | APrim    op :: {String} vs :: AVals
+  | AForce   e :: AExp
 
 data ATm
   | AExp     e :: AExp

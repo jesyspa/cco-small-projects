@@ -10,6 +10,9 @@ options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 file : "src/CCO/HM/AG/Sanitize.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
+file : "src/CCO/HM/AG/AddLaziness.ag"
+options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+
 file : "src/CCO/HM/AG/ToANormal.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 

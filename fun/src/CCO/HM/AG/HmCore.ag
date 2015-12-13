@@ -43,6 +43,7 @@ sem AExp
            lhs.code        = C.Case @c.code [@t2.code, @t1.code]
   | AAlloc lhs.code        = C.Node @tag @vs.code
   | APrim  lhs.code        = C.Prim @op @vs.code
+  | AForce lhs.code        = C.Eval @e.code
 
 sem ATm
   | ALet   lhs.code        = C.Let (C.Bind (resolve @loc.context @x) @e.code) @t.code

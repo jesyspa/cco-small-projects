@@ -13,6 +13,7 @@ attr Tm_ Tm Tms
   syn bindings use {++} {[]} :: {[(Var, AExp)]}
   chn counter :: Int
   syn freevars use {`union`} {[]} :: {[Var]}
+  inh forced :: {Bool}
 
 attr Tm_ Tm
   syn code :: {AExp}
@@ -26,6 +27,7 @@ sem Tm_
           lhs.freevars  = [@x]
   | Lam   lhs.code      = ALam [@x] $ wrapBinds @t1.code @t1.bindings
           lhs.bindings  = []
+          t1 .forced    = True
           +freevars     = delete @x
   | App   lhs.code      = AApp @t1.code (AVar @loc.fresh)
           loc.num :: uniqueref counter
@@ -33,6 +35,7 @@ sem Tm_
           +bindings     = (:) (@loc.fresh, @t2.code)
   | Let   lhs.code      = @t2.code
           lhs.bindings  = @t2.bindings ++ [(@x, @t1.code)] ++ @t1.bindings
+          t1 .forced    = False
           +freevars     = delete @x
   | If    loc.c1        = wrapBinds @t1.code @t1.bindings
           loc.c2        = wrapBinds @t2.code @t2.bindings
@@ -40,8 +43,14 @@ sem Tm_
           loc.fresh     = "$e_" ++ show @loc.num
           lhs.code      = AIf (AVar @loc.fresh) @loc.c1 @loc.c2
           lhs.bindings  = [(@loc.fresh, @c.code)] ++ @c.bindings
+          c  .forced    = True
   | Prim  lhs.code      = APrim @op (map AVar @args)
           lhs.freevars  = @args
+  | Thunk lhs.code      = if @lhs.forced then @t.code else ALam [] $ wrapBinds @t.code @t.bindings
+          lhs.bindings  = if @lhs.forced then @t.bindings else []
+          t  .forced    = True
+  | Force lhs.code      = AForce @t.code
+          t  .forced    = True
 
 {
 wrapBinds :: AExp -> [(Var, AExp)] -> ATm

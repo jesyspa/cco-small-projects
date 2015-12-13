@@ -10,7 +10,7 @@ import CCO.Component
 
 toANormal :: Component Tm ATm
 toANormal = component $ \tm -> do
-    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm 0)
+    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm 0 True)
         binds = bindings_Syn_Tm wtm
         code = code_Syn_Tm wtm
         vars = freevars_Syn_Tm wtm

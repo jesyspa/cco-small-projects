@@ -39,6 +39,7 @@ data Exp
   | Let    bind :: Bind
            body :: Exp
   | Tail   body :: Exp
+  | Eval   body :: Exp
   | Dbg    info :: {String}
 
 type ExpL = [Exp]

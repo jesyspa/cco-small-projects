@@ -1,0 +1,52 @@
+module{CCO.HM.AG.AddLaziness}{}{}
+imports
+{
+import CCO.HM.AG.BaseHelpers
+import CCO.HM.AG.Base
+import Data.Maybe
+import Data.List
+}
+
+include "Base.ag"
+
+attr Tm Tm_ Tms
+  chn counter :: Int
+
+attr Tm
+  syn code :: {Tm}
+
+attr Tm_
+  syn code :: {Tm_}
+
+attr Tms
+  syn code use {:} {[]} :: {[Tm]}
+
+sem Tm
+  | Tm    lhs.code      = Tm @pos @t.code
+
+sem Tm_
+  | Nat   lhs.code      = Nat @i
+  | Var   lhs.code      = Var @x
+  | Lam   lhs.code      = Lam @x @t1.code
+  | App   lhs.code      = Thunk $ toTm $ App @t1.code @t2.code
+  | Let   lhs.code      = Let @x @t1.code @t2.code
+  | If    loc.num :: uniqueref counter
+          loc.fvar      = forcedVar @loc.num
+          lhs.code      = Let @loc.fvar (toTm $ Force @c.code) $ toTm $ If (toTm $ Var @loc.fvar) @t1.code @t2.code
+  | Prim  loc.num       = @lhs.counter
+          lhs.counter   = @loc.num + length @args
+          loc.args'     = zip (map forcedVar [@loc.num..]) @args
+          lhs.code      = foldr (\(v, v') t -> Let v (toTm $ Var v') $ toTm t) (Prim @op $ map fst @loc.args') @loc.args'
+  | Force lhs.code      = Force @t.code
+  | Thunk lhs.code      = Thunk @t.code
+
+{
+forcedVar :: Int -> Var
+forcedVar i = "$f_" ++ show i
+
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+
+toTm :: Tm_ -> Tm
+toTm = Tm undefined
+}
