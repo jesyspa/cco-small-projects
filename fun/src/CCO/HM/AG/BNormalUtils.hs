@@ -16,4 +16,4 @@ extend x (Left  tm)  bs = [(x, BWrap (BBind bs tm))]
 extend x (Right exp) bs = bs ++ [(x, exp)]
 
 extendBind :: Bindings -> BBind -> BBind
-extendBind bs (BBind bs' t) = BBind (bs ++ bs') t
+extendBind bs (BBind bs' t) = BBind (bs' ++ bs) t

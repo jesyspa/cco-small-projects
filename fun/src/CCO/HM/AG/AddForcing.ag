@@ -28,13 +28,18 @@ sem BRoot
 
 sem BExp
   | BVal    +code         = maybeForce @lhs.forced
-  | BApp    +code         = maybeForce @lhs.forced
+  | BApp    loc.num :: uniqueref counter
+            loc.fvar      = forcedVar @loc.num
+            lhs.code      = BApp @loc.fvar @x2
+            lhs.bindings  = [(@loc.fvar, BForce $ BVal $ BVar @x1)]
+            +code         = maybeForce @lhs.forced
   | BLam    b  .forced    = True
   | BPrim   loc.num       = @lhs.counter
             lhs.counter   = @loc.num + length @vs.code
             loc.args'     = zip (map forcedVar [@loc.num..]) @vs.code
             lhs.code      = BPrim @op $ map (BVar . fst) @loc.args'
             lhs.bindings  = map (\(v, v') -> (v, BForce $ BVal v')) @loc.args'
+  | BWrap   b  .forced    = True
 
 sem BTm
   | BIf     loc.num :: uniqueref counter

@@ -22,7 +22,7 @@ sem BRoot
 sem BExp
   | BVal   +code       = maybeWrap @lhs.lazyPos
   | BApp   +code       = maybeWrap @lhs.lazyPos
-  | BLam   b  .lazyPos = False
+  | BLam   +code       = maybeWrap @lhs.lazyPos
   | BPrim  +code       = maybeWrap @lhs.lazyPos
   | BAlloc +code       = maybeWrap @lhs.lazyPos
   | BWrap  b  .lazyPos = False

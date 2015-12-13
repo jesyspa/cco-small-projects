@@ -42,7 +42,7 @@ sem BVal
 
 sem BExp
   | BVal   lhs.code        = C.SExp @v.code
-  | BApp   lhs.code        = C.App (C.SExp @v1.code) [@v2.code]
+  | BApp   lhs.code        = C.App (C.SExp $ C.Var $ resolve @lhs.context @x1) [C.Var $ resolve @lhs.context @x2]
   | BLam   loc.context     = pushFrame [@x] @lhs.context
            lhs.code        = C.Lam [resolve @loc.context @x] @b.code
            b  .context     = @loc.context

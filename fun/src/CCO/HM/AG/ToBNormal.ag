@@ -22,7 +22,7 @@ sem Tm_
   | Var   lhs.code      = Right $ BVal $ BVar  @x
   | Lam   lhs.code      = Right $ BLam @x $ wrap @t1.code @t1.bindings
           lhs.bindings  = []
-  | App   loc.code      = Right $ BApp (BVar $ fst @loc.norm1) (BVar $ fst @loc.norm2)
+  | App   loc.code      = Right $ BApp (fst @loc.norm1) (fst @loc.norm2)
           loc.num1 :: uniqueref counter
           loc.num2 :: uniqueref counter
           loc.norm1     = normalize @t1.code @loc.num1 @t1.bindings

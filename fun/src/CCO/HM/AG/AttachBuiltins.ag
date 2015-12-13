@@ -23,6 +23,7 @@ sem BVal
   | BVar    lhs.freevars  = [@x]
 
 sem BExp
+  | BApp    lhs.freevars  = nub [@x1, @x2]
   | BLam    +freevars     = delete @x
 
 sem BTm

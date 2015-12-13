@@ -17,7 +17,7 @@ type BVals = [BVal]
 
 data BExp
   | BVal     v :: BVal
-  | BApp     v1 :: BVal  v2 :: BVal
+  | BApp     x1 :: {Var}  x2 :: {Var}
   | BLam     x :: {Var}  b :: BBind
   | BPrim    op :: {String} vs :: BVals
   | BAlloc   tag :: {Int} vs :: BVals
