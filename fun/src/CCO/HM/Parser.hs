@@ -17,7 +17,7 @@ module CCO.HM.Parser (
     parser    -- :: Component String Tm
 ) where
 
-import CCO.HM.Base                     (Var, Tm (Tm), Tm_ (..))
+import CCO.HM.Base                     (Var, Root(..), Tm (Tm), Tm_ (..))
 import CCO.HM.Lexer                    (Token, lexer, keyword, var, nat, spec)
 import CCO.Component                   (Component)
 import qualified CCO.Component as C    (parser)
@@ -36,8 +36,8 @@ type TokenParser = Parser Token
 -------------------------------------------------------------------------------
 
 -- A 'Component' for parsing terms.
-parser :: Component String Tm
-parser = C.parser lexer (pTm <* eof)
+parser :: Component String Root
+parser = C.parser lexer (Root <$> pTm <* eof)
 
 -- | Parses a 'Tm'.
 pTm :: TokenParser Tm

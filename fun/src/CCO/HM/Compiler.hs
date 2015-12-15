@@ -14,5 +14,5 @@ import CCO.HM.ToCore
 import CCO.Component
 import Control.Arrow ((>>>))
 
-compile :: Component Tm Mod
+compile :: Component Root Mod
 compile = sanitize >>> toBNormal >>> attachBuiltins >>> annotateTailCalls >>> addLaziness >>> addForcing >>> toCore

@@ -17,6 +17,13 @@ attr Tm_ Tm
 attr Tm_ Tm
   syn code :: {Either BTm BExp}
 
+attr Root
+  syn code :: BRoot
+
+sem Root
+  | Root  lhs.code      = BRoot $ wrap @tm.code @tm.bindings
+          tm .counter   = 0
+
 sem Tm_
   | Nat   lhs.code      = Right $ BVal $ BNat  @i
   | Var   lhs.code      = Right $ BVal $ BVar  @x

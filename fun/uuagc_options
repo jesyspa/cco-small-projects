@@ -14,7 +14,7 @@ file : "src/CCO/HM/AG/Sanitize.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
 file : "src/CCO/HM/AG/ToBNormal.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
+options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/HM/AG/AttachBuiltins.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax

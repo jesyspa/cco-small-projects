@@ -3,22 +3,20 @@ module CCO.HM.Sanitize (
 ) where
 
 import CCO.HM.AG.Sanitize
+import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
-import CCO.HM.Builtins (builtinList)
+import CCO.HM.PrintUtils
 import CCO.Component
+import CCO.SourcePos
 import CCO.Feedback    (Message(Error), messages)
-import CCO.Printing    (pp)
 import Data.List
 import Control.Monad
 
-sanitize :: Component Tm Tm
-sanitize = component $ \tm -> do
-    let wtm = wrap_Tm (sem_Tm tm) (Inh_Tm locals 0)
-        code = code_Syn_Tm wtm
-        fv = freevars_Syn_Tm wtm
-        unresolved = fv \\ builtinList
-        locals = locals_Syn_Tm wtm
-        errs = map (Error . pp) unresolved
 
+sanitize :: Component Root Root
+sanitize = component $ \r -> do
+    let wr = wrap_Root (sem_Root r) Inh_Root
+        code = code_Syn_Root wr
+        errs = map (Error . ppUse) . reverse $ unresolved_Syn_Root wr
     messages errs
     return code

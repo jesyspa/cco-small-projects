@@ -9,8 +9,11 @@ import CCO.HM.AG.BaseHelpers
 -- Syntax
 -------------------------------------------------------------------------
 
+data Root
+  | Root   tm :: Tm
+
 data Tm
-  | Tm  pos :: {SourcePos}  t :: Tm_
+  | Tm     pos :: {SourcePos}  t :: Tm_
 
 data Tm_
   | Nat    i :: {Int}

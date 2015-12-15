@@ -1,4 +1,0 @@
-let x = y in
-let y = x in
-    5
-ni ni

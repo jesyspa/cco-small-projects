@@ -3,57 +3,53 @@ imports
 {
 import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
-import CCO.HM.Table
+import CCO.HM.Builtins (builtinMarkedNames)
+import CCO.HM.TmSymbolTable
 import Data.Maybe
 import Data.List
 }
 
 include "Base.ag"
 
-attr Tm_ Tm
-  inh context :: {Table}
-  chn counter :: Int
-  syn freevars use {`union`} {[]} :: {[Var]}
-  syn locals use {++} {[]} :: {Table}
-
-attr Tm Tm_
+attr Root Tm_ Tm
   syn code :: self
 
+attr Root
+  syn unresolved :: {[(Var, SourcePos)]}
+
+attr Tm Tm_
+  chn context :: {TMSTable}
+
+attr Tm_
+  inh pos :: {SourcePos}
+
+sem Root
+  | Root  tm .context    = foldr ($) empty $ map (uncurry specialBind) builtinMarkedNames
+          lhs.unresolved = unresolved @tm.context
+
 sem Tm
-  | Tm    lhs.code      = Tm @pos @t.code
+  | Tm    t  .pos        = @pos
 
 sem Tm_
-  | Nat   lhs.code      = Nat @i
-  | Var   loc.result    = searchTable @lhs.context @x
-          lhs.code      = Var $ fst @loc.result
-          lhs.freevars  = snd @loc.result
-  | Lam   loc.num :: uniqueref counter
-          t1 .context   = @loc.locals ++ @lhs.context
-          loc.fvar      = freshen @x @loc.num
-          lhs.code      = Lam @loc.fvar @t1.code
-          loc.locals    = newVar @x @loc.fvar @t1.locals
-          lhs.locals    = emptyTable
-  | App   lhs.code      = App @t1.code @t2.code
-  | Let   loc.num :: uniqueref counter
-          loc.fvar      = freshen @x @loc.num
-          lhs.code      = Let @loc.fvar @t1.code @t2.code
-          lhs.locals    = newVar @x @loc.fvar @t2.locals
-  | If    lhs.code      = If @c.code @t1.code @t2.code
-          lhs.locals    = @c.locals
-          t1 . context  = @t1.locals ++ @lhs.context
-          t2 . context  = @t2.locals ++ @lhs.context
-  | Prim  loc.num       = @lhs.counter
-          lhs.counter   = @loc.num + length @args
-          loc.args'     = map (searchTable @lhs.context) @args
-          lhs.code      = Prim @op (map fst @loc.args')
-          lhs.freevars  = concatMap snd @loc.args'
+  | Var   loc.result     = use @x @lhs.pos @lhs.context
+          lhs.code       = Var $ fst @loc.result
+          lhs.context    = snd @loc.result
+  | Lam   loc.result     = bind @x (enterScope @lhs.context)
+          t1 .context    = snd @loc.result
+          lhs.code       = Lam (fst @loc.result) @t1.code
+          lhs.context    = leaveScope @t1.context
+  | Let   loc.result     = bind @x @lhs.context
+          lhs.code       = Let (fst @loc.result) @t1.code @t2.code
+          t1 .context    = enterScope $ snd @loc.result
+          t2 .context    = leaveScope @t1.context
+          lhs.context    = release @t2.context
+  | Prim  loc.result     = stateMapM (\x -> use x @lhs.pos) @args @lhs.context
+          lhs.code       = Prim @op (fst @loc.result)
+          lhs.context    = snd @loc.result
 
 {
-freshen :: Var -> Int -> Var
-freshen x i = "$u_" ++ show i ++ "_" ++ x
+stateMapM :: (a -> s -> (b, s)) -> [a] -> s -> ([b], s)
+stateMapM f = foldr (\a r s -> let (b, s') = f a s; (bs, s'') = r s' in (b:bs, s'')) (\s -> ([], s))
 
-nextUnique :: Int -> (Int, Int)
-nextUnique u = (u+1, u)
 }
-
 

@@ -15,6 +15,7 @@
 module CCO.HM.Base (
     -- * Syntax
     Var                                 -- = String
+  , Root (Root)                         -- instances: Tree
   , Tm (Tm)                             -- instances: Tree
   , Tm_ (..)                            -- instances: Tree
 ) where
@@ -29,6 +30,10 @@ import Control.Applicative        (Applicative ((<*>)), (<$>))
 -------------------------------------------------------------------------------
 -- Tree instances
 -------------------------------------------------------------------------------
+
+instance Tree Root where
+  fromTree (Root tm) = T.App "Root" [fromTree tm]
+  toTree = parseTree [app "Root" (Root <$> arg)]
 
 instance Tree Tm where
   fromTree (Tm pos t) = T.App "Tm" [fromTree pos, fromTree t]
