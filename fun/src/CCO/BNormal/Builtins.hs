@@ -1,11 +1,11 @@
-module CCO.HM.Builtins (
+module CCO.BNormal.Builtins (
       builtins
     , builtinList
     , builtinMarkedNames
     , markBuiltin
 ) where
 
-import CCO.HM.AG.BNormal
+import CCO.BNormal.AG.BNormal
 import CCO.HM.Base
 
 -- | A list of built-in names with their meanings.

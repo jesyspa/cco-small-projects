@@ -1,7 +1,7 @@
-module{CCO.HM.AG.AddLaziness}{}{}
+module{CCO.BNormal.AG.AddLaziness}{}{}
 imports
 {
-import CCO.HM.AG.BNormal
+import CCO.BNormal.AG.BNormal
 }
 
 include "BNormal.ag"

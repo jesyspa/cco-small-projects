@@ -1,9 +1,9 @@
-module{CCO.HM.AG.AttachBuiltins}{}{}
+module{CCO.BNormal.AG.AttachBuiltins}{}{}
 imports
 {
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.BNormalUtils
-import CCO.HM.Builtins
+import CCO.BNormal.AG.BNormal
+import CCO.BNormal.AG.BNormalUtils
+import CCO.BNormal.Builtins
 import Data.List
 }
 

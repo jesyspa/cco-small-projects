@@ -2,8 +2,8 @@ module{CCO.HM.AG.ToBNormal}{}{}
 imports
 {
 import CCO.HM.AG.Base
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.BNormalUtils
+import CCO.BNormal.AG.BNormal
+import CCO.BNormal.AG.BNormalUtils
 }
 
 include "Base.ag"

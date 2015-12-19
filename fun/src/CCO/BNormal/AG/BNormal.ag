@@ -1,4 +1,4 @@
-module{CCO.HM.AG.BNormal}{}{}
+module{CCO.BNormal.AG.BNormal}{}{}
 imports
 {
 import CCO.HM.AG.BaseHelpers (Var)

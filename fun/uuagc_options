@@ -1,7 +1,7 @@
 file : "src/CCO/HM/AG/Base.ag"
 options : data, haskellsyntax
 
-file : "src/CCO/HM/AG/BNormal.ag"
+file : "src/CCO/BNormal/AG/BNormal.ag"
 options : data, haskellsyntax
 
 file : "src/CCO/Core/AG/Base.ag"
@@ -13,19 +13,19 @@ options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 file : "src/CCO/HM/AG/ToBNormal.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/AttachBuiltins.ag"
+file : "src/CCO/BNormal/AG/AttachBuiltins.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/AddLaziness.ag"
+file : "src/CCO/BNormal/AG/AddLaziness.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/AddForcing.ag"
+file : "src/CCO/BNormal/AG/AddForcing.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/AnnotateTailCalls.ag"
+file : "src/CCO/BNormal/AG/AnnotateTailCalls.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/ToCore.ag"
+file : "src/CCO/BNormal/AG/ToCore.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/Core/AG/ToCoreRun.ag"

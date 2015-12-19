@@ -1,9 +1,9 @@
-module{CCO.HM.AG.AddForcing}{}{}
+module{CCO.BNormal.AG.AddForcing}{}{}
 imports
 {
-import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.BNormalUtils
+import CCO.HM.Base (Var)
+import CCO.BNormal.AG.BNormal
+import CCO.BNormal.AG.BNormalUtils
 }
 
 include "BNormal.ag"

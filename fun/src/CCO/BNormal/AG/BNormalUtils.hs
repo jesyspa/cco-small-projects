@@ -1,11 +1,11 @@
-module CCO.HM.AG.BNormalUtils (
+module CCO.BNormal.AG.BNormalUtils (
       wrap
     , extend
     , extendBind
 ) where
 
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.BaseHelpers
+import CCO.BNormal.AG.BNormal
+import CCO.HM.Base (Var)
 
 -- | Attach bindings to a BNormal term or expression to get a BNormal binding group.
 wrap :: Either BTm BExp -> Bindings -> BBind

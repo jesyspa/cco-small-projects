@@ -1,6 +1,6 @@
-module {CCO.HM.AG.AnnotateTailCalls}{}{}
+module {CCO.BNormal.AG.AnnotateTailCalls}{}{}
 {
-import CCO.HM.AG.BNormal
+import CCO.BNormal.AG.BNormal
 }
 
 include "BNormal.ag"

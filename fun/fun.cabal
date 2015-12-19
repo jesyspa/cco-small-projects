@@ -32,12 +32,33 @@ executable parse-hm
 executable hmcr
   main-is:             HmCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
-  other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.ToCore,
-                       CCO.HM.Context, CCO.HM.AttachBuiltins, CCO.HM.ToCore, CCO.HM.AG.AttachBuiltins,
-                       CCO.HM.AG.Sanitize, CCO.HM.Builtins, CCO.HM.Sanitize, CCO.HM.AG.AddLaziness,
-                       CCO.HM.AG.AnnotateTailCalls, CCO.HM.AnnotateTailCalls, CCO.HM.PrintUtils,
-                       CCO.HM.AG.AddForcing, CCO.HM.AddForcing, CCO.HM.ToBNormal, CCO.HM.AG.ToBNormal,
-                       CCO.HM.AG.BNormal, CCO.HM.AG.BNormalUtils, CheapPrinter, CCO.HM.TmSymbolTable
+  other-modules:       CCO.Core.AG.Base,
+                       CCO.BNormal.AddForcing,
+                       CCO.BNormal.AddForcing,
+                       CCO.BNormal.AddLaziness,
+                       CCO.BNormal.AG.AddForcing,
+                       CCO.BNormal.AG.AddLaziness,
+                       CCO.BNormal.AG.AnnotateTailCalls,
+                       CCO.BNormal.AG.AttachBuiltins,
+                       CCO.BNormal.AG.BNormal,
+                       CCO.BNormal.AG.BNormalUtils,
+                       CCO.BNormal.AG.ToCore,
+                       CCO.BNormal.AnnotateTailCalls,
+                       CCO.BNormal.AttachBuiltins,
+                       CCO.BNormal.Builtins,
+                       CCO.BNormal.Context,
+                       CCO.BNormal.ToCore,
+                       CCO.HM,
+                       CCO.HM.AG.Base,
+                       CCO.HM.AG.BaseHelpers,
+                       CCO.HM.AG.Sanitize,
+                       CCO.HM.AG.ToBNormal,
+                       CCO.HM.Base,
+                       CCO.HM.PrintUtils,
+                       CCO.HM.Sanitize,
+                       CCO.HM.TmSymbolTable,
+                       CCO.HM.ToBNormal,
+                       CheapPrinter
   hs-source-dirs:      src
 
 executable pp-core

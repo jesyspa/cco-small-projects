@@ -2,7 +2,7 @@ module CCO.HM.ToBNormal (
       toBNormal
 ) where
 
-import CCO.HM.AG.BNormal
+import CCO.BNormal.AG.BNormal
 import CCO.HM.AG.ToBNormal
 import CCO.HM.Base
 import CCO.Component

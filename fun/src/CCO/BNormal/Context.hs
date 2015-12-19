@@ -1,4 +1,4 @@
-module CCO.HM.Context (
+module CCO.BNormal.Context (
       newContext
     , Context
     , resolve
@@ -6,11 +6,11 @@ module CCO.HM.Context (
     , appendToFrame
 ) where
 
-import CCO.HM.AG.BaseHelpers
-import qualified CCO.Core.AG.Base as C
-import Data.List
+import CCO.HM.Base (Var)
 import Control.Applicative ((<|>))
+import Data.List
 import Data.Maybe
+import qualified CCO.Core.AG.Base as C
 
 -- | A table of bindings, tracking how far up they were bound.
 data Context = Context [[Var]] [Var]

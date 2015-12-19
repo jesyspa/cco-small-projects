@@ -1,7 +1,7 @@
-module {CCO.HM.AG.ToCore}{}{}
+module {CCO.BNormal.AG.ToCore}{}{}
 {
-import CCO.HM.AG.BNormal
-import CCO.HM.Context
+import CCO.BNormal.AG.BNormal
+import CCO.BNormal.Context
 import qualified CCO.Core.AG.Base as C
 }
 
