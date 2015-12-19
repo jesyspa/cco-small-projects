@@ -29,7 +29,7 @@ executable parse-hm
                        CCO.HM.Parser, CheapPrinter
   hs-source-dirs:      src
 
-executable hmcr
+executable hm2cr
   main-is:             HmCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
   other-modules:       CCO.Core.AG.Base,
