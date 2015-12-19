@@ -1,6 +1,5 @@
 module {CCO.HM.AG.HmCore}{}{}
 {
-import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.BNormal
 import CCO.HM.Context
 import qualified CCO.Core.AG.Base as C

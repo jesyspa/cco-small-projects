@@ -2,14 +2,10 @@ module CCO.HM.AddForcing (
       addForcing
 ) where
 
-import CCO.HM.AG.AddForcing
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.BNormalUtils
-import CCO.Component
-import CCO.Feedback
-import Control.Arrow (arr)
-import Data.List
-import Control.Monad
+import CCO.HM.AG.AddForcing (sem_BRoot)
+import CCO.HM.AG.BNormal    (BRoot)
+import CCO.Component        (Component)
+import Control.Arrow        (arr)
 
 addForcing :: Component BRoot BRoot
 addForcing = arr sem_BRoot

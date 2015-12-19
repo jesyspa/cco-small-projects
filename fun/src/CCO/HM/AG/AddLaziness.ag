@@ -1,11 +1,7 @@
 module{CCO.HM.AG.AddLaziness}{}{}
 imports
 {
-import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.BNormal
-import CCO.HM.AG.BNormalUtils
-import Data.Maybe
-import Data.List
 }
 
 include "BNormal.ag"

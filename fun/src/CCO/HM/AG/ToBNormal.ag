@@ -1,11 +1,9 @@
 module{CCO.HM.AG.ToBNormal}{}{}
 imports
 {
-import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
 import CCO.HM.AG.BNormal
 import CCO.HM.AG.BNormalUtils
-import Data.List
 }
 
 include "Base.ag"

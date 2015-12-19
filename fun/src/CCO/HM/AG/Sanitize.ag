@@ -1,12 +1,9 @@
 module{CCO.HM.AG.Sanitize}{}{}
 imports
 {
-import CCO.HM.AG.BaseHelpers
 import CCO.HM.AG.Base
 import CCO.HM.Builtins (builtinMarkedNames)
 import CCO.HM.TmSymbolTable
-import Data.Maybe
-import Data.List
 }
 
 include "Base.ag"
@@ -50,6 +47,5 @@ sem Tm_
 {
 stateMapM :: (a -> s -> (b, s)) -> [a] -> s -> ([b], s)
 stateMapM f = foldr (\a r s -> let (b, s') = f a s; (bs, s'') = r s' in (b:bs, s'')) (\s -> ([], s))
-
 }
 

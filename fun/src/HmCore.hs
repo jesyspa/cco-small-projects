@@ -6,6 +6,7 @@ import Control.Arrow    (arr, (>>>))
 import System.Environment
 
 -- We don't use the built-in printer mechanism because it is ridiculously slow.
+main :: IO ()
 main = do
     args <- getArgs
     ioWrap $ parser >>> component toTree >>> compile >>> arr fromTree >>> cheapPrinter ("-p" `elem` args)

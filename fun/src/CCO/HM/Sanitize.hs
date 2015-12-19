@@ -2,15 +2,11 @@ module CCO.HM.Sanitize (
       sanitize
 ) where
 
-import CCO.HM.AG.Sanitize
-import CCO.HM.AG.BaseHelpers
-import CCO.HM.AG.Base
-import CCO.HM.PrintUtils
-import CCO.Component
-import CCO.SourcePos
-import CCO.Feedback    (Message(Error), messages)
-import Data.List
-import Control.Monad
+import CCO.HM.AG.Sanitize (wrap_Root, sem_Root, Inh_Root(..), unresolved_Syn_Root, code_Syn_Root)
+import CCO.HM.AG.Base     (Root)
+import CCO.HM.PrintUtils  (ppUse)
+import CCO.Component      (Component, component)
+import CCO.Feedback       (Message(Error), messages)
 
 
 sanitize :: Component Root Root

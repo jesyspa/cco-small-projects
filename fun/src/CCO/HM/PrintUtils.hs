@@ -21,6 +21,7 @@ ppSource Stdin = text "<stdin>"
 
 ppPos :: Pos -> Doc
 ppPos (Pos l c) = pp l >|< colon >|< pp c
+ppPos EOF = text "<EOF>"
 
 ppSourcePos :: SourcePos -> Doc
 ppSourcePos (SourcePos s p) = ppSource s >|< colon >|< ppPos p

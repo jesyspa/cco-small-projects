@@ -12,7 +12,7 @@ import Data.List
 import Control.Applicative ((<|>))
 import Data.Maybe
 
-data Context = Context { locals :: [[Var]], globals :: [Var] }
+data Context = Context [[Var]] [Var]
              deriving (Eq, Ord, Read, Show)
 
 newContext :: Context

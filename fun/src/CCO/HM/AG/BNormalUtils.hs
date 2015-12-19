@@ -9,11 +9,11 @@ import CCO.HM.AG.BaseHelpers
 
 wrap :: Either BTm BExp -> Bindings -> BBind
 wrap (Left  tm)  bs = BBind bs tm
-wrap (Right exp) bs = BBind bs (BExp exp)
+wrap (Right e) bs = BBind bs (BExp e)
 
 extend :: Var -> Either BTm BExp -> Bindings -> Bindings
 extend x (Left  tm)  bs = [(x, BWrap (BBind bs tm))]
-extend x (Right exp) bs = bs ++ [(x, exp)]
+extend x (Right e) bs = bs ++ [(x, e)]
 
 extendBind :: Bindings -> BBind -> BBind
 extendBind bs (BBind bs' t) = BBind (bs' ++ bs) t

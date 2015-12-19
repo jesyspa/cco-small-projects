@@ -19,15 +19,14 @@ type NonEmptyStack a = (a, [a])
 
 push :: a -> NonEmptyStack a -> NonEmptyStack a
 push a (x, xs) = (a, x:xs)
+
 pop :: NonEmptyStack a -> NonEmptyStack a
 pop (_, x:xs) = (x, xs)
 pop _ = error "Removing last item from non-empty stack"
+
 modifyTop :: (a -> a) -> NonEmptyStack a -> NonEmptyStack a
 modifyTop f (x, xs) = (f x, xs)
-modifyAll :: (a -> a) -> NonEmptyStack a -> NonEmptyStack a
-modifyAll f (x, xs) = (f x, map f xs)
-top :: NonEmptyStack a -> a
-top = fst
+
 toList :: NonEmptyStack a -> [a]
 toList (x, xs) = x:xs
 
@@ -54,7 +53,7 @@ leaveScope t = t { binds = pop $ binds t }
 use :: Var -> SourcePos -> TMSTable -> (Var, TMSTable)
 use x pos (Table i bs us) = (fromMaybe x y, Table i bs us')
     where us' = case y of
-                    Just x' -> us
+                    Just _ -> us
                     Nothing -> (x, pos) : us
           y = foldr1 (<|>) $ lookup x <$> toList bs
 

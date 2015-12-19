@@ -1,9 +1,9 @@
-import CCO.Component    (Component, component, printer, ioWrap)
+import CCO.Component    (Component, component, ioWrap)
 import CCO.Core         (Mod)
 import CCO.Core.Print
 import CCO.Tree         (ATerm, toTree, parser)
-import Control.Arrow    (arr, (>>>))
+import Control.Arrow    ((>>>))
 
-main = ioWrap $
-       parser >>> (component toTree :: Component ATerm Mod) >>> crprinter
+main :: IO ()
+main = ioWrap $ parser >>> (component toTree :: Component ATerm Mod) >>> crprinter
 

@@ -14,5 +14,6 @@ import CCO.HM.ToCore
 import CCO.Component
 import Control.Arrow ((>>>))
 
+-- | Compile a rooted Hindley-Milner term to a module.
 compile :: Component Root Mod
 compile = sanitize >>> toBNormal >>> attachBuiltins >>> annotateTailCalls >>> addLaziness >>> addForcing >>> toCore

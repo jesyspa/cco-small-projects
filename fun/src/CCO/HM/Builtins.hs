@@ -7,8 +7,6 @@ module CCO.HM.Builtins (
 
 import CCO.HM.AG.BNormal
 import CCO.HM.Base
-import CCO.Component
-import Control.Arrow ((>>>))
 
 builtins' :: [(Var, BExp)]
 builtins' = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]

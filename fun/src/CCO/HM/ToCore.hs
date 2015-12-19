@@ -2,12 +2,10 @@ module CCO.HM.ToCore (
       toCore
 ) where
 
-import CCO.HM.AG.BNormal
-import CCO.HM.AG.HmCore
-import CCO.HM.AG.BaseHelpers
-import CCO.HM.Context
-import CCO.Component
-import CCO.Core.AG.Base
+import CCO.HM.AG.BNormal (BRoot)
+import CCO.HM.AG.HmCore  (wrap_BRoot, sem_BRoot, Inh_BRoot(..), code_Syn_BRoot)
+import CCO.Component     (Component, component)
+import CCO.Core.AG.Base  (Mod)
 
 toCore :: Component BRoot Mod
 toCore = component $ \br -> do
