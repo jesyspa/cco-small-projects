@@ -25,7 +25,7 @@ options : catas, semfuns, signatures, pretty, haskellsyntax
 file : "src/CCO/HM/AG/AnnotateTailCalls.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
-file : "src/CCO/HM/AG/HmCore.ag"
+file : "src/CCO/HM/AG/ToCore.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/Core/AG/ToCoreRun.ag"

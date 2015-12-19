@@ -32,7 +32,7 @@ executable parse-hm
 executable hmcr
   main-is:             HmCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uuagc, uuagc-cabal
-  other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.HmCore,
+  other-modules:       CCO.HM, CCO.HM.AG.Base, CCO.HM.AG.BaseHelpers, CCO.HM.Base, CCO.Core.AG.Base, CCO.HM.AG.ToCore,
                        CCO.HM.Context, CCO.HM.AttachBuiltins, CCO.HM.ToCore, CCO.HM.AG.AttachBuiltins,
                        CCO.HM.AG.Sanitize, CCO.HM.Builtins, CCO.HM.Sanitize, CCO.HM.AG.AddLaziness,
                        CCO.HM.AG.AnnotateTailCalls, CCO.HM.AnnotateTailCalls, CCO.HM.PrintUtils,
