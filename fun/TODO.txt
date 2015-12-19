@@ -1,3 +1,0 @@
-- Fix shadowing issue
-- Get rid of free variable search in ToANormal
-- Add in the builtins as a separate step
