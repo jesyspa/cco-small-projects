@@ -8,16 +8,30 @@ import CCO.HM.TmSymbolTable
 
 include "Base.ag"
 
+-- Detect and remove user-introduced deformities from Hindley-Milner terms.
+--
+-- In particular, shadowing is removed (by renaming all variables) and invalid uses of variables (at the moment, only
+-- use before the variable is defined) are listed.
+
 attr Root Tm_ Tm
+  -- Resulting code, with identifiers renamed
+  -- In most cases we don't need to do anything, so we use UUAG's copy rules.
   syn code :: self
 
 attr Root
+  -- A list of uses of undefined variables, together with the place they are used.
   syn unresolved :: {[(Var, SourcePos)]}
 
 attr Tm Tm_
+  -- A table of currently bound variables and uses of undefined variables.
+  --
+  -- Keeping these things together is not entirely good from a design standpoint, but they are so often needed together
+  -- that wrapping them in a single ADT makes the code more manageable at the expense of having to manage the bindings
+  -- in a linear manner.
   chn context :: {TMSTable}
 
 attr Tm_
+  -- In order to report errors, we need to give each term access to its position.
   inh pos :: {SourcePos}
 
 sem Root
@@ -28,6 +42,9 @@ sem Tm
   | Tm    t  .pos        = @pos
 
 sem Tm_
+  -- Here and later, loc.result is a pair of a found identifier together with a new table.
+  -- In the case of a lookup, the new table tracks whether the use was valid.
+  -- In the case of a binding, the new table stores the binding.
   | Var   loc.result     = use @x @lhs.pos @lhs.context
           lhs.code       = Var $ fst @loc.result
           lhs.context    = snd @loc.result
@@ -45,6 +62,7 @@ sem Tm_
           lhs.context    = snd @loc.result
 
 {
+-- | This is simply mapM for the `s -> (a, s)` monad.
 stateMapM :: (a -> s -> (b, s)) -> [a] -> s -> ([b], s)
 stateMapM f = foldr (\a r s -> let (b, s') = f a s; (bs, s'') = r s' in (b:bs, s'')) (\s -> ([], s))
 }

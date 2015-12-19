@@ -8,16 +8,26 @@ import CCO.HM.AG.BNormalUtils
 
 include "BNormal.ag"
 
+-- Add, where necessary, instructions to force certain terms.
+
 attr BRoot BTm BBind BExp BVal BVals Binding Bindings
+  -- The resulting code.
   syn code :: self
 
 attr BTm BBind BExp BVal BVals Binding Bindings
+  -- A counter to allow us to generate fresh variable names.
   chn counter :: Int
 
 attr BExp BTm BBind
+  -- Indicate whether a value will be forced in this context.
+  --
+  -- The body of a lambda is forced, since if a lambda is evaluated, its body should be as well.
+  -- The bound term in a let binding is not evaluated, since evaluating the let-binding doesn't necessarily evaluate it.
   inh forced :: {Bool}
 
 attr BExp BTm
+  -- A list of newly-generated bindings.  This is necessary to be able to generate free variables, which are then bound
+  -- when it is convenient.
   syn bindings use {++} {[]} :: {Bindings}
 
 sem BRoot
@@ -53,13 +63,16 @@ sem Binding
 
 
 {
+-- | Get a unique identifier based on an integer.
 forcedVar :: Int -> Var
 forcedVar i = "$f_" ++ show i
 
+-- | Based on a Bool, possibly force the expression.
 maybeForce :: Bool -> BExp -> BExp
 maybeForce True = BForce
 maybeForce False = id
 
+-- | Helper function necessary for UUAG to automatically handle the counter.
 nextUnique :: Int -> (Int, Int)
 nextUnique u = (u+1, u)
 }

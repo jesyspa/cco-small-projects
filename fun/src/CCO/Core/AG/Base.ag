@@ -12,7 +12,9 @@ data Ref
   | Glob   offset     :: {Int}
   | Loc    levdiff    :: {Int}
            offset     :: {Int}
+  -- A reference to the tag of some variable.
   | Tag    ref        :: Ref
+  -- A reference to a field of some variable.
   | Field  ref        :: Ref
            offset     :: {Int}
 
@@ -38,12 +40,14 @@ data Exp
            alts :: ExpL
   | Let    bind :: Bind
            body :: Exp
+  -- A tail call annotation.
   | Tail   body :: Exp
+  -- A "force evaluation" annotation.
   | Eval   body :: Exp
   | Dbg    info :: {String}
 
 type ExpL = [Exp]
-  
+
 data Bind
   | Bind   x    :: Ref
            xexp :: Exp

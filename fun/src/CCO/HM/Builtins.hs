@@ -8,6 +8,7 @@ module CCO.HM.Builtins (
 import CCO.HM.AG.BNormal
 import CCO.HM.Base
 
+-- | A list of built-in names with their meanings.
 builtins' :: [(Var, BExp)]
 builtins' = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
     where bFalse = ("False", BAlloc 0 [])
@@ -23,14 +24,18 @@ builtins' = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
           bHead  = ("head",  BLam "$bv_list" $ BBind [("$bv_flist", BForce $ BVal $ BVar "$bv_list")] $ BExp $ BVal $ BField "$bv_flist" 0)
           bTail  = ("tail",  BLam "$bv_list" $ BBind [("$bv_flist", BForce $ BVal $ BVar "$bv_list")] $ BExp $ BVal $ BField "$bv_flist" 1)
 
+-- | A list of built-ins with their sanitized names and their meanings.
 builtins :: [(Var, BExp)]
 builtins = map (\(x, y) -> (markBuiltin x, y)) builtins'
 
+-- | The human-readable names of all builtin functions.
 builtinList :: [Var]
 builtinList = map fst builtins'
 
+-- | A mapping of human-readable to sanitized names.
 builtinMarkedNames :: [(Var, Var)]
 builtinMarkedNames = map (\x -> (x, markBuiltin x)) builtinList
 
+-- | Sanitize the name of a built-in.
 markBuiltin :: Var -> Var
 markBuiltin x = "$b_" ++ x

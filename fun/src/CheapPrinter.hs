@@ -6,8 +6,10 @@ import CCO.Printing     (render_, pp, Printable)
 import CCO.Component    (Component)
 import Control.Arrow    (arr)
 
+-- | Print a printable value in a fast way.
+--
 -- By not restricting the maximum width we speed the renderer up somewhat.
--- It's still not exactly fast, but at least it doesn't start backtracking exponentially.
+-- It's still not exactly fast, but at least it doesn't start backtracking exponentially as soon.
 cheapPrinter :: Printable a => Bool -> Component a String
 cheapPrinter b = arr $ render_ width . pp
     where width = if b then 120 else 10000000

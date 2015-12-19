@@ -9,17 +9,30 @@ import CCO.HM.AG.BaseHelpers
 -- Syntax
 -------------------------------------------------------------------------
 
+-- The root of a term.
+--
+-- This type allows us to perform some initial or final computation at the top level, that would usually have to be
+-- performed in the file using a semantic function.
 data Root
   | Root   tm :: Tm
 
+-- A position-annotated term.
 data Tm
   | Tm     pos :: {SourcePos}  t :: Tm_
 
+-- An actual term.
 data Tm_
+  -- An integer.
   | Nat    i :: {Int}
+  -- A reference to a variable.
   | Var    x :: {Var}
+  -- A lambda taking a parameter x.
   | Lam    x :: {Var}  t1 :: Tm
+  -- An application.
   | App    t1 :: Tm  t2 :: Tm
+  -- A let expression binding t1 as x.
   | Let    x :: {Var}  t1 :: Tm  t2 :: Tm
+  -- A branch on a boolean c, yielding t1 if true and t2 if false.
   | If     c :: Tm  t1 :: Tm  t2 :: Tm
+  -- A call to a primitive operation op with the given arguments.
   | Prim   op :: {String} args :: {[Var]}

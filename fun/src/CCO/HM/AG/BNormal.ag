@@ -8,32 +8,57 @@ import CCO.HM.AG.BaseHelpers (Var)
 -- AST
 ------------------------------------------------------------------------
 
+-- For details about BNormal forms, see the design description document.
+
+-- A root node for BNormal terms.
+data BRoot
+  | BRoot    b :: BBind
+
+-- A value in BNormal form
 data BVal
+  -- An integer.
   | BNat     i :: {Int}
+  -- A reference to a variable.
   | BVar     x :: {Var}
+  -- A reference to a field of a variable.
   | BField   x :: {Var}  i :: {Int}
 
+-- A list of values in BNormal form.
 type BVals = [BVal]
 
+-- An expression in BNormal form.
 data BExp
+  -- A simple value.
   | BVal     v :: BVal
+  -- An application.
   | BApp     x1 :: {Var}  x2 :: {Var}
+  -- A lambda abstraction binding x.
   | BLam     x :: {Var}  b :: BBind
+  -- A call to a primitive operation op with the given values as arguments.
   | BPrim    op :: {String} vs :: BVals
+  -- An allocation of a node with the given tag and member values.
   | BAlloc   tag :: {Int} vs :: BVals
+  -- A term whose computation has been delayed.
   | BWrap    b :: BBind
+  -- An expression whose computation should be forced here.
   | BForce   e :: BExp
+  -- Annotation that this expression is in tail position.
   | BTail    e :: BExp
 
+-- A binding of an expression in BNormal form to a variable.
 type Binding = (Var, BExp)
+
+-- A list of bindings.
 type Bindings = [Binding]
 
+-- A term in BNormal form with bindings attached.
 data BBind
   | BBind    es :: Bindings  t :: BTm
 
+-- A term in BNormal form.
 data BTm
+  -- A simple expression.
   | BExp     e :: BExp
+  -- An if statement on the boolean referred to by x, taking b1 if it is true or b2 if it is false.
+  -- Note that b1 and b2 may have local variables.
   | BIf      x :: {Var}  b1 :: BBind  b2 :: BBind
-
-data BRoot
-  | BRoot    b :: BBind

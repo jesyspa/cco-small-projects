@@ -8,14 +8,25 @@ import CCO.HM.AG.BNormalUtils
 
 include "Base.ag"
 
+-- Convert from Hindley-Milner terms to terms in binding-normal form.
+--
+-- See the design description file for a motivation and full definition of the BNormal form.
+
 attr Tm_ Tm
+  -- A list of bindings that have been introduced by this term.
   syn bindings use {++} {[]} :: Bindings
+  -- A counter to allow us to generate fresh variable names.
   chn counter :: Int
 
 attr Tm_ Tm
+  -- The resulting BNormal value.
+  --
+  -- We want to allow it to be either a term or an expression in the intermediate computations, as this cannot be
+  -- determined statically, and terms and expressions behave differently when bound.
   syn code :: {Either BTm BExp}
 
 attr Root
+  -- The resulting rooted BNormal term.
   syn code :: BRoot
 
 sem Root
@@ -44,13 +55,16 @@ sem Tm_
   | Prim  loc.code      = Right $ BPrim @op (map BVar @args)
 
 {
+-- | Get a unique identifier based on an integer.
 toVar :: Int -> Var
 toVar i = "$e_" ++ show i
 
+-- | Convert a term or expression to normal form, add it as a binding, and return the resulting variable.
 normalize :: Either BTm BExp -> Int -> Bindings -> (Var, Bindings)
 normalize (Right (BVal (BVar x)))  _ bs = (x, bs)
 normalize e i bs = (toVar i, extend (toVar i) e bs)
 
+-- | Helper function necessary for UUAG to automatically handle the counter.
 nextUnique :: Int -> (Int, Int)
 nextUnique u = (u+1, u)
 }

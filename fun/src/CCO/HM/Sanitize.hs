@@ -8,7 +8,8 @@ import CCO.HM.PrintUtils  (ppUse)
 import CCO.Component      (Component, component)
 import CCO.Feedback       (Message(Error), messages)
 
-
+-- | Ensure the program defines all identifiers it uses (except builtins) and
+-- remove shadowing.
 sanitize :: Component Root Root
 sanitize = component $ \r -> do
     let wr = wrap_Root (sem_Root r) Inh_Root

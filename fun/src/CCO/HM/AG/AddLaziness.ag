@@ -6,10 +6,16 @@ import CCO.HM.AG.BNormal
 
 include "BNormal.ag"
 
+-- Add laziness annotations to the code.
+
 attr BRoot BTm BBind BExp BVal BVals Binding Bindings
+  -- The resulting code.
   syn code :: self
 
 attr BTm BBind BExp
+  -- Indicates whether the code is in a position that can be yield a lazy value.
+  --
+  -- This lets us avoid generating duplicate laziness annotations, or making the contents of a forced block lazy.
   inh lazyPos :: {Bool}
 
 sem BRoot
@@ -28,6 +34,7 @@ sem Binding
   | Tuple  x2 .lazyPos = True
 
 {
+-- | Based on a Bool, possibly wrap the expression to delay its execution.
 maybeWrap :: Bool -> BExp -> BExp
 maybeWrap True = BWrap . BBind [] . BExp
 maybeWrap False = id

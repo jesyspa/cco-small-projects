@@ -8,6 +8,7 @@ import CCO.HM.Base
 import CCO.Component
 import Control.Arrow (arr)
 
+-- | Convert a Hindley-Milner term to BNormal form.
 toBNormal :: Component Root BRoot
 toBNormal = arr sem_Root
 

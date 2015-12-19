@@ -9,11 +9,23 @@ import Data.List
 
 include "BNormal.ag"
 
+-- Addition of built-in features to the code.
+--
+-- We could simply attach all built-in functions to every output, but that seems wasteful.  Instead, we determine what
+-- features are used (syntactically) and then add those.
+
 attr BTm BBind BExp BVal BVals Binding Bindings
+  -- The free variables of a piece.  Really, we only care about free variables that are uses of built-in functions, but
+  -- it is simpler to consider all the free variables.
+  --
+  -- (The real reason is that when this part was designed, there was no way to tell whether something is a use of a
+  -- built-in or not simply by the variable name.)
   syn freevars use {`union`} {[]} :: {[Var]}
+  -- A copy of the code.
   syn code :: self
 
 attr BRoot
+  -- The tree, now with variables bound.
   syn code :: self
 
 sem BRoot
@@ -24,7 +36,7 @@ sem BVal
 
 sem BExp
   | BApp    lhs.freevars  = nub [@x1, @x2]
-  | BLam    +freevars     = delete @x
+  | BLam    +freevars     = filter (@x/=)
 
 sem BTm
   | BIf     +freevars     = union [@x]

@@ -7,10 +7,15 @@ import qualified CCO.Core.AG.Base as C
 
 include "BNormal.ag"
 
+-- Convert a rooted BNormal term to a Core module.
+
 attr BTm BExp BVal BVals BBind Binding Bindings
+  -- The bindings available at the value being converted.
   inh context :: {Context}
 
 attr BVal
+  -- The resulting code.
+  -- idem. for all other 'code' attributes.
   syn code :: {C.SExp}
 
 attr BVals
@@ -24,10 +29,14 @@ attr BTm BExp BBind
 
 attr Bindings
   syn code use {:} {[]}:: {[C.Bind]}
+  -- A list of variables bound by these bindings.
   syn boundVars use {:} {[]} :: {[Var]}
 
 attr Binding
   syn code use {++} {[]}:: {C.Bind}
+  -- The variable bound by this binding.
+  --
+  -- The plural is necessary to make UUAG autogenerate code for 'Bindings'.
   syn boundVars :: {Var}
 
 sem BRoot

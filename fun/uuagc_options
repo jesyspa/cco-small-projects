@@ -7,9 +7,6 @@ options : data, haskellsyntax
 file : "src/CCO/Core/AG/Base.ag"
 options : data, haskellsyntax
 
-file : "src/CCO/HM/AG/HmCore.ag"
-options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
-
 file : "src/CCO/HM/AG/Sanitize.ag"
 options : catas, semfuns, signatures, pretty, wrappers, haskellsyntax
 
@@ -26,6 +23,9 @@ file : "src/CCO/HM/AG/AddForcing.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/HM/AG/AnnotateTailCalls.ag"
+options : catas, semfuns, signatures, pretty, haskellsyntax
+
+file : "src/CCO/HM/AG/HmCore.ag"
 options : catas, semfuns, signatures, pretty, haskellsyntax
 
 file : "src/CCO/Core/AG/ToCoreRun.ag"

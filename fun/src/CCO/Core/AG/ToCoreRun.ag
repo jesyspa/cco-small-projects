@@ -18,6 +18,7 @@ attr Mod
   syn crmod :: {CR.Mod}
 
 sem Mod
+  -- Apart from the bindings, we also attach a definition for the "Bool" datatype so that primEqInt can be used.
   | Mod  lhs    .   crmod   =   CR.mkModWithMetas (mkHNm "Main") Nothing (length @binds.crbindl + 100) @loc.metas @loc.binds @main.crexp
          loc    .   binds   =   V.fromList @binds.crbindl
          loc    .   metas   =   [CR.mkMetaDataType (mkHNm "Bool") [CR.mkMetaDataCon (mkHNm "False") 0, CR.mkMetaDataCon (mkHNm "True") 1]]

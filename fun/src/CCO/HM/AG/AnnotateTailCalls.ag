@@ -5,10 +5,14 @@ import CCO.HM.AG.BNormal
 
 include "BNormal.ag"
 
+-- Annotate computations in tail position to allow tail-call optimization.
+
 attr BTm BExp BBind
+  -- Indicate whether this computation is in tail position.
   inh isTail :: {Bool}
 
 attr BRoot BTm BBind BExp BVal BVals Binding Bindings
+  -- The resulting code.
   syn code :: self
 
 sem BRoot
@@ -32,6 +36,7 @@ sem Binding
   | Tuple  x2 .isTail  = False
 
 {
+-- Based on Bool, possibly annotate the expression as being in tail position.
 maybeMkTail :: Bool -> BExp -> BExp
 maybeMkTail True = BTail
 maybeMkTail False = id
