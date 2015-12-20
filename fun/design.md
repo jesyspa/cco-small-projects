@@ -19,7 +19,7 @@ changes are noteworthy:
 * The following built-in symbols have been defined: `False`, `True`, `Cons`,
   `Nil`, `isNil`, `head`, `tail`.
 
-Note that we have chosen to capitalise `Cons` and `Nil` to remain consistent
+Note that we have chosen to capitalize `Cons` and `Nil` to remain consistent
 with Haskell's notation for constructors.
 
 ## Semantics
@@ -133,7 +133,7 @@ which we place them there.
 We search for uses of built-ins in the program and attach them.
 
 The procedure in place at the moment does not make use of the fact that we can
-tell whether a variable refers to a built-in simply by analysing the identifier.
+tell whether a variable refers to a built-in simply by analyzing the identifier.
 This could be improved, though it is not a significant matter.
 
 ### Laziness Introduction
@@ -155,7 +155,7 @@ as a body.  The lambda itself, on the other hand, is an expression.
 ### Tail Call Annotation
 
 This step marks expressions that are in tail position as such.  It is purely an
-optimisation, and can be omitted from the pipeline if desired.  We include it to
+optimization, and can be omitted from the pipeline if desired.  We include it to
 demonstrate that further transformations can be performed in a modular manner.
 
 ### Core Conversion
@@ -184,7 +184,7 @@ We have chosen not to do this, as it would not add anything in terms of the
 translation.  The Core representation does not rely on type information, and so
 non-well-typed terms can still be compiled (and may even run correctly).
 
-From an optimisation standpoint, BNormal forms are too strict.  The resulting
+From an optimization standpoint, BNormal forms are too strict.  The resulting
 program could be improved by defining a notion between ANormal and BNormal
 forms and performing an inlining pass after the initial translation.  A similar
 situation arises when forcing has been introduced; a great many fresh variables
