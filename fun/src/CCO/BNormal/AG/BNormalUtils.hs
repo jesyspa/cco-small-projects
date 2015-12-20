@@ -16,8 +16,8 @@ wrap (Right e) bs = BBind bs (BExp e)
 --
 -- Expressions can be bound directly, but terms must first be wrapped.
 extend :: Var -> Either BTm BExp -> Bindings -> Bindings
-extend x (Left  tm)  bs = [(x, BWrap (BBind bs tm))]
-extend x (Right e) bs = bs ++ [(x, e)]
+extend x (Left  tm)  bs = [Binding x False $ BWrap (BBind bs tm)]
+extend x (Right e) bs = bs ++ [Binding x False e]
 
 -- | Extend a BNormal binding with some bindings, attaching them outside the existing scope.
 extendBind :: Bindings -> BBind -> BBind

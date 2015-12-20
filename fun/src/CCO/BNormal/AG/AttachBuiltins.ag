@@ -29,7 +29,7 @@ attr BRoot
   syn code :: self
 
 sem BRoot
-  | BRoot   lhs.code      = BRoot $ extendBind (filter (flip elem @b.freevars . fst) builtins) @b.code
+  | BRoot   lhs.code      = BRoot $ extendBind (filter (flip elem @b.freevars . getName) builtins) @b.code
 
 sem BVal
   | BVar    lhs.freevars  = [@x]
@@ -42,5 +42,11 @@ sem BTm
   | BIf     +freevars     = union [@x]
 
 sem BBind
-  | BBind   +freevars     = flip (\\) $ fmap fst @es.code
+  | BBind   +freevars     = flip (\\) $ fmap getName @es.code
+
+{
+-- | Get the name that a binding binds.
+getName :: Binding -> Var
+getName (Binding x _ _) = x
+}
 

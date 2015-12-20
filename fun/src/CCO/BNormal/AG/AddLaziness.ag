@@ -22,16 +22,16 @@ sem BRoot
   | BRoot  b  .lazyPos = False
 
 sem BExp
-  | BVal   +code       = maybeWrap @lhs.lazyPos
-  | BApp   +code       = maybeWrap @lhs.lazyPos
-  | BLam   +code       = maybeWrap @lhs.lazyPos
-  | BPrim  +code       = maybeWrap @lhs.lazyPos
-  | BAlloc +code       = maybeWrap @lhs.lazyPos
-  | BWrap  b  .lazyPos = False
-  | BForce e  .lazyPos = False
+  | BVal    +code       = maybeWrap @lhs.lazyPos
+  | BApp    +code       = maybeWrap @lhs.lazyPos
+  | BLam    +code       = maybeWrap @lhs.lazyPos
+  | BPrim   +code       = maybeWrap @lhs.lazyPos
+  | BAlloc  +code       = maybeWrap @lhs.lazyPos
+  | BWrap   b  .lazyPos = False
+  | BForce  e  .lazyPos = False
 
 sem Binding
-  | Tuple  x2 .lazyPos = True
+  | Binding e .lazyPos = True
 
 {
 -- | Based on a Bool, possibly wrap the expression to delay its execution.

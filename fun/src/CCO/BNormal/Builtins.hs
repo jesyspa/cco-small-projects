@@ -21,12 +21,12 @@ builtins' = reverse [bFalse, bTrue, bCons, bNil, bIsNil, bHead, bTail]
           -- This is, of course, rather questionable from the point of view of garbage collection
           -- and efficient memory usage.
           bIsNil = ("isNil", BLam "$bv_list" $ BBind [] $ BExp $ BVal $ BVar "$bv_list")
-          bHead  = ("head",  BLam "$bv_list" $ BBind [("$bv_flist", BForce $ BVal $ BVar "$bv_list")] $ BExp $ BVal $ BField "$bv_flist" 0)
-          bTail  = ("tail",  BLam "$bv_list" $ BBind [("$bv_flist", BForce $ BVal $ BVar "$bv_list")] $ BExp $ BVal $ BField "$bv_flist" 1)
+          bHead  = ("head",  BLam "$bv_list" $ BBind [Binding "$bv_flist" False $ BForce $ BVal $ BVar "$bv_list"] $ BExp $ BVal $ BField "$bv_flist" 0)
+          bTail  = ("tail",  BLam "$bv_list" $ BBind [Binding "$bv_flist" False $ BForce $ BVal $ BVar "$bv_list"] $ BExp $ BVal $ BField "$bv_flist" 1)
 
 -- | A list of built-ins with their sanitized names and their meanings.
-builtins :: [(Var, BExp)]
-builtins = map (\(x, y) -> (markBuiltin x, y)) builtins'
+builtins :: Bindings
+builtins = map (\(x, y) -> Binding (markBuiltin x) False y) builtins'
 
 -- | The human-readable names of all builtin functions.
 builtinList :: [Var]

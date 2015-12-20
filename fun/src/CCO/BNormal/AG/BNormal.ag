@@ -46,7 +46,10 @@ data BExp
   | BTail    e :: BExp
 
 -- A binding of an expression in BNormal form to a variable.
-type Binding = (Var, BExp)
+data Binding
+  -- The bool indicates whether the binding must be done using a let, or whether it may be global to the module.
+  | Binding  x :: {Var} forceLet :: {Bool} e :: BExp
+
 
 -- A list of bindings.
 type Bindings = [Binding]

@@ -16,24 +16,24 @@ attr BRoot BTm BBind BExp BVal BVals Binding Bindings
   syn code :: self
 
 sem BRoot
-  | BRoot  b  .isTail  = True
+  | BRoot   b  .isTail  = True
 
 sem BExp
-  | BVal   +code       = maybeMkTail @lhs.isTail
-  | BApp   +code       = maybeMkTail @lhs.isTail
-  | BAlloc +code       = maybeMkTail @lhs.isTail
-  | BPrim  +code       = maybeMkTail @lhs.isTail
-  | BLam   b  .isTail  = True
-  | BForce e  .isTail  = False
-           +code       = maybeMkTail @lhs.isTail
+  | BVal    +code       = maybeMkTail @lhs.isTail
+  | BApp    +code       = maybeMkTail @lhs.isTail
+  | BAlloc  +code       = maybeMkTail @lhs.isTail
+  | BPrim   +code       = maybeMkTail @lhs.isTail
+  | BLam    b  .isTail  = True
+  | BForce  e  .isTail  = False
+            +code       = maybeMkTail @lhs.isTail
 
 sem BTm
-  | BExp   e  .isTail  = True
-  | BIf    b1 .isTail  = True
-           b2 .isTail  = True
+  | BExp    e  .isTail  = True
+  | BIf     b1 .isTail  = True
+            b2 .isTail  = True
 
 sem Binding
-  | Tuple  x2 .isTail  = False
+  | Binding e  .isTail  = False
 
 {
 -- Based on Bool, possibly annotate the expression as being in tail position.

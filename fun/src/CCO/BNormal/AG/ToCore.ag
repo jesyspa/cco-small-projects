@@ -28,55 +28,77 @@ attr BTm BExp BBind
   syn code :: {C.Exp}
 
 attr BBind
+  -- TODO: Add comments
+  inh isTopLevel :: {Bool}
   syn binds :: {C.BindL}
   syn topCode :: {C.Exp}
+  syn boundVars :: {[Var]}
+  syn globCount :: {Int}
 
 attr Bindings
-  syn code use {:} {[]}:: {[C.Bind]}
+  syn code use {:} {[]} :: {[C.Bind]}
+  -- TODO: Comment
+  syn forceLet use {:} {[]} :: {[Bool]}
   -- A list of variables bound by these bindings.
   syn boundVars use {:} {[]} :: {[Var]}
 
 attr Binding
   syn code use {++} {[]}:: {C.Bind}
+  syn forceLet :: {Bool}
   -- The variable bound by this binding.
   --
   -- The plural is necessary to make UUAG autogenerate code for 'Bindings'.
   syn boundVars :: {Var}
 
 sem BRoot
-  | BRoot  lhs.code        = C.Mod @b.topCode @b.binds
-           b  .context     = newContext
+  | BRoot   lhs.code        = C.Mod @loc.initCode @loc.binds
+            loc.context     = appendToFrame (take @b.globCount @b.boundVars ++ ["$main"]) newContext
+            loc.mainRef     = resolve @loc.context "$main"
+            loc.binds       = @b.binds ++ [C.Bind @loc.mainRef @loc.mainCode]
+            b  .context     = pushFrame [] @loc.context
+            loc.mainCode    = C.Lam [] @b.topCode
+            loc.initCode    = C.Eval $ C.SExp $ C.Var @loc.mainRef
+            b  .isTopLevel  = True
 
 sem BVal
-  | BNat   lhs.code        = C.Int @i
-  | BVar   lhs.code        = C.Var $ resolve @lhs.context @x
-  | BField lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
+  | BNat    lhs.code        = C.Int @i
+  | BVar    lhs.code        = C.Var $ resolve @lhs.context @x
+  | BField  lhs.code        = C.Var $ C.Field (resolve @lhs.context @x) @i
 
 sem BExp
-  | BVal   lhs.code        = C.SExp @v.code
-  | BApp   lhs.code        = C.App (C.SExp $ C.Var $ resolve @lhs.context @x1) [C.Var $ resolve @lhs.context @x2]
-  | BLam   loc.context     = pushFrame [@x] @lhs.context
-           lhs.code        = C.Lam [resolve @loc.context @x] @b.code
-           b  .context     = @loc.context
-  | BAlloc lhs.code        = C.Node @tag @vs.code
-  | BPrim  lhs.code        = C.Prim @op @vs.code
-  | BWrap  lhs.code        = C.Lam [] @b.code
-           b  .context     = pushFrame [] @lhs.context
-  | BForce lhs.code        = C.Eval @e.code
-  | BTail  lhs.code        = C.Tail @e.code
+  | BVal    lhs.code        = C.SExp @v.code
+  | BApp    lhs.code        = C.App (C.SExp $ C.Var $ resolve @lhs.context @x1) [C.Var $ resolve @lhs.context @x2]
+  | BLam    loc.context     = pushFrame [@x] @lhs.context
+            lhs.code        = C.Lam [resolve @loc.context @x] @b.code
+            b  .context     = @loc.context
+            b  .isTopLevel  = False
+  | BAlloc  lhs.code        = C.Node @tag @vs.code
+  | BPrim   lhs.code        = C.Prim @op @vs.code
+  | BWrap   lhs.code        = C.Lam [] @b.code
+            b  .context     = pushFrame [] @lhs.context
+            b  .isTopLevel  = False
+  | BForce  lhs.code        = C.Eval @e.code
+  | BTail   lhs.code        = C.Tail @e.code
 
 sem BTm
-  | BIf    -- The order is flipped here, since b2 corresponds to False (0) and b1 corresponds to True (1)
-           lhs.code        = C.Case (C.Var $ C.Tag $ resolve @lhs.context @x) [@b2.code, @b1.code]
+  | BIf     -- The order is flipped here, since b2 corresponds to False (0) and b1 corresponds to True (1)
+            lhs.code        = C.Case (C.Var $ C.Tag $ resolve @lhs.context @x) [@b2.code, @b1.code]
+            b1 .isTopLevel  = False
+            b2 .isTopLevel  = False
 
 sem BBind
-  | BBind  loc.context     = appendToFrame @es.boundVars @lhs.context
-           lhs.code        = foldr C.Let @t.code @es.code
-           lhs.binds       = @es.code
-           lhs.topCode     = @t.code
-           t  .context     = @loc.context
-           es .context     = @loc.context
+  | BBind   loc.context     = appendToFrame (if @lhs.isTopLevel then drop @loc.globCount @es.boundVars else @es.boundVars) @lhs.context
+            lhs.code        = foldr C.Let @t.code @es.code
+            loc.globCount   = length $ takeWhile not @es.forceLet
+            lhs.globCount   = @loc.globCount
+            loc.parts       = splitAt @loc.globCount @es.code
+            lhs.binds       = fst @loc.parts
+            lhs.topCode     = foldr C.Let @t.code (snd @loc.parts)
+            t  .context     = @loc.context
+            es .context     = @loc.context
 
 sem Binding
-  | Tuple  lhs.code        = C.Bind (resolve @lhs.context @x1) @x2.code
-           lhs.boundVars   = @x1
+  | Binding lhs.code        = C.Bind (resolve @lhs.context @x) @e.code
+            lhs.forceLet    = @forceLet
+            lhs.boundVars   = @x
+
