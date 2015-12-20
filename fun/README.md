@@ -3,7 +3,9 @@
 By Anton Golov (3809277) and Giovanni Garufi (5685109).
 
 We have implemented a compiler as described in [CCO Mini-Project E][0],
-satisfying all four points.
+satisfying all four points.  Additionally, to demonstrate the modularity of the
+design, we have implemented a self-contained tail call annotation
+transformation.
 
 A full description of our design can be found in `design.pdf`.
 
