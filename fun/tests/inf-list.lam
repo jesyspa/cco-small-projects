@@ -1,0 +1,3 @@
+let x = Cons 5 x in
+    head x
+ni
