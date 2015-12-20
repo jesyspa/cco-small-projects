@@ -28,16 +28,22 @@ attr BTm BExp BBind
   syn code :: {C.Exp}
 
 attr BBind
-  -- TODO: Add comments
+  -- Boolean to represent if a bind occurs on the top level
   inh isTopLevel :: {Bool}
+
+  -- Bindings and code to pass to a BRoot in case the bind occurs on the top level
   syn binds :: {C.BindL}
   syn topCode :: {C.Exp}
+
+  -- The list of bound variable
   syn boundVars :: {[Var]}
+
+  -- Number of bindings that must be lifted to globals
   syn globCount :: {Int}
 
 attr Bindings
   syn code use {:} {[]} :: {[C.Bind]}
-  -- TODO: Comment
+  -- A list of Bools to represent which bindings must be evaluated strictly
   syn forceLet use {:} {[]} :: {[Bool]}
   -- A list of variables bound by these bindings.
   syn boundVars use {:} {[]} :: {[Var]}
@@ -101,4 +107,3 @@ sem Binding
   | Binding lhs.code        = C.Bind (resolve @lhs.context @x) @e.code
             lhs.forceLet    = @forceLet
             lhs.boundVars   = @x
-
