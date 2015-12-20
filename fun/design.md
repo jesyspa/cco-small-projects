@@ -136,6 +136,12 @@ The procedure in place at the moment does not make use of the fact that we can
 tell whether a variable refers to a built-in simply by analyzing the identifier.
 This could be improved, though it is not a significant matter.
 
+### Tail Call Annotation
+
+This step marks expressions that are in tail position as such.  It is purely an
+optimization, and can be omitted from the pipeline if desired.  We include it to
+demonstrate that further transformations can be performed in a modular manner.
+
 ### Laziness Introduction
 
 This step is implemented in two parts: laziness introduction and forcing
@@ -151,12 +157,6 @@ There is a certain lack of symmetry here: laziness is introduced on terms while
 forcing is done on expressions.  This is a consequence of the definition of
 BNormal form; we see a laziness marker as introducing a lambda, which has a term
 as a body.  The lambda itself, on the other hand, is an expression.
-
-### Tail Call Annotation
-
-This step marks expressions that are in tail position as such.  It is purely an
-optimization, and can be omitted from the pipeline if desired.  We include it to
-demonstrate that further transformations can be performed in a modular manner.
 
 ### Core Conversion
 
