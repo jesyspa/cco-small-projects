@@ -28,16 +28,20 @@ attr BTm BExp BBind
   syn code :: {C.Exp}
 
 attr BBind
-  -- TODO: Add comments
+  -- Indicates whether this binding is at the top level.
   inh isTopLevel :: {Bool}
+  -- List of bindings.
   syn binds :: {C.BindL}
+  -- Code to be used at tope level.
   syn topCode :: {C.Exp}
+  -- List of bound variables.
   syn boundVars :: {[Var]}
+  -- List of variables that should be bound globally.
   syn globCount :: {Int}
 
 attr Bindings
   syn code use {:} {[]} :: {[C.Bind]}
-  -- TODO: Comment
+  -- Indicate which bindings must be in a let.
   syn forceLet use {:} {[]} :: {[Bool]}
   -- A list of variables bound by these bindings.
   syn boundVars use {:} {[]} :: {[Var]}
