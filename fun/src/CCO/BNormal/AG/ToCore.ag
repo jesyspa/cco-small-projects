@@ -27,6 +27,10 @@ attr BRoot
 attr BTm BExp BBind
   syn code :: {C.Exp}
 
+attr BBind
+  syn binds :: {C.BindL}
+  syn topCode :: {C.Exp}
+
 attr Bindings
   syn code use {:} {[]}:: {[C.Bind]}
   -- A list of variables bound by these bindings.
@@ -40,7 +44,7 @@ attr Binding
   syn boundVars :: {Var}
 
 sem BRoot
-  | BRoot  lhs.code        = C.Mod @b.code []
+  | BRoot  lhs.code        = C.Mod @b.topCode @b.binds
            b  .context     = newContext
 
 sem BVal
@@ -68,10 +72,11 @@ sem BTm
 sem BBind
   | BBind  loc.context     = appendToFrame @es.boundVars @lhs.context
            lhs.code        = foldr C.Let @t.code @es.code
+           lhs.binds       = @es.code
+           lhs.topCode     = @t.code
            t  .context     = @loc.context
            es .context     = @loc.context
 
 sem Binding
   | Tuple  lhs.code        = C.Bind (resolve @lhs.context @x1) @x2.code
            lhs.boundVars   = @x1
-
