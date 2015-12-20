@@ -34,3 +34,4 @@ Examples, together with their expected output, can be found in the `tests`
 directory.  The `.lam` files are example Hindley-Milner terms and the `.exp`
 files are the corresponding expected output.
 
+Note that tests with names beginning in `fail-` are expected to fail.
