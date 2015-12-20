@@ -130,12 +130,67 @@ which we place them there.
 
 ### Addition of Builtins
 
+We search for uses of built-ins in the program and attach them.
+
+The procedure in place at the moment does not make use of the fact that we can
+tell whether a variable refers to a built-in simply by analysing the identifier.
+This could be improved, though it is not a significant matter.
+
 ### Laziness Introduction
+
+This step is implemented in two parts: laziness introduction and forcing
+introduction.
+
+During laziness introduction we find all terms that are in a position where they
+should be treated lazily and then annotate them as such.
+
+During forcing introduction we find all expressions that must be evaluated when
+their parent term or expression is evaluated, and mark them as forced.
+
+There is a certain lack of symmetry here: laziness is introduced on terms while
+forcing is done on expressions.  This is a consequence of the definition of
+BNormal form; we see a laziness marker as introducing a lambda, which has a term
+as a body.  The lambda itself, on the other hand, is an expression.
 
 ### Tail Call Annotation
 
+This step marks expressions that are in tail position as such.  It is purely an
+optimisation, and can be omitted from the pipeline if desired.  We include it to
+demonstrate that further transformations can be performed in a modular manner.
+
 ### Core Conversion
+
+This step converts the rooted BNormal term into a Core module.  This is, by this
+point, fairly straightforward: we need to track what variables are defined in
+what order, but this follows directly from the shape of the BNormal term and is
+hard to get wrong.
 
 ### Core to CoreRun conversion
 
+We use the conversion from Core to the official UHC CoreRun format mostly as it
+was provided, though we have extended the translation to account for the
+features we have added to the Core representation.
+
+In addition to that, we specify that there is a `Bool` datatype to make the
+`primEqInt` primitive operation work.
+
 ## Possible future improvements
+
+The most glaring omission at the moment is a type system: given that we have
+Hindley-Milner terms, the sensible thing to do would be to run Algorithm W on
+them in order to convert them to System F, and then work with that.
+
+We have chosen not to do this, as it would not add anything in terms of the
+translation.  The Core representation does not rely on type information, and so
+non-well-typed terms can still be compiled (and may even run correctly).
+
+From an optimisation standpoint, BNormal forms are too strict.  The resulting
+program could be improved by defining a notion between ANormal and BNormal
+forms and performing an inlining pass after the initial translation.  A similar
+situation arises when forcing has been introduced; a great many fresh variables
+are introduced, which could for a large part be inlined away.
+
+Finally, there is significantly more laziness introduced in the resulting code
+than is truly necessary.  A transformation that would remove laziness from terms
+that are always evaluated in the context where they are defined would
+significantly improve the resulting code.
