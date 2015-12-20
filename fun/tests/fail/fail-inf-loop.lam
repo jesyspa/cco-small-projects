@@ -1,0 +1,3 @@
+let xs = Cons 5 xs in
+    if isNil xs then 6 else head xs fi
+ni
