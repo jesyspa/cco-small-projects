@@ -33,17 +33,18 @@ attr BBind
 
   -- Bindings and code to pass to a BRoot in case the bind occurs on the top level
   syn binds :: {C.BindL}
+  -- Code to be used at tope level.
   syn topCode :: {C.Exp}
 
   -- The list of bound variable
   syn boundVars :: {[Var]}
 
-  -- Number of bindings that must be lifted to globals
+  -- Number of bindings that should be lifted to globals
   syn globCount :: {Int}
 
 attr Bindings
   syn code use {:} {[]} :: {[C.Bind]}
-  -- A list of Bools to represent which bindings must be evaluated strictly
+  -- A list of Bools to represent which bindings must be in a let
   syn forceLet use {:} {[]} :: {[Bool]}
   -- A list of variables bound by these bindings.
   syn boundVars use {:} {[]} :: {[Var]}
