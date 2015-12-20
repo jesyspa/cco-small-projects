@@ -64,6 +64,6 @@ executable hm2cr
 executable pp-core
   main-is:             PpCore.hs
   build-depends:       base >= 4 && < 5, uu-cco >= 0.1.0.1, uhc-light >= 1.1.9.2, uhc-util >= 0.1.6.3, uuagc,
-                       uuagc-cabal, vector
+                       uuagc-cabal
   other-modules:       CCO.Core, CCO.Core.Base, CCO.Core.AG.Base, CCO.Core.AG.ToCoreRun
   hs-source-dirs:      src

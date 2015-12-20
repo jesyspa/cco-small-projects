@@ -1,7 +1,6 @@
 module {CCO.Core.AG.ToCoreRun}{}{}
 {
 import CCO.Core.AG.Base
-import qualified Data.Vector as V
 import           UHC.Light.Compiler.Base.API
 import qualified UHC.Light.Compiler.CoreRun.API as CR
 -- We need to use some things that aren't supported by the API, such as referencing a tag.
@@ -20,7 +19,7 @@ attr Mod
 sem Mod
   -- Apart from the bindings, we also attach a definition for the "Bool" datatype so that primEqInt can be used.
   | Mod  lhs    .   crmod   =   CR.mkModWithMetas (mkHNm "Main") Nothing (length @binds.crbindl + 100) @loc.metas @loc.binds @main.crexp
-         loc    .   binds   =   V.fromList @binds.crbindl
+         loc    .   binds   =   CRI.crarrayFromList @binds.crbindl
          loc    .   metas   =   [CR.mkMetaDataType (mkHNm "Bool") [CR.mkMetaDataCon (mkHNm "False") 0, CR.mkMetaDataCon (mkHNm "True") 1]]
 
 attr SExpL SExp
