@@ -1,0 +1,1 @@
+Root(Tm(SourcePos(Stdin, Pos(1, 1)), Let("fv", Tm(SourcePos(Stdin, Pos(1, 10)), Nat(5)), Tm(SourcePos(Stdin, Pos(2, 1)), Let("id", Tm(SourcePos(Stdin, Pos(2, 10)), Lam("x", Tm(SourcePos(Stdin, Pos(2, 14)), Var("x")))), Tm(SourcePos(Stdin, Pos(3, 1)), App(Tm(SourcePos(Stdin, Pos(3, 1)), Var("a")), Tm(SourcePos(Stdin, Pos(3, 3)), Var("b")))))))))

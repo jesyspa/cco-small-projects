@@ -1,0 +1,17 @@
+module Main 108 -> case m.7.tag of
+                    -> let 0 -> eval(m.4); in
+                       tail(eval(app (m.8)(m.2)));
+                    -> tail(eval(6));;
+data "Bool" = "False" -> 0, "True" -> 1;
+\0,100 -> eval(5);
+\0,100 -> let 0 -> eval(m.6); in
+          eval(app (d.0.0)(m.0));
+\0,100 -> let 0 -> eval(m.1); in
+          eval(app (d.0.0)(m.2));
+\0,100 -> let 0 -> eval(m.5); in
+          eval(app (d.0.0)(m.2));
+\0,100 -> \1,100 -> let 1 -> eval(d.0.0); in
+                    tail(\0,100 -> eval(d.1.1.0));
+\0,100 -> \1,100 -> tail(\0,100 -> eval(d.1.0));
+\0,100 -> \1,100 -> \0,100 -> \1,100 -> tail(\0,100 -> alloc 0(d.3.0,d.1.0));
+eval(m.3);
