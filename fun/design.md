@@ -164,8 +164,12 @@ This step converts the rooted BNormal term into a Core module.  This is, by this
 point, fairly straightforward: we need to track what variables are defined in
 what order, but this follows directly from the shape of the BNormal term and is
 hard to get wrong.
-Bindings on the top level are hoisted to module globals; top level bindings are
-introduced in a special context called "$main" and are strictly evaluated to avoid clashes with module metas.
+
+Some bindings at module level are hoisted out into a special global binding
+list.  This cannot be done with all bindings; namely, any non-lazy bindings may
+require data type information to be available, which only happens when all
+global bindings have been evaluated.  The bindings that are not lazy are hoisted
+out, while the others are wrapped in an extra lambda.
 
 ### Core to CoreRun conversion
 
@@ -196,3 +200,4 @@ Finally, there is significantly more laziness introduced in the resulting code
 than is truly necessary.  A transformation that would remove laziness from terms
 that are always evaluated in the context where they are defined would
 significantly improve the resulting code.
+
