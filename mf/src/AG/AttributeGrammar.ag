@@ -1,8 +1,4 @@
-{
-import qualified Data.Map as M
-import qualified Data.Maybe as Maybe
-import qualified Data.List as L
-}
+module{AG.AttributeGrammar}{}{}
 
 data Program
   | Program   procs :: Procs

@@ -1,0 +1,7 @@
+module{AG.PropertyCatas}{}{}
+
+{
+import AG.AttributeGrammar
+}
+
+include "AttributeGrammar.ag"

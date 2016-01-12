@@ -1,0 +1,7 @@
+module{AG.LabellingCata}{}{}
+
+{
+import AG.AttributeGrammar
+}
+
+include "AttributeGrammar.ag"
