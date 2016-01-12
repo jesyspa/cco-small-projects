@@ -1,7 +1,62 @@
 module{AG.PropertyCatas}{}{}
 
 {
+import Prelude hiding (init)
 import AG.AttributeGrammar
+import qualified Data.Set as S
 }
 
 include "AttributeGrammar.ag"
+
+attr Stat'
+    syn     init :: {Int}
+    syn     final use {++} {undefined} :: {[Int]}
+    syn     blocks use {++} {undefined} :: {[Code]}
+    syn     labels use {++} {undefined} :: {[Int]}
+    syn     flow use {++} {[]} :: {[(Int, Int)]}
+
+attr Stat' IExpr BExpr Exprs Expr
+    syn     copy :: self
+
+sem Stat'
+    | Skip' IAssign' BAssign' Malloc' Free' RefAssign' Continue' Break'
+                    lhs.init    = @label
+                    lhs.final   = [@label]
+                    lhs.blocks  = [CStat @copy]
+                    lhs.labels  = [@label]
+    | IfThenElse' While'
+                    lhs.init    = @labelc
+                       +blocks  = (:) $ CBExpr @cond.copy
+                       +labels  = (:) $ @labelc
+    | IfThenElse'      +flow    = (++) $ [(@labelc, @stat1.init), (@labelc, @stat2.init)]
+    | While'        lhs.final   = [@labelc]
+                       +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
+    -- TODO: Implement this
+    | Call'         lhs.init    = undefined
+                    lhs.final   = undefined
+                    lhs.blocks  = undefined
+                    lhs.labels  = undefined
+                    lhs.flow    = undefined
+
+{
+run s = wrap_Stat' (sem_Stat' s) Inh_Stat'
+
+-- I was sorely tempted to use Template Haskell for this bit, but I thought your day might be bad enough without that.
+init :: Stat' -> Int
+init = init_Syn_Stat' . run
+
+final :: Stat' -> [Int]
+final = final_Syn_Stat' . run
+
+blocks :: Stat' -> [Code]
+blocks = blocks_Syn_Stat' . run
+
+labels :: Stat' -> [Int]
+labels = labels_Syn_Stat' . run
+
+flow :: Stat' -> [(Int, Int)]
+flow = flow_Syn_Stat' . run
+
+flowR :: Stat' -> [(Int, Int)]
+flowR = map (uncurry $ flip (,)) . flow
+}
