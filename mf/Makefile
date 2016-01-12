@@ -1,17 +1,17 @@
 default: all
 
-all: src/Lexer.hs src/Parser.hs src/AG/AttributeGrammar.hs src/AG/LabellingCata.hs src/AG/PropertyCatas.hs
+all: src/Parsing/Lexer.hs src/Parsing/Parser.hs src/AG/AttributeGrammar.hs src/AG/LabellingCata.hs src/AG/PropertyCatas.hs
 
 dev: all
 	cd src && ghci Dev
 
 #----------------------------
 
-src/Lexer.hs:
-	cd src && alex Lexer.x
+src/Parsing/Lexer.hs: src/Parsing/Lexer.x
+	cd src/Parsing && alex Lexer.x
 
-src/Parser.hs:
-	cd src && happy Parser.y
+src/Parsing/Parser.hs: src/Parsing/Parser.y
+	cd src/Parsing && happy Parser.y
 
 # uuagc:
 #  -H              --haskellsyntax                 Use Haskell like syntax (equivalent to --lckeywords and --doublecolons --genlinepragmas)
@@ -32,6 +32,8 @@ src/AG/PropertyCatas.hs: src/AG/AttributeGrammar.ag src/AG/PropertyCatas.ag
 #----------------------------
 
 clean:
-	rm -f src/AG/*.hs src/Parser.hs src/Lexer.hs src/*.hi src/*.o src/Main
+	rm -f src/AG/*.hs src/Parsing/*.hs src/Main
+	find src -name '*.hi' -delete
+	find src -name '*.o' -delete
 
 .PHONY: default all clean

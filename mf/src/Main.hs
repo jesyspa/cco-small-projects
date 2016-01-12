@@ -1,7 +1,7 @@
 module Main where
 
-import Lexer
-import Parser
+import Parsing.Lexer
+import Parsing.Parser
 import Properties
 import Labelling
 

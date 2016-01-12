@@ -3,10 +3,10 @@ module Dev where
 import qualified Data.Map as M
 import qualified Data.List as L
 
-import AttributeGrammar
-import Lexer
+import AG.AttributeGrammar
+import Parsing.Lexer
 import Main
-import Parser
+import Parsing.Parser
 
 -- To make it all compile for the moment:
 type Analysis a = [a]

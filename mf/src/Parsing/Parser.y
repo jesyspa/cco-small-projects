@@ -1,6 +1,6 @@
 {
-module Parser where
-import Lexer
+module Parsing.Parser where
+import Parsing.Lexer
 import AG.AttributeGrammar
 }
 

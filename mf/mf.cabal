@@ -14,14 +14,16 @@ cabal-version:         >=1.8
 extra-source-files:    Makefile,
                        examples/cp1.c,
                        examples/fib.c,
-                       src/AttributeGrammar.ag
-                       src/Lexer.x
-                       src/Parser.y
+                       src/AG/AttributeGrammar.ag
+                       src/AG/PropertyCatas.ag
+                       src/AG/LabellingCata.ag
+                       src/Parsing/Lexer.x
+                       src/Parsing/Parser.y
 
 executable mf
   main-is:             Main.hs
-  other-modules:       Lexer
-                       Parser
-                       Dev
+  other-modules:       Dev
+                       Labelling
+                       Properties
   build-depends:       base >= 4 && < 5, containers, array
   hs-source-dirs:      src                     
