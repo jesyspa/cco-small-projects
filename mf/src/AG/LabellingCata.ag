@@ -5,3 +5,105 @@ import AG.AttributeGrammar
 }
 
 include "AttributeGrammar.ag"
+
+-- attr Stat
+--   chn counter  :: {Int}
+--
+-- sem Stat
+--       | IfThenElse Seq
+--           loc.counter1 :: uniqueref counter
+--           loc.counter2 :: uniqueref counter
+--           stat1.counter = @loc.counter1
+--           stat2.counter = @loc.counter2
+--
+--       | While
+--           stat.counter = @lhs.counter + 1
+--
+--       | *
+--           loc.counter :: uniqueref counter
+--           lhs.counter = @loc.counter
+
+attr Stat
+    syn howMany :: {Int}
+    inh labels :: {[Int]}
+    syn counter :: {Int}
+
+sem Stat
+    | IfThenElse
+        lhs.howMany = 1 + @stat1.howMany + @stat2.howMany
+        stat1.labels = take @lhs.howMany @lhs.labels
+        lhs.counter = @lhs.labels !! @lhs.howMany
+        stat2.labels = drop (@lhs.howMany+1) @lhs.labels
+
+    | Seq
+        lhs.howMany = @stat1.howMany + @stat2.howMany
+        stat1.labels = take @lhs.howMany @lhs.labels
+        stat2.labels = drop @lhs.howMany @lhs.labels
+
+    | While
+        lhs.howMany = 1 + @stat.howMany
+        lhs.counter = take 1 @lhs.labels
+        stat.labels = drop 1 @lhs.labels
+
+    | Skip IAssign BAssign Malloc Free RefAssign Continue Break
+        lhs.counter = take 1 @lhs.labels
+        lhs.howMany = 1
+
+    | Call
+        lhs.counter = undefined
+        lhs.howMany = undefined
+
+attr Stat
+  syn labelled :: {Stat'}
+
+sem Stat
+      | Skip
+            lhs.labelled = Skip' @lhs.counter
+
+      | IfThenElse
+            lhs.labelled = IfThenElse' @lhs.counter @cond @stat1.labelled @stat2.labelled
+
+      | While
+            lhs.labelled = While' @lhs.counter @cond @stat.labelled
+
+      | Call
+            lhs.labelled = undefined
+
+      | IAssign
+            lhs.labelled = IAssign' @lhs.counter @name @val
+
+      | BAssign
+            lhs.labelled = BAssign' @lhs.counter @name @val
+
+      | Seq
+            lhs.labelled = Seq' @stat1.labelled @stat2.labelled
+
+      | Malloc
+            lhs.labelled = Malloc' @lhs.counter @name @size
+
+      | Free
+            lhs.labelled = Free' @lhs.counter @ptr
+
+      | RefAssign
+            lhs.labelled = RefAssign' @lhs.counter @ptr @val
+
+      | Continue
+            lhs.labelled = Continue' @lhs.counter
+
+      | Break
+            lhs.labelled = Break' @lhs.counter
+
+{
+
+
+-- | Helper function necessary for UUAG to automatically handle the counter.
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+
+run s = wrap_Stat (sem_Stat s) Inh_Stat{labels_Inh_Stat=[1..]}
+
+labelled :: Stat -> Stat'
+labelled = labelled_Syn_Stat . run
+
+
+}
