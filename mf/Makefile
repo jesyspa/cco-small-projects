@@ -24,7 +24,7 @@ src/AG/AttributeGrammar.hs: src/AG/AttributeGrammar.ag
 	cd src/AG && uuagc -Hd AttributeGrammar.ag
 
 src/AG/LabellingCata.hs: src/AG/AttributeGrammar.ag src/AG/LabellingCata.ag
-	cd src/AG && uuagc -Hcfs LabellingCata.ag
+	cd src/AG && uuagc -Hcfws LabellingCata.ag
 
 src/AG/PropertyCatas.hs: src/AG/AttributeGrammar.ag src/AG/PropertyCatas.ag
 	cd src/AG && uuagc -Hcfws PropertyCatas.ag
