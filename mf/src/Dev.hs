@@ -7,6 +7,8 @@ import AG.AttributeGrammar
 import Parsing.Lexer
 import Main
 import Parsing.Parser
+import PrettyPrint
+import Labelling
 
 -- To make it all compile for the moment:
 type Analysis a = [a]

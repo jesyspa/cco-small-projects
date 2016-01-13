@@ -35,7 +35,7 @@ sem Stat'
                     stat2.prec = Compound
   | While'          lhs  .doc  = text "while" <+> wrapWithLabel @labelc @cond.doc <+> text "do" <+> @stat.doc
                     stat .prec = Compound
-  | Call'           lhs  .doc  = undefined -- TODO: Implement this
+  | Call'           lhs  .doc  = text "<TODO:call>"
   | IAssign' BAssign'
                     lhs  .doc  = wrapWithLabel @label $ text @name <+> assign <+> @val.doc
   | Seq'            lhs  .doc  = @stat1.doc <+> semi <+> @stat2.doc
@@ -67,8 +67,8 @@ sem BExpr
   | Not             lhs  .doc  = text "!" <+> @val.doc
 
 sem Expr
-  | B               lhs  .doc  = @BExpr.doc
-  | I               lhs  .doc  = @IExpr.doc
+  | B               lhs  .doc  = @bExpr.doc
+  | I               lhs  .doc  = @iExpr.doc
 
 
 {
@@ -79,5 +79,5 @@ wrapWithLabel :: Int -> Doc -> Doc
 wrapWithLabel i d = brackets d <+> int i
 
 ppStat' :: Stat' -> Doc
-ppStat' s = doc_Syn_Stat' $ wrap_Stat' (sem_Stat' s) (Inh_Stat None)
+ppStat' s = doc_Syn_Stat' $ wrap_Stat' (sem_Stat' s) (Inh_Stat' None)
 }
