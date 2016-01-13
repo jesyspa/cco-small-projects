@@ -1,6 +1,6 @@
 default: all
 
-all: src/Parsing/Lexer.hs src/Parsing/Parser.hs src/AG/AttributeGrammar.hs src/AG/LabellingCata.hs src/AG/PropertyCatas.hs
+all: src/Parsing/Lexer.hs src/Parsing/Parser.hs src/AG/AttributeGrammar.hs src/AG/LabellingCata.hs src/AG/PropertyCatas.hs src/AG/PrettyPrintCatas.hs
 
 dev: all
 	cd src && ghci Dev
@@ -28,6 +28,9 @@ src/AG/LabellingCata.hs: src/AG/AttributeGrammar.ag src/AG/LabellingCata.ag
 
 src/AG/PropertyCatas.hs: src/AG/AttributeGrammar.ag src/AG/PropertyCatas.ag
 	cd src/AG && uuagc -Hcfws PropertyCatas.ag
+
+src/AG/PrettyPrintCatas.hs: src/AG/AttributeGrammar.ag src/AG/PrettyPrintCatas.ag
+	cd src/AG && uuagc -Hcfws PrettyPrintCatas.ag
 
 #----------------------------
 

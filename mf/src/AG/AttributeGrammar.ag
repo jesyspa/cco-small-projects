@@ -48,7 +48,7 @@ data Stat'
   | Break'         label :: Int
 deriving Stat' : Show
 
-data IExpr 
+data IExpr
   | IConst        val  :: Int
   | Var           name :: String
   | Plus          left :: IExpr       right :: IExpr

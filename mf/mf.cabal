@@ -17,6 +17,7 @@ extra-source-files:    Makefile,
                        src/AG/AttributeGrammar.ag
                        src/AG/PropertyCatas.ag
                        src/AG/LabellingCata.ag
+                       src/AG/PrettyPrintCatas.ag
                        src/Parsing/Lexer.x
                        src/Parsing/Parser.y
 
@@ -25,5 +26,5 @@ executable mf
   other-modules:       Dev
                        Labelling
                        Properties
-  build-depends:       base >= 4 && < 5, containers, array
-  hs-source-dirs:      src                     
+  build-depends:       base >= 4 && < 5, containers, array, pretty
+  hs-source-dirs:      src
