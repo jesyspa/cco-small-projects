@@ -1,0 +1,30 @@
+module{AG.ConstantPropagation}{}{}
+
+{
+import AG.AttributeGrammar
+import qualified Data.Map as M
+}
+
+include "AttributeGrammar.ag"
+
+{
+type Info = M.Map Int (M.Map String Int -> M.Map String Int)
+}
+
+attr Stat'
+    syn update use {`M.union`} {M.empty} :: Info
+
+attr IExpr
+    -- Using inh here doesn't work, because the value passed is only determined
+    -- once the tree has been broken down, and so we don't have anything to
+    -- pass within the grammar itself.
+    syn value :: {M.Map String Int -> Maybe Int}
+
+
+sem Stat'
+    | Call'         lhs.update = undefined
+    | IAssign'      lhs.update = M.singleton @label $ \m -> M.update (const $ @val.value m) @name m
+    | Malloc'       lhs.update = undefined
+    | Free'         lhs.update = undefined
+    | RefAssign'    lhs.update = undefined
+
