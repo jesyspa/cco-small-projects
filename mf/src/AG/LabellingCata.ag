@@ -37,7 +37,6 @@ sem Stat
             lhs.labelled = BAssign' @loc.fresh @name @val
 
       | Seq
-            loc.fresh :: uniqueref counter
             lhs.labelled = Seq' @stat1.labelled @stat2.labelled
 
       | Malloc
