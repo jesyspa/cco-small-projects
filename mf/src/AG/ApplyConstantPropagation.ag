@@ -1,0 +1,60 @@
+module {AG.ApplyConstantPropagation}{}{}
+
+{
+import AG.AttributeGrammar
+import Data.Maybe
+import qualified Data.Map as M
+}
+
+include "AttributeGrammar.ag"
+
+attr Stat' IExpr BExpr Exprs Expr
+    syn code :: self
+
+attr Stat'
+    inh analysis :: {Int -> M.Map String Int}
+
+attr IExpr BExpr Exprs Expr
+    inh analysis :: {M.Map String Int}
+
+sem Stat'
+  | IfThenElse' While'
+                    cond  .analysis = @lhs.analysis @labelc
+  | IAssign' BAssign' RefAssign'
+                    val   .analysis = @lhs.analysis @label
+  | Call'           params.analysis = @lhs.analysis @labelCall
+  | Malloc'         size  .analysis = @lhs.analysis @label
+  | Free' RefAssign'
+                    ptr   .analysis = @lhs.analysis @label
+
+sem IExpr
+  | Var             lhs   .code     = maybe (Var @name) IConst $ M.lookup @name @lhs.analysis
+  | Plus            lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> IConst $ x + y
+                                          (_, _) -> Plus @left.code @right.code
+  | Minus           lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> IConst $ x - y
+                                          (_, _) -> Minus @left.code @right.code
+  | Times           lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> IConst $ x * y
+                                          (_, _) -> Times @left.code @right.code
+  | Divide          lhs   .code     = case (@left.code, @right.code) of
+                                        (IConst x, IConst y) -> IConst $ x `div` y
+                                        (_, _) -> Divide @left.code @right.code
+
+sem BExpr
+  | LessThan        lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> BConst $ x < y
+                                          (_, _) -> LessThan @left.code @right.code
+  | GreaterThan     lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> BConst $ x > y
+                                          (_, _) -> GreaterThan @left.code @right.code
+  | LessEqual       lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> BConst $ x <= y
+                                          (_, _) -> LessEqual @left.code @right.code
+  | GreaterEqual    lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> BConst $ x >= y
+                                          (_, _) -> GreaterEqual @left.code @right.code
+  | IEqual          lhs   .code     = case (@left.code, @right.code) of
+                                          (IConst x, IConst y) -> BConst $ x == y
+                                          (_, _) -> IEqual @left.code @right.code

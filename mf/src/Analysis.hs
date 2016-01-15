@@ -16,3 +16,5 @@ data Analysis a = Analysis
                 , extremal :: a
                 , update :: Update a
                 }
+
+type AnalysisResult a = Int -> a

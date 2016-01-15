@@ -6,7 +6,8 @@ all: src/Parsing/Lexer.hs \
 	src/AG/LabellingCata.hs \
 	src/AG/PropertyCatas.hs \
 	src/AG/PrettyPrintCatas.hs \
-	src/AG/ConstantPropagation.hs
+	src/AG/ConstantPropagation.hs \
+	src/AG/ApplyConstantPropagation.hs
 
 dev: all
 	cd src && ghci Dev
@@ -42,6 +43,9 @@ src/AG/PrettyPrintCatas.hs: src/AG/AttributeGrammar.ag src/AG/PrettyPrintCatas.a
 
 src/AG/ConstantPropagation.hs: src/AG/AttributeGrammar.ag src/AG/ConstantPropagation.ag
 	cd src/AG && uuagc -Hcfws ConstantPropagation.ag
+
+src/AG/ApplyConstantPropagation.hs: src/AG/AttributeGrammar.ag src/AG/ApplyConstantPropagation.ag
+	cd src/AG && uuagc -Hcfws ApplyConstantPropagation.ag
 
 #----------------------------
 

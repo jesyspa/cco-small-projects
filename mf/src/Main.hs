@@ -6,6 +6,7 @@ import Properties
 import Labelling
 import PrettyPrint
 import ConstantPropagation
+import ApplyConstantPropagation
 
 main :: IO ()
 main = undefined

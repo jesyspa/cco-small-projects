@@ -14,3 +14,5 @@ constantPropagationAnalysis stat = Analysis (M.mergeWithKey comb kill kill) Forw
           kill = const M.empty
           info = update_Syn_Stat' $ wrap_Stat' (sem_Stat' stat) Inh_Stat'
           update = Monolithic $ \x -> M.findWithDefault id x info
+
+
