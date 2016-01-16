@@ -19,24 +19,24 @@ attr Stat' IExpr BExpr Exprs Expr
     syn     copy :: self
 
 sem Stat'
-    | Skip' IAssign' BAssign' Malloc' Free' RefAssign' Continue' Break'
-                    lhs.init    = @label
-                    lhs.final   = [@label]
-                    lhs.blocks  = [CStat @copy]
-                    lhs.labels  = [@label]
-    | IfThenElse' While'
-                    lhs.init    = @labelc
-                       +blocks  = (:) $ CBExpr @cond.copy
-                       +labels  = (:) $ @labelc
-    | IfThenElse'      +flow    = (++) $ [(@labelc, @stat1.init), (@labelc, @stat2.init)]
-    | While'        lhs.final   = [@labelc]
-                       +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
-    -- TODO: Implement this
-    | Call'         lhs.init    = undefined
-                    lhs.final   = undefined
-                    lhs.blocks  = undefined
-                    lhs.labels  = undefined
-                    lhs.flow    = undefined
+  | Skip' IAssign' BAssign' Malloc' Free' RefAssign' Continue' Break'
+                  lhs.init    = @label
+                  lhs.final   = [@label]
+                  lhs.blocks  = [CStat @copy]
+                  lhs.labels  = [@label]
+  | IfThenElse' While'
+                  lhs.init    = @labelc
+                     +blocks  = (:) $ CBExpr @cond.copy
+                     +labels  = (:) $ @labelc
+  | IfThenElse'      +flow    = (++) $ [(@labelc, @stat1.init), (@labelc, @stat2.init)]
+  | While'        lhs.final   = [@labelc]
+                     +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
+  -- TODO: Implement this
+  | Call'         lhs.init    = undefined
+                  lhs.final   = undefined
+                  lhs.blocks  = undefined
+                  lhs.labels  = undefined
+                  lhs.flow    = undefined
 
 {
 run s = wrap_Stat' (sem_Stat' s) Inh_Stat'
