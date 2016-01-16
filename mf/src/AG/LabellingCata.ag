@@ -6,58 +6,80 @@ import AG.AttributeGrammar
 
 include "AttributeGrammar.ag"
 
-attr Stat
+attr Procs Proc Stat
     chn counter :: {Int}
+
+attr Program
+    syn labelled :: {Program'}
+
+attr Proc
+    syn labelled :: {Proc'}
+
+attr Procs
+    syn labelled use {:} {[]} :: {Procs'}
+
+attr Stat
     syn labelled :: {Stat'}
 
+sem Program
+  | Program
+        procs.counter = 0
+        lhs.labelled = Program' @procs.labelled @stat.labelled
+
+sem Proc
+  | Proc
+        loc.fresh1 :: uniqueref counter
+        loc.fresh2 :: uniqueref counter
+        lhs.labelled = Proc' @loc.fresh1 @loc.fresh2 @name @inp @out @stat.labelled
+
 sem Stat
-      | Skip
-            loc.fresh :: uniqueref counter
-            lhs.labelled = Skip' @loc.fresh
+  | Skip
+        loc.fresh :: uniqueref counter
+        lhs.labelled = Skip' @loc.fresh
 
-      | IfThenElse
-            loc.fresh :: uniqueref counter
-            lhs.labelled = IfThenElse' @loc.fresh @cond @stat1.labelled @stat2.labelled
+  | IfThenElse
+        loc.fresh :: uniqueref counter
+        lhs.labelled = IfThenElse' @loc.fresh @cond @stat1.labelled @stat2.labelled
 
-      | While
-            loc.fresh :: uniqueref counter
-            lhs.labelled = While' @loc.fresh @cond @stat.labelled
+  | While
+        loc.fresh :: uniqueref counter
+        lhs.labelled = While' @loc.fresh @cond @stat.labelled
 
-      | Call
-            loc.freshEntry :: uniqueref counter
-            loc.freshExit :: uniqueref counter
-            lhs.labelled = Call' @loc.freshEntry @loc.freshExit @name @params @out
+  | Call
+        loc.freshEntry :: uniqueref counter
+        loc.freshExit :: uniqueref counter
+        lhs.labelled = Call' @loc.freshEntry @loc.freshExit @name @params @out
 
-      | IAssign
-            loc.fresh :: uniqueref counter
-            lhs.labelled = IAssign' @loc.fresh @name @val
+  | IAssign
+        loc.fresh :: uniqueref counter
+        lhs.labelled = IAssign' @loc.fresh @name @val
 
-      | BAssign
-            loc.fresh :: uniqueref counter
-            lhs.labelled = BAssign' @loc.fresh @name @val
+  | BAssign
+        loc.fresh :: uniqueref counter
+        lhs.labelled = BAssign' @loc.fresh @name @val
 
-      | Seq
-            lhs.labelled = Seq' @stat1.labelled @stat2.labelled
+  | Seq
+        lhs.labelled = Seq' @stat1.labelled @stat2.labelled
 
-      | Malloc
-            loc.fresh :: uniqueref counter
-            lhs.labelled = Malloc' @loc.fresh @name @size
+  | Malloc
+        loc.fresh :: uniqueref counter
+        lhs.labelled = Malloc' @loc.fresh @name @size
 
-      | Free
-            loc.fresh :: uniqueref counter
-            lhs.labelled = Free' @loc.fresh @ptr
+  | Free
+        loc.fresh :: uniqueref counter
+        lhs.labelled = Free' @loc.fresh @ptr
 
-      | RefAssign
-            loc.fresh :: uniqueref counter
-            lhs.labelled = RefAssign' @loc.fresh @ptr @val
+  | RefAssign
+        loc.fresh :: uniqueref counter
+        lhs.labelled = RefAssign' @loc.fresh @ptr @val
 
-      | Continue
-            loc.fresh :: uniqueref counter
-            lhs.labelled = Continue' @loc.fresh
+  | Continue
+        loc.fresh :: uniqueref counter
+        lhs.labelled = Continue' @loc.fresh
 
-      | Break
-            loc.fresh :: uniqueref counter
-            lhs.labelled = Break' @loc.fresh
+  | Break
+        loc.fresh :: uniqueref counter
+        lhs.labelled = Break' @loc.fresh
 
 {
 
@@ -65,9 +87,7 @@ sem Stat
 nextUnique :: Int -> (Int, Int)
 nextUnique u = (u+1, u)
 
-run s = wrap_Stat (sem_Stat s) (Inh_Stat 0)
-
-toLabelled :: Stat -> Stat'
-toLabelled = labelled_Syn_Stat . run
+toLabelled :: Program -> Program'
+toLabelled = sem_Program
 
 }

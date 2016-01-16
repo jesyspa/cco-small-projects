@@ -42,7 +42,6 @@ parse programName = do
   content <- readFile fileName
   return . happy . alex $ content
 
-
-
-
+parse' :: String -> IO Program'
+parse' = fmap toLabelled . parse
 
