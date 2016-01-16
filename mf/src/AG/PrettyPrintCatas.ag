@@ -22,11 +22,22 @@ data PrecedenceE = Atomic
 attr Stat'
     inh     prec :: {PrecedenceS}
 
-attr Stat' IExpr BExpr Expr
+attr Code Program' Proc' Stat' IExpr BExpr Expr
     syn     doc :: {Doc}
 
-attr Exprs
+attr Procs' Exprs
     syn     docs use {:} {[]} :: {[Doc]}
+
+sem Code
+  | CStat           stat'.prec = None
+
+sem Program'
+  | Program'        lhs  .doc  = text "begin" $$ nest 4 (vcat @procs.docs $$ @stat.doc) $$ text "end"
+                    stat .prec = None
+
+sem Proc'
+  | Proc'           lhs  .doc  = text "<TODO:proc>" $$ nest 4 @stat.doc
+                    stat .prec = None
 
 sem Stat'
   | Skip'           lhs  .doc  = wrapWithLabel @label $ text "skip"
@@ -79,5 +90,8 @@ wrapWithLabel :: Int -> Doc -> Doc
 wrapWithLabel i d = brackets d <+> int i
 
 ppStat' :: Stat' -> Doc
-ppStat' s = doc_Syn_Stat' $ wrap_Stat' (sem_Stat' s) (Inh_Stat' None)
+ppStat' stat = sem_Stat' stat None
+
+ppProgram' :: Program' -> Doc
+ppProgram' = sem_Program'
 }
