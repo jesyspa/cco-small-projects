@@ -1,11 +1,5 @@
-* Implement the basic info functions
-    - init
-    - finals
-    - flow
-    - ???
 * Implement intraprocedural analysis
     - General framework
-    - Constant propagation
     - Strongly live variable analysis
 * Implement interprocedural analysis
     - Context
