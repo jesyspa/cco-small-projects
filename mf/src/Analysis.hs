@@ -11,6 +11,7 @@ data Update a = Monolithic (Int -> a -> a)
 
 data AnalysisSpec a = AnalysisSpec
                     { combine :: a -> a -> a
+                    , leq :: a -> a -> Bool
                     , direction :: Direction
                     , bottom :: a
                     , extremal :: a

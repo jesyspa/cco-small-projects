@@ -10,8 +10,7 @@ import qualified Data.Set as S
 import Properties
 
 stronglyLiveVariableAnalysis :: Program' -> AnalysisSpec (S.Set String)
-stronglyLiveVariableAnalysis prog = AnalysisSpec S.union Backward allNames allNames update
+stronglyLiveVariableAnalysis prog = AnalysisSpec S.union leq Backward allNames allNames update
     where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
           allNames = names prog
-
-
+          leq = (<=)

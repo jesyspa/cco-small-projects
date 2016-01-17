@@ -15,6 +15,7 @@ import StronglyLiveVariable
 import Analysis
 import ChaoticIteration
 
+--import Debug.Trace
 {-- How To Run (examples)
 
 -- Strongly Live Variables
@@ -38,6 +39,8 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
   print p
   let spec = getSpec p
       result = chaoticIteration p spec
+
+  print $ map result [0..2]
   print $ applyResult result p
   putStrLn "G'bye"
 
@@ -45,9 +48,8 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
 
 parse :: String -> IO Program
 parse programName = do
-  let fileName = "../examples/"++programName++".c"
+  let fileName = "examples/"++programName++".c"
   happy . alex <$> readFile fileName
 
 parse' :: String -> IO Program'
 parse' = fmap toLabelled . parse
-
