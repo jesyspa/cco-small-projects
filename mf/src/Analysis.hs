@@ -9,12 +9,14 @@ data Update a = Monolithic (Int -> a -> a)
                           , kill :: Int -> a
                           }
 
-data Analysis a = Analysis
-                { combine :: a -> a -> a
-                , direction :: Direction
-                , bottom :: a
-                , extremal :: a
-                , update :: Update a
-                }
+data AnalysisSpec a = AnalysisSpec
+                    { combine :: a -> a -> a
+                    , direction :: Direction
+                    , bottom :: a
+                    , extremal :: a
+                    , update :: Update a
+                    }
 
 type AnalysisResult a = Int -> a
+
+data Analysis p a = Analysis (p -> AnalysisSpec a) (AnalysisResult a -> p -> p)

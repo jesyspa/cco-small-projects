@@ -10,6 +10,7 @@ import Parsing.Parser
 import PrettyPrint
 import Labelling
 import ConstantPropagation
+import ApplyConstantPropagation
 import Analysis
 
 {-- How To Run (examples)
@@ -20,19 +21,22 @@ ghci> run slv "fib"
 --}
 
 slv = undefined
-cp  = constantPropagationAnalysis
+cp  = Analysis constantPropagationAnalysis propagateConstants
 
-run :: (Eq a, Show a) => (Program' -> Analysis a) -> String -> IO ()
+run :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
 run = runAnalysis'
 
 -- run some analysis by passing an analysis function and a 'show' function to display the result
-runAnalysis' :: (Eq a, Show a) => (Program' -> Analysis a) -> String -> IO ()
-runAnalysis' analyze programName = do
+runAnalysis' :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
+runAnalysis' (Analysis getSpec applyResult) programName = do
   p <- parse programName
   putStrLn "OUTPUT:"
   -- The "analysis" by itself isn't what we want to print; it's just rules for making the analysis
   -- We actually want to analyse using runAnalysis and then print the annotated results.
   print p
+  let spec = getSpec p
+      result = chaoticIteration spec
+  print $ applyResult result p
   putStrLn "G'bye"
 
 -- parse program

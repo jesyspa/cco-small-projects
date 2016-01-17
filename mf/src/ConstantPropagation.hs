@@ -7,8 +7,8 @@ import AG.ConstantPropagation
 import Analysis
 import qualified Data.Map as M
 
-constantPropagationAnalysis :: Program' -> Analysis (M.Map String Int)
-constantPropagationAnalysis prog = Analysis (M.mergeWithKey comb kill kill) Forward M.empty M.empty update
+constantPropagationAnalysis :: Program' -> AnalysisSpec (M.Map String Int)
+constantPropagationAnalysis prog = AnalysisSpec (M.mergeWithKey comb kill kill) Forward M.empty M.empty update
     where comb _ x y | x == y = Just x
                      | otherwise = Nothing
           kill = const M.empty

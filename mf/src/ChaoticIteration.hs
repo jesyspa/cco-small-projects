@@ -1,9 +1,9 @@
 module ChaoticIteration (
-      runAnalysis
+      chaoticIteration
 ) where
 
 import Analysis
 
-runAnalysis :: Analysis a -> AnalysisResult a
-runAnalysis = error "Hi Giovanni, I left this for you to implement.  Have fun!"
+chaoticIteration :: AnalysisSpec a -> AnalysisResult a
+chaoticIteration = error "Hi Giovanni, I left this for you to implement.  Have fun!"
 
