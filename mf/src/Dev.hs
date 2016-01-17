@@ -9,9 +9,8 @@ import Main
 import Parsing.Parser
 import PrettyPrint
 import Labelling
-
--- To make it all compile for the moment:
-type Analysis a = [a]
+import ConstantPropagation
+import Analysis
 
 {-- How To Run (examples)
 
@@ -21,7 +20,7 @@ ghci> run slv "fib"
 --}
 
 slv = undefined
-cp  = undefined
+cp  = constantPropagationAnalysis
 
 run :: (Eq a, Show a) => (Program' -> Analysis a) -> String -> IO ()
 run = runAnalysis'
@@ -31,7 +30,9 @@ runAnalysis' :: (Eq a, Show a) => (Program' -> Analysis a) -> String -> IO ()
 runAnalysis' analyze programName = do
   p <- parse programName
   putStrLn "OUTPUT:"
-  putStrLn (show p)
+  -- The "analysis" by itself isn't what we want to print; it's just rules for making the analysis
+  -- We actually want to analyse using runAnalysis and then print the annotated results.
+  print p
   putStrLn "G'bye"
 
 -- parse program
@@ -39,8 +40,7 @@ runAnalysis' analyze programName = do
 parse :: String -> IO Program
 parse programName = do
   let fileName = "../examples/"++programName++".c"
-  content <- readFile fileName
-  return . happy . alex $ content
+  happy . alex <$> readFile fileName
 
 parse' :: String -> IO Program'
 parse' = fmap toLabelled . parse

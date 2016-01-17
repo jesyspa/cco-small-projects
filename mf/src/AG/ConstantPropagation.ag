@@ -11,7 +11,7 @@ include "AttributeGrammar.ag"
 type Info = M.Map Int (M.Map String Int -> M.Map String Int)
 }
 
-attr Stat'
+attr Program' Proc' Stat'
     syn update use {`M.union`} {M.empty} :: Info
 
 attr IExpr
@@ -20,11 +20,16 @@ attr IExpr
     -- pass within the grammar itself.
     syn value :: {M.Map String Int -> Maybe Int}
 
-
 sem Stat'
     | Call'         lhs.update = undefined
-    | IAssign'      lhs.update = M.singleton @label $ \m -> M.update (const $ @val.value m) @name m
-    | Malloc'       lhs.update = undefined
-    | Free'         lhs.update = undefined
-    | RefAssign'    lhs.update = undefined
+    | IAssign'      lhs.update = M.singleton @label $ \m -> M.alter (const $ @val.value m) @name m
+    | Malloc'       lhs.update = M.singleton @label $ M.delete @name
 
+sem IExpr
+    | IConst        lhs.value  = const $ Just @val
+    | Var           lhs.value  = M.lookup @name
+    | Plus          lhs.value  = \m -> (+) <$> @left.value m <*> @right.value m
+    | Minus         lhs.value  = \m -> (-) <$> @left.value m <*> @right.value m
+    | Times         lhs.value  = \m -> (*) <$> @left.value m <*> @right.value m
+    | Divide        lhs.value  = \m -> div <$> @left.value m <*> @right.value m
+    | Deref         lhs.value  = const Nothing
