@@ -35,7 +35,7 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
   -- We actually want to analyse using runAnalysis and then print the annotated results.
   print p
   let spec = getSpec p
-      result = chaoticIteration spec
+      result = chaoticIteration p spec
   print $ applyResult result p
   putStrLn "G'bye"
 
