@@ -11,7 +11,9 @@ import PrettyPrint
 import Labelling
 import ConstantPropagation
 import ApplyConstantPropagation
+import StronglyLiveVariable
 import Analysis
+import ChaoticIteration
 
 {-- How To Run (examples)
 
@@ -20,7 +22,7 @@ ghci> run slv "fib"
 
 --}
 
-slv = undefined
+slv = Analysis stronglyLiveVariableAnalysis (const id)
 cp  = Analysis constantPropagationAnalysis propagateConstants
 
 run :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
@@ -29,7 +31,7 @@ run = runAnalysis'
 -- run some analysis by passing an analysis function and a 'show' function to display the result
 runAnalysis' :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
 runAnalysis' (Analysis getSpec applyResult) programName = do
-  p <- parse programName
+  p <- parse' programName
   putStrLn "OUTPUT:"
   -- The "analysis" by itself isn't what we want to print; it's just rules for making the analysis
   -- We actually want to analyse using runAnalysis and then print the annotated results.

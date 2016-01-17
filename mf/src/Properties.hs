@@ -5,6 +5,7 @@ module Properties (
     , labels
     , flow
     , flowR
+    , names
 ) where
 
 import Prelude hiding (init)

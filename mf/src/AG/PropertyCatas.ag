@@ -8,6 +8,9 @@ import qualified Data.Set as S
 
 include "AttributeGrammar.ag"
 
+attr Program' Proc' Procs'
+    syn     names use {`S.union`} {S.empty} :: {S.Set String}
+
 attr Stat'
     syn     init :: {Int}
     syn     final use {++} {undefined} :: {[Int]}
@@ -16,6 +19,7 @@ attr Stat'
     syn     flow use {++} {[]} :: {[(Int, Int)]}
 
 attr Stat' IExpr BExpr Exprs Expr
+    syn     names use {`S.union`} {S.empty} :: {S.Set String}
     syn     copy :: self
 
 sem Stat'
@@ -24,6 +28,8 @@ sem Stat'
                   lhs.final   = [@label]
                   lhs.blocks  = [CStat @copy]
                   lhs.labels  = [@label]
+  | IAssign' BAssign' Malloc'
+                  lhs.names   = S.singleton @name
   | IfThenElse' While'
                   lhs.init    = @labelc
                      +blocks  = (:) $ CBExpr @cond.copy
@@ -37,6 +43,13 @@ sem Stat'
                   lhs.blocks  = undefined
                   lhs.labels  = undefined
                   lhs.flow    = undefined
+
+sem IExpr
+  | Var           lhs.names   = S.singleton @name
+
+sem BExpr
+  | BVar          lhs.names   = S.singleton @name
+
 
 {
 run s = wrap_Stat' (sem_Stat' s) Inh_Stat'
@@ -59,4 +72,8 @@ flow = flow_Syn_Stat' . run
 
 flowR :: Stat' -> [(Int, Int)]
 flowR = map (uncurry $ flip (,)) . flow
+
+names :: Program' -> S.Set String
+names prog = names_Syn_Program' $ wrap_Program' (sem_Program' prog) Inh_Program'
+
 }

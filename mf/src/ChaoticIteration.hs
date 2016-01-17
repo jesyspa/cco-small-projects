@@ -3,6 +3,7 @@ module ChaoticIteration (
 ) where
 
 import Analysis
+import AG.AttributeGrammar
 
 -- I am not entirely satisfied that we require the program here.
 -- Perhaps AnalysisSpec a should be changed so that it contains all the necessary

@@ -1,0 +1,32 @@
+module{AG.StronglyLiveVariable}{}{}
+
+{
+import AG.AttributeGrammar
+import qualified Data.Map as M
+import qualified Data.Set as S
+}
+
+include "AttributeGrammar.ag"
+
+{
+type Info = M.Map Int (S.Set String -> S.Set String)
+}
+
+attr Program' Proc' Stat'
+    syn update use {`M.union`} {M.empty} :: Info
+
+attr IExpr BExpr
+    syn uses use {`S.union`} {S.empty} :: {S.Set String}
+
+sem Stat'
+    | IfThenElse' While'
+                       +update = M.insert @labelc (S.union @cond.uses)
+    | Call'         lhs.update = undefined
+    | IAssign'      lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
+    | Malloc'       lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @size.uses else s
+
+sem IExpr
+    | Var           lhs.uses   = S.singleton @name
+
+sem BExpr
+    | BVar          lhs.uses   = S.singleton @name
