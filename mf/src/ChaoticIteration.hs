@@ -5,49 +5,31 @@ module ChaoticIteration (
 
 import Analysis
 import AG.AttributeGrammar
-import Properties as Prop
 
 import Data.Map (Map)
 import qualified Data.Map as M
 
--- I am not entirely satisfied that we require the program here.
--- Perhaps AnalysisSpec a should be changed so that it contains all the necessary
--- information to perform the analysis.  This is possible, but what exactly this info
--- is will probably only become clear while implementing this function.
-chaoticIteration :: Program' -> AnalysisSpec a -> AnalysisResult a
-chaoticIteration (Program' procs stat) AnalysisSpec{..} = go pFlow array
+import Debug.Trace
+
+chaoticIteration :: AnalysisSpec a -> AnalysisResult a
+chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
   where
-    pFlow = case direction of
-      Forward -> flow stat
-      Backward -> flowR stat
-    pInit = Prop.init stat
-    pLabels = labels stat
-    array = map initArray pLabels
-    initArray label = if label == pInit then extremal else bottom
+    lookup = M.findWithDefault bottom
+    initialInfo = foldr (\x -> M.insert x extremal) M.empty entries
 
+    go [] info = finalize info
+    go ((l, l') : wl) info | fal `leq` al' = go wl info
+                           | otherwise = let newInfo = M.insert l' (al' `combine` fal) info
+                                             newWork = filter (\p -> fst p == l') flowGraph
+                                         in go (newWork ++ wl) newInfo
+      where
+        al = lookup l info
+        al' = lookup l' info
+        fal = runUpdate update combine l al
 
-    go workList array = if null workList then finalize array
-      else let
-        (l, l') = head workList
-        newWorkList = tail workList
-        al = array !! l
-        al' = array !! l'
-        fal = runUpdate update l al
-        in if fal `leq` al' then
-          let
-          newArray = replaceNth l' (al' `combine` fal) array
-          additionalFlows = [(l', l'') | (l', l'') <- pFlow ]
-          in go (additionalFlows ++ workList) newArray
-        else
-          go newWorkList array
+    finalize info i Entry = lookup i info
+    finalize info i Exit  = runUpdate update combine i (lookup i info)
 
-    finalize :: [a] -> AnalysisResult a
-    finalize a i = a !! i
-
-replaceNth :: Int -> a -> [a] -> [a]
-replaceNth n newVal (x:xs)
- | n == 0 = newVal:xs
- | otherwise = x:replaceNth (n-1) newVal xs
-
-runUpdate :: Update a -> Int -> a -> a
-runUpdate (Monolithic f) = f
+runUpdate :: Update a -> (a -> a -> a) -> Int -> a -> a
+runUpdate (Monolithic f) _ i x = f i x
+runUpdate Composite{..} cmb i x = (x `remove` kill i) `cmb` gen i

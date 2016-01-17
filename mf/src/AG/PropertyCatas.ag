@@ -33,10 +33,12 @@ sem Stat'
   | IfThenElse' While'
                   lhs.init    = @labelc
                      +blocks  = (:) $ CBExpr @cond.copy
-                     +labels  = (:) $ @labelc
-  | IfThenElse'      +flow    = (++) $ [(@labelc, @stat1.init), (@labelc, @stat2.init)]
+                     +labels  = (:) @labelc
+  | IfThenElse'      +flow    = (++) [(@labelc, @stat1.init), (@labelc, @stat2.init)]
   | While'        lhs.final   = [@labelc]
                      +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
+  | Seq'             +flow    = (++) [(x, @stat2.init) | x <- @stat1.final]
+                  lhs.final   = @stat2.final
   -- TODO: Implement this
   | Call'         lhs.init    = undefined
                   lhs.final   = undefined
