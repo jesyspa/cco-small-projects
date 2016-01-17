@@ -8,10 +8,10 @@ import qualified Data.Map as M
 
 include "AttributeGrammar.ag"
 
-attr Stat' IExpr BExpr Exprs Expr
+attr Program' Procs' Proc' Stat' IExpr BExpr Exprs Expr
     syn code :: self
 
-attr Stat'
+attr Program' Procs' Proc' Stat'
     inh analysis :: {Int -> M.Map String Int}
 
 attr IExpr BExpr Exprs Expr
@@ -58,3 +58,5 @@ sem BExpr
   | IEqual          lhs   .code     = case (@left.code, @right.code) of
                                           (IConst x, IConst y) -> BConst $ x == y
                                           (_, _) -> IEqual @left.code @right.code
+
+
