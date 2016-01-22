@@ -15,7 +15,7 @@ chaoticIteration :: AnalysisSpec a -> AnalysisResult a
 chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
   where
     lookup = M.findWithDefault bottom
-    initialInfo = foldr (\x -> M.insert x extremal) M.empty entries
+    initialInfo = foldr (`M.insert` extremal) M.empty entries
 
     go [] info = finalize info
     go ((l, l') : wl) info | fal `leq` al' = go wl info

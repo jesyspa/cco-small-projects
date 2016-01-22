@@ -32,8 +32,11 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     -- The "analysis" by itself isn't what we want to print; it's just rules for making the analysis
     -- We actually want to analyse using runAnalysis and then print the annotated results.
     putStrLn . render $ ppProgram' p
-    let result = chaoticIteration (getSpec p)
+    let spec = getSpec p
+        result = chaoticIteration spec
         Program' _ stat = p
+
+    putStrLn $ "FlowGraph: " ++ show (flowGraph spec)
 
     forM_ (P.labels stat) $ \l ->
         forM_ [Entry, Exit] $ \e -> do

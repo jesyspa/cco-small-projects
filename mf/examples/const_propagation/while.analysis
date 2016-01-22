@@ -1,0 +1,41 @@
+Running the constraint propagation analysis over the while.c program in the
+const_propagation folder yields the following output.
+
+begin
+    [x := 5] 0 ; while [x > 6] 1 do [x := x - 1] 2 ; [y := 4] 3 ; [y := x + 2] 4
+end
+FlowGraph: [(0,1),(1,4),(1,3),(3,1),(2,3)]
+0 (Entry): fromList []
+0 (Exit): fromList [("x",5)]
+1 (Entry): fromList [("x",5),("y",4)]
+1 (Exit): fromList [("x",5),("y",4)]
+2 (Entry): fromList []
+2 (Exit): fromList []
+3 (Entry): fromList [("x",5),("y",4)]
+3 (Exit): fromList [("x",5),("y",4)]
+4 (Entry): fromList [("x",5),("y",4)]
+4 (Exit): fromList [("x",5),("y",7)]
+begin
+    [x := 5] 0 ; while [false] 1 do [x := x - 1] 2 ; [y := 4] 3 ; [y := 7] 4
+end
+
+
+The first thing that is printed is the program to analyze with it's corresponding
+labels.
+The MFP algorithm start by taking the head of the flow graph and applying the suitable
+transfer function to a set of partial solutions.
+The property space of this analysis is the complete lattice of total functions from
+the set of variables appearing in the program to the lattice on Z.
+We can represent these functions as maps from variable names to ints.
+
+The first pair of labels is (0,1), we know that A[1] is bottom since label 1 is not
+an extremal of the program (remember cp is a forward analysis).
+We compute f_0(A[0]) by using the corresponding transfer function, and we obtain
+{x -> 5}, here we assume that any variable not appearing in the curly braces
+maps to top.
+
+Since these two are inconsistent we must incorporate them.
+A[1] is set as the join of bottom and {x->5} which is {x->5}.
+As soon as this is done we must add all tuples in the flow graph where 1 appears on
+the left. This is done because the information of A[1] has been updated and these
+changes must propagate to every node that is reachable from 1.
