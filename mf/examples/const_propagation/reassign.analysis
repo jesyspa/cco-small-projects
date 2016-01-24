@@ -1,0 +1,53 @@
+Running the constraint propagation analysis over the reassign.c program in the
+const_propagation folder yields the following output.
+
+OUTPUT:
+begin
+    [x := 5 ;] 0
+    [x := x + 1 ;] 1
+    [y := x + 1 ;] 2
+end
+FlowGraph: [(1,2),(0,1)]
+
+Nothing <= Nothing
+Just (fromList [("x",5)]) </= Nothing
+Just (fromList [("x",6)]) </= Nothing
+done
+
+0 (Entry): Just (fromList [])
+0 (Exit): Just (fromList [("x",5)])
+1 (Entry): Just (fromList [("x",5)])
+1 (Exit): Just (fromList [("x",6)])
+2 (Entry): Just (fromList [("x",6)])
+2 (Exit): Just (fromList [("x",6),("y",7)])
+begin
+    [x := 5 ;] 0
+    [x := 6 ;] 1
+    [y := 7 ;] 2
+end
+G'bye
+
+The first thing that is printed is the program to analyze with it's corresponding
+labels.
+The MFP algorithm start by taking the head of the flow graph and applying the suitable
+transfer function to a set of partial solutions.
+The property space of this analysis is the complete lattice of total functions from
+the set of variables appearing in the program to the lattice on Z^{top}.
+We can represent these functions as maps from variable names to ints.
+
+The first pair of labels is (1,2), since f(A[1]) and A[2] are Nothing, the algorithm continues
+considering the next pair (0,1). Now f(A[0]) = ("x", 5) and A[1] is still Nothing, so we
+combine the two values. This will also cause the reinsertion in the worklist of every
+tuple of label that had 1 as its first member. This is done because the information
+of A[1] has been updated and these changes must propagate to every node that is reachable from 1.
+in this case it is only (1,2).
+(1,2) is pushed on top of the worklist and picked as the next tuple.
+Since now A[1]={("x",5)}, we can see that f(A[1]) will be equal to {("x",6)} which is
+still inconsistent with Nothing (A[2]). The two values are combined giving A[2]={("x",6)}.
+
+We now try to add any tuple of labels where 2 appears in the first position but since there
+are no such tuples the worklist is empty; the algorithm jumps to the finalization stage.
+
+In the finalization we simply return a function that: given a label and a side (Entry,Exit),
+prints the corresponding value A value where the Entry at label i is calculated as A[i]
+and the exit at label i is F(A[i])
