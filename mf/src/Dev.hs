@@ -35,7 +35,6 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
         (result, msgs) = runWriter $ runIntraprocAnalysis spec
-        Program' _ stat = p
 
     putStr "\nFlowGraph: "
     print $ flowGraph spec
@@ -45,7 +44,7 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
         putStrLn msg
 
     putStrLn "\nAnalysis results:"
-    forM_ (P.labels stat) $ \l -> do
+    forM_ (P.labels p) $ \l -> do
         putStr $ show l
         putStr ": "
         putStr $ pp spec $ result l Entry
