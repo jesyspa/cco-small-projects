@@ -20,12 +20,9 @@ attr IExpr BExpr Exprs Expr
 sem Stat'
   | IfThenElse' While'
                     cond  .analysis = @lhs.analysis @labelc
-  | IAssign' BAssign' RefAssign'
+  | IAssign' BAssign'
                     val   .analysis = @lhs.analysis @label
   | Call'           params.analysis = @lhs.analysis @labelCall
-  | Malloc'         size  .analysis = @lhs.analysis @label
-  | Free' RefAssign'
-                    ptr   .analysis = @lhs.analysis @label
 
 sem IExpr
   | Var             lhs   .code     = maybe (Var @name) IConst $ M.lookup @name @lhs.analysis
@@ -39,8 +36,8 @@ sem IExpr
                                           (IConst x, IConst y) -> IConst $ x * y
                                           (_, _) -> Times @left.code @right.code
   | Divide          lhs   .code     = case (@left.code, @right.code) of
-                                        (IConst x, IConst y) -> IConst $ x `div` y
-                                        (_, _) -> Divide @left.code @right.code
+                                          (IConst x, IConst y) -> IConst $ x `div` y
+                                          (_, _) -> Divide @left.code @right.code
 
 sem BExpr
   | LessThan        lhs   .code     = case (@left.code, @right.code) of

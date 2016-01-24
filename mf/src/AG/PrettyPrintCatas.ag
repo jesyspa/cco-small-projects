@@ -52,9 +52,6 @@ sem Stat'
   | Seq'            lhs  .doc  = maybeParens (@lhs.prec >= Compound) $ @stat1.doc $$ @stat2.doc
                     stat1.prec = None
                     stat2.prec = None
-  | Malloc'         lhs  .doc  = undefined
-  | Free'           lhs  .doc  = undefined
-  | RefAssign'      lhs  .doc  = undefined
   | Continue'       lhs  .doc  = wrapWithLabel @label $ text "continue" <+> semi
   | Break'          lhs  .doc  = wrapWithLabel @label $ text "break" <+> semi
 
@@ -65,7 +62,6 @@ sem IExpr
   | Minus           lhs  .doc  = @left.doc <+> char '-' <+> @right.doc
   | Times           lhs  .doc  = @left.doc <+> char '*' <+> @right.doc
   | Divide          lhs  .doc  = @left.doc <+> char '/' <+> @right.doc
-  | Deref           lhs  .doc  = char '*' <> @ptr.doc
 
 sem BExpr
   | BConst          lhs  .doc  = text $ if @val then "true" else "false"

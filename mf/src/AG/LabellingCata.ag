@@ -61,18 +61,6 @@ sem Stat
   | Seq
         lhs.labelled = Seq' @stat1.labelled @stat2.labelled
 
-  | Malloc
-        loc.fresh :: uniqueref counter
-        lhs.labelled = Malloc' @loc.fresh @name @size
-
-  | Free
-        loc.fresh :: uniqueref counter
-        lhs.labelled = Free' @loc.fresh @ptr
-
-  | RefAssign
-        loc.fresh :: uniqueref counter
-        lhs.labelled = RefAssign' @loc.fresh @ptr @val
-
   | Continue
         loc.fresh :: uniqueref counter
         lhs.labelled = Continue' @loc.fresh

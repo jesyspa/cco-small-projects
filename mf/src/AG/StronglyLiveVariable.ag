@@ -23,7 +23,6 @@ sem Stat'
                        +update = M.insert @labelc (S.union @cond.uses)
     | Call'         lhs.update = undefined
     | IAssign'      lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
-    | Malloc'       lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @size.uses else s
 
 sem IExpr
     | Var           lhs.uses   = S.singleton @name

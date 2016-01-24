@@ -23,12 +23,12 @@ attr Stat' IExpr BExpr Exprs Expr
     syn     copy :: self
 
 sem Stat'
-  | Skip' IAssign' BAssign' Malloc' Free' RefAssign' Continue' Break'
+  | Skip' IAssign' BAssign' Continue' Break'
                   lhs.init    = @label
                   lhs.final   = [@label]
                   lhs.blocks  = [CStat @copy]
                   lhs.labels  = [@label]
-  | IAssign' BAssign' Malloc'
+  | IAssign' BAssign'
                   lhs.names   = S.singleton @name
   | IfThenElse' While'
                   lhs.init    = @labelc
@@ -39,6 +39,7 @@ sem Stat'
                      +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
   | Seq'             +flow    = (++) [(x, @stat2.init) | x <- @stat1.final]
                   lhs.final   = @stat2.final
+                  lhs.init    = @stat1.init
   -- TODO: Implement this
   | Call'         lhs.init    = undefined
                   lhs.final   = undefined

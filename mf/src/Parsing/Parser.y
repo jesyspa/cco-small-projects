@@ -23,7 +23,7 @@ import AG.AttributeGrammar
       ":="             { TAssign }
       "+"              { TArithmeticOp "+" }
       "-"              { TArithmeticOp "-" }
-      "*"              { TStar }
+      "*"              { TArithmeticOp "*" }
       "/"              { TArithmeticOp "/" }
       and              { TBoolOp "and" }
       or               { TBoolOp "or" }
@@ -47,11 +47,8 @@ import AG.AttributeGrammar
       res              { TRes }
       call             { TCall }
       ","              { TComma }
-      malloc           { TMalloc }
-      free             { TFree }
       continue         { TContinue }
       break            { TBreak }
-      tyint            { TTyInt }
 
 
 %left or
@@ -88,16 +85,11 @@ Stat  : if BExpr then Stat0 else Stat0 { IfThenElse $2 $4 $6 }
 Stat0 : skip ";"                         { Skip }
       | ident ":=" AExpr ";"             { IAssign $1 $3 }
       | ident ":=" BExpr ";"             { BAssign $1 $3 }
-      | "*" AExpr0 ":=" AExpr0 ";"       { RefAssign $2 $4 }
       | call ident "(" CallArgs "," ident ")" ";"  { Call $2 $4 $6 }
-      | malloc "(" ident "," AExpr ")" ";"      { Malloc $3 $5 }
-      | free "(" AExpr0 ")" ";"          { Free $3 }
       | "(" Stats ")"                    { $2 }
       | "{" Stats "}"                    { $2 }
       | continue ";"                     { Continue }
       | break ";"                        { Break }
-      | tyint ident "[" AExpr "]" ";"      { Malloc $2 $4 }
-      | ident "[" AExpr "]" ":=" AExpr0 ";"          { RefAssign (Plus (Var $1) $3) $6 }
 
 CallArgs : CallArgs "," EitherExpr   { $1 ++ [ $3 ] }
          | EitherExpr                { [ $1 ] }
@@ -114,8 +106,6 @@ AExpr0 : int               { IConst $1 }
        | ident             { Var $1 }
        | "(" AExpr ")"     { $2 }
        | "[" AExpr "]"     { $2 }
-       | "*" AExpr0        { Deref $2 }
-       | ident "[" AExpr "]" { Deref (Plus (Var $1) $3) }
 
 BExpr  : not BExpr         { Not $2 }
        | BExpr and BExpr   { And $1 $3 }
