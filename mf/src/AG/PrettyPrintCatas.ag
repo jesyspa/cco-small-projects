@@ -36,8 +36,8 @@ sem Program'
                     stat .prec = None
 
 sem Proc'
-  | Proc'           lhs  .doc  = text "proc" <+> text @name <> parens @loc.args <+> text "is" $$ nest 4 @stat.doc $$ text "end"
-                    loc  .args = (hsep (map (\x -> text "val" <+> text x <> comma) @inp) <+> text "res" <+> text @out)
+  | Proc'           lhs  .doc  = text "proc" <+> wrapWithPair (@labelEntry, @labelReturn) (text @name <> parens @loc.args) <+> text "is" $$ nest 4 @stat.doc $$ text "end"
+                    loc  .args = hsep (map (\x -> text "val" <+> text x <> comma) @inp) <+> text "res" <+> text @out
                     stat .prec = None
 
 sem Stat'
@@ -47,7 +47,8 @@ sem Stat'
                     stat2.prec = Compound
   | While'          lhs  .doc  = text "while" <+> wrapWithLabel @labelc @cond.doc $$ text "do" <+> @stat.doc
                     stat .prec = Compound
-  | Call'           lhs  .doc  = text "<TODO:call>"
+  | Call'           lhs  .doc  = wrapWithPair (@labelCall, @labelExit) $ text "call" <+> text @name <> parens @loc.args
+                    loc  .args = hsep (map (<> comma) @params.doc) <+> text @out
   | IAssign' BAssign'
                     lhs  .doc  = wrapWithLabel @label $ text @name <+> assign <+> @val.doc <+> semi
   | Seq'            lhs  .doc  = maybeParens (@lhs.prec >= Compound) $ @stat1.doc $$ @stat2.doc
@@ -87,6 +88,9 @@ assign = text ":="
 
 wrapWithLabel :: Int -> Doc -> Doc
 wrapWithLabel i d = brackets d <+> int i
+
+wrapWithPair :: (Int, Int) -> Doc -> Doc
+wrapWithPair (l, l') d = brackets d <+> parens (int l <> comma <+> int l')
 
 maybeParens :: Bool -> Doc -> Doc
 maybeParens True  = parens
