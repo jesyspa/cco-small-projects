@@ -7,6 +7,7 @@ import Control.Monad.Writer
 import Text.PrettyPrint
 
 import AG.AttributeGrammar
+import Comment
 import Parsing.Lexer
 import Main
 import Parsing.Parser
@@ -19,6 +20,7 @@ import StronglyLiveVariable
 import ApplyStronglyLiveVariable
 import Analysis
 import IntraproceduralMFP
+import InterproceduralMFP
 
 slv = Analysis stronglyLiveVariableAnalysis removeDeadAssignments
 cp  = Analysis constantPropagationAnalysis propagateConstants
@@ -34,22 +36,22 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     putStrLn "Input Program:"
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
-        (result, msgs) = runWriter $ runIntraprocAnalysis spec
+        (result, msgs) = runWriter $ runInterprocAnalysis spec
+        ppS = pp spec
 
     putStr "\nFlowGraph: "
     print $ flowGraph spec
 
     putStrLn "\nAnalysis progress:"
-    forM_ msgs $ \(CS msg) ->
-        putStrLn msg
+    putStrLn . render . vcat . map (ppComment ppS) $ msgs
 
     putStrLn "\nAnalysis results:"
     forM_ (P.labels p) $ \l -> do
         putStr $ show l
         putStr ": "
-        putStr $ pp spec $ result l Entry
+        putStr . render . ppS $ result l Entry
         putStr " -> "
-        putStrLn $ pp spec $ result l Exit
+        putStrLn . render . ppS $ result l Exit
 
     putStrLn "\nImproved program:"
     putStrLn . render . ppProgram' $ applyResult result p

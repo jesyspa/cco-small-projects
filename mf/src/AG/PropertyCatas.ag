@@ -12,29 +12,34 @@ include "AttributeGrammar.ag"
 attr Program' Proc' Stat'
     syn     init :: {Int}
     syn     final use {++} {error "undefined finals"} :: {[Int]}
-    syn     labels use {++} {error "undefined labels"} :: {[Int]}
 
-attr Procs'
-    syn     labels use {++} {[]} :: {[Int]}
+attr Program' Procs'
+    syn     bodies use {`M.union`} {M.empty} :: {M.Map Int [(Int, Int)]}
 
 attr Procs' Proc'
     syn     plabels use {`M.union`} {M.empty} :: {M.Map String (Int, Int)}
 
-attr Procs' Proc' Stat'
-    inh     plabels' :: {M.Map String (Int, Int)}
-
 attr Program' Procs' Proc' Stat'
     syn     flow use {++} {[]} :: {[(Int, Int)]}
+    syn     interFlow use {++} {[]} :: {[((Int, Int), (Int, Int))]}
+    syn     labels use {++} {[]} :: {[Int]}
+
+attr Procs' Proc' Stat'
+    inh     plabels' :: {M.Map String (Int, Int)}
 
 attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
     syn     names use {`S.union`} {S.empty} :: {S.Set String}
     syn     copy :: self
 
 sem Program'
-  | Program'      lhs.init       = @stat.init
-                  lhs.final      = @stat.final
+  | Program'      lhs  .init     = @stat.init
+                  lhs  .final    = @stat.final
                   stat .plabels' = @procs.plabels
                   procs.plabels' = @procs.plabels
+                       +bodies   = M.insert @stat.init @stat.flow
+
+sem Procs'
+  | Cons               +bodies   = M.insert @hd.init @hd.flow
 
 sem Proc'
   | Proc'         lhs.init       = @labelEntry
@@ -64,6 +69,7 @@ sem Stat'
                   lhs.labels     = [@labelCall, @labelExit]
                   loc.funLabels  = @lhs.plabels' M.! @name
                   lhs.flow       = [(@labelCall, fst @loc.funLabels), (snd @loc.funLabels, @labelExit)]
+                  lhs.interFlow  = [((@labelCall, fst @loc.funLabels), (snd @loc.funLabels, @labelExit))]
 
 sem IExpr
   | Var           lhs.names      = S.singleton @name
@@ -90,6 +96,12 @@ flow = flow_Syn_Program' . run
 
 flowR :: Program' -> [(Int, Int)]
 flowR = map (uncurry $ flip (,)) . flow
+
+interFlow :: Program' -> [((Int, Int), (Int, Int))]
+interFlow = interFlow_Syn_Program' . run
+
+bodies :: Program' -> M.Map Int [(Int, Int)]
+bodies = bodies_Syn_Program' . run
 
 names :: Program' -> S.Set String
 names prog = names_Syn_Program' $ wrap_Program' (sem_Program' prog) Inh_Program'

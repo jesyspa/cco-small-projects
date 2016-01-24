@@ -8,11 +8,14 @@ import Analysis as A
 import qualified Data.Map as M
 import Properties as P
 import Data.List
+import Text.PrettyPrint
 
 constantPropagationAnalysis :: Program' -> AnalysisSpec (Maybe (M.Map String Int))
 constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
                                                 , leq = leqF
                                                 , flowGraph = flow prog
+                                                , procFlowGraph = interFlow prog
+                                                , procBodies = bodies prog
                                                 , entries = [P.init prog]
                                                 , A.labels = P.labels prog
                                                 , bottom = Nothing
@@ -40,6 +43,6 @@ combineF (Just a) Nothing = Just a
 combineF Nothing (Just b) = Just b
 combineF Nothing Nothing = Nothing
 
-ppF :: Maybe (M.Map String Int) -> String
-ppF Nothing = "bottom"
-ppF (Just m) = "{" ++ intercalate ", " [k ++ " => " ++ show v | (k, v) <- M.assocs m] ++ "}"
+ppF :: Maybe (M.Map String Int) -> Doc
+ppF Nothing = text "bottom"
+ppF (Just m) = braces . hsep $ punctuate comma [text k <+> text "=>" <+> int v | (k, v) <- M.assocs m]

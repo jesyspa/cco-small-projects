@@ -4,6 +4,8 @@ module Properties (
     , labels
     , flow
     , flowR
+    , bodies
+    , interFlow
     , names
 ) where
 
