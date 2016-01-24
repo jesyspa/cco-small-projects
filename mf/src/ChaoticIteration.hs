@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module ChaoticIteration (
       chaoticIteration
+    , Comment(..)
 ) where
 
 import Analysis
@@ -9,19 +10,25 @@ import AG.AttributeGrammar
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import Debug.Trace
+import Control.Monad.Writer
 
-chaoticIteration :: AnalysisSpec a -> AnalysisResult a
+data Comment = CS String
+             deriving (Eq, Ord, Read, Show)
+
+comment :: Writer [Comment] a -> String -> Writer [Comment] a
+comment a s = tell [CS s] >> a
+
+chaoticIteration :: Show a => AnalysisSpec a -> Writer [Comment] (AnalysisResult a)
 chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
   where
     lookup = M.findWithDefault bottom
     initialInfo = foldr (`M.insert` extremal) M.empty entries
 
-    go [] info = finalize info
-    go ((l, l') : wl) info | fal `leq` al' = go wl info
+    go [] info = return (finalize info) `comment` "done"
+    go ((l, l') : wl) info | fal `leq` al' = go wl info `comment` (show fal ++ " <= " ++ show al')
                            | otherwise = let newInfo = M.insert l' (al' `combine` fal) info
                                              newWork = filter (\p -> fst p == l') flowGraph
-                                         in go (newWork ++ wl) newInfo
+                                         in go (newWork ++ wl) newInfo `comment` (show fal ++ " </= " ++ show al')
       where
         al = lookup l info
         al' = lookup l' info

@@ -41,10 +41,10 @@ sem Proc'
 
 sem Stat'
   | Skip'           lhs  .doc  = wrapWithLabel @label $ text "skip" <+> semi
-  | IfThenElse'     lhs  .doc  = text "if" <+> wrapWithLabel @labelc @cond.doc <+> text "then" <+> @stat1.doc <+> text "else" <+> @stat2.doc
+  | IfThenElse'     lhs  .doc  = text "if" <+> wrapWithLabel @labelc @cond.doc $$ text "then" <+> @stat1.doc $$ text "else" <+> @stat2.doc
                     stat1.prec = Compound
                     stat2.prec = Compound
-  | While'          lhs  .doc  = text "while" <+> wrapWithLabel @labelc @cond.doc <+> text "do" <+> @stat.doc
+  | While'          lhs  .doc  = text "while" <+> wrapWithLabel @labelc @cond.doc $$ text "do" <+> @stat.doc
                     stat .prec = Compound
   | Call'           lhs  .doc  = text "<TODO:call>"
   | IAssign' BAssign'

@@ -8,7 +8,7 @@ import qualified Data.Map as M
 include "AttributeGrammar.ag"
 
 {
-type Info = M.Map Int (M.Map String Int -> M.Map String Int)
+type Info = M.Map Int (Maybe (M.Map String Int) -> Maybe (M.Map String Int))
 }
 
 attr Program' Proc' Stat'
@@ -22,7 +22,7 @@ attr IExpr
 
 sem Stat'
     | Call'         lhs.update = undefined
-    | IAssign'      lhs.update = M.singleton @label $ \m -> M.alter (const $ @val.value m) @name m
+    | IAssign'      lhs.update = M.singleton @label $ fmap $ \m -> M.alter (const $ @val.value m) @name m
 
 sem IExpr
     | IConst        lhs.value  = const $ Just @val

@@ -3,6 +3,7 @@ module Dev where
 import qualified Data.Map as M
 import qualified Data.List as L
 import Control.Monad
+import Control.Monad.Writer
 import Text.PrettyPrint
 
 import AG.AttributeGrammar
@@ -34,10 +35,13 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     -- We actually want to analyse using runAnalysis and then print the annotated results.
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
-        result = chaoticIteration spec
+        (result, msgs) = runWriter $ chaoticIteration spec
         Program' _ stat = p
 
     putStrLn $ "FlowGraph: " ++ show (flowGraph spec)
+
+    forM_ msgs $ \(CS msg) ->
+        putStrLn msg
 
     forM_ (P.labels stat) $ \l ->
         forM_ [Entry, Exit] $ \e -> do
