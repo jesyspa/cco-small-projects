@@ -49,7 +49,7 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
             putStr " ("
             putStr $ show e
             putStr "): "
-            print $ result l e
+            putStrLn $ pp spec $ result l e
 
     putStrLn . render . ppProgram' $ applyResult result p
     putStrLn "G'bye"

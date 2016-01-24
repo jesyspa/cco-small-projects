@@ -7,6 +7,7 @@ import AG.ConstantPropagation
 import Analysis as A
 import qualified Data.Map as M
 import Properties as P
+import Data.List
 
 constantPropagationAnalysis :: Program' -> AnalysisSpec (Maybe (M.Map String Int))
 constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
@@ -17,6 +18,7 @@ constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
                                                 , bottom = Nothing
                                                 , extremal = Just M.empty
                                                 , update = update
+                                                , pp = ppF
                                                 }
     where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
           Program' _ stat = prog
@@ -39,3 +41,7 @@ combineF (Just a) (Just b) = Just $ M.mergeWithKey comb kill kill a b
 combineF (Just a) Nothing = Just a
 combineF Nothing (Just b) = Just b
 combineF Nothing Nothing = Nothing
+
+ppF :: Maybe (M.Map String Int) -> String
+ppF Nothing = "bottom"
+ppF (Just m) = "{" ++ intercalate ", " [k ++ " => " ++ show v | (k, v) <- M.assocs m] ++ "}"

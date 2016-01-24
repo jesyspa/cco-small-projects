@@ -15,20 +15,22 @@ import Control.Monad.Writer
 data Comment = CS String
              deriving (Eq, Ord, Read, Show)
 
+infix 2 `comment`
 comment :: Writer [Comment] a -> String -> Writer [Comment] a
 comment a s = tell [CS s] >> a
 
-chaoticIteration :: Show a => AnalysisSpec a -> Writer [Comment] (AnalysisResult a)
+chaoticIteration :: AnalysisSpec a -> Writer [Comment] (AnalysisResult a)
 chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
   where
     lookup = M.findWithDefault bottom
     initialInfo = foldr (`M.insert` extremal) M.empty entries
 
     go [] info = return (finalize info) `comment` "done"
-    go ((l, l') : wl) info | fal `leq` al' = go wl info `comment` (show fal ++ " <= " ++ show al')
-                           | otherwise = let newInfo = M.insert l' (al' `combine` fal) info
+    go ((l, l') : wl) info | fal `leq` al' = go wl info `comment` pp fal ++ " <= " ++ pp al' ++ "; continuing."
+                           | otherwise = let newVal = al' `combine` fal
+                                             newInfo = M.insert l' newVal info
                                              newWork = filter (\p -> fst p == l') flowGraph
-                                         in go (newWork ++ wl) newInfo `comment` (show fal ++ " </= " ++ show al')
+                                         in go (newWork ++ wl) newInfo `comment` pp fal ++ " </= " ++ pp al' ++ "; accepting " ++ pp newVal
       where
         al = lookup l info
         al' = lookup l' info
