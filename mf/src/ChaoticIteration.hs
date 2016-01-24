@@ -26,11 +26,11 @@ chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
     initialInfo = foldr (`M.insert` extremal) M.empty entries
 
     go [] info = return (finalize info) `comment` "done"
-    go ((l, l') : wl) info | fal `leq` al' = go wl info `comment` pp fal ++ " <= " ++ pp al' ++ "; continuing."
+    go ((l, l') : wl) info | fal `leq` al' = go wl info `comment` show (l, l') ++ ": " ++ pp fal ++ " <= " ++ pp al' ++ "; continuing."
                            | otherwise = let newVal = al' `combine` fal
                                              newInfo = M.insert l' newVal info
                                              newWork = filter (\p -> fst p == l') flowGraph
-                                         in go (newWork ++ wl) newInfo `comment` pp fal ++ " </= " ++ pp al' ++ "; accepting " ++ pp newVal
+                                         in go (newWork ++ wl) newInfo `comment` show (l, l') ++ ": " ++ pp fal ++ " </= " ++ pp al' ++ "; accepting " ++ pp newVal
       where
         al = lookup l info
         al' = lookup l' info
