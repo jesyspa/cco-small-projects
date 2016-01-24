@@ -1,4 +1,4 @@
-Running the constraint propagation analysis over the reassign.c program in the
+Running the constant propagation analysis over the reassign.c program in the
 const_propagation folder yields the following output.
 
 Input Program:
