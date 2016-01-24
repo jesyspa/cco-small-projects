@@ -15,10 +15,11 @@ import Labelling
 import ConstantPropagation
 import ApplyConstantPropagation
 import StronglyLiveVariable
+import ApplyStronglyLiveVariable
 import Analysis
 import ChaoticIteration
 
-slv = Analysis stronglyLiveVariableAnalysis (const id)
+slv = Analysis stronglyLiveVariableAnalysis removeDeadAssignments
 cp  = Analysis constantPropagationAnalysis propagateConstants
 
 run :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()

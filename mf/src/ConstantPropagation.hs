@@ -28,6 +28,6 @@ constantPropagationAnalysis prog = AnalysisSpec { combine = M.mergeWithKey comb 
 leqF :: M.Map String Int -> M.Map String Int -> Bool
 leqF a b = and (isEq <$> M.toList a)
    where
-     isEq (v,i) = case M.lookup v b of
+     isEq (k,v) = case M.lookup k b of
        Nothing -> False
-       Just x -> x == i
+       Just x -> x == v

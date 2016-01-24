@@ -1,0 +1,19 @@
+module {AG.ApplyStronglyLiveVariable}{}{}
+
+{
+import AG.AttributeGrammar
+import Data.Maybe
+import qualified Data.Set as S
+}
+
+include "AttributeGrammar.ag"
+
+attr Program' Procs' Proc' Stat' IExpr BExpr Exprs Expr
+    syn code :: self
+
+attr Program' Procs' Proc' Stat'
+    inh analysis :: {Int -> S.Set String}
+
+sem Stat'
+  | IAssign'        +code     = if @name `S.member` @lhs.analysis @label then id else const (Skip' @label)
+
