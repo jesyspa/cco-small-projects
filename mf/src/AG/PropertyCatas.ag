@@ -4,6 +4,7 @@ module{AG.PropertyCatas}{}{}
 import Prelude hiding (init)
 import AG.AttributeGrammar
 import qualified Data.Set as S
+import qualified Data.Map as M
 }
 
 include "AttributeGrammar.ag"
@@ -16,7 +17,13 @@ attr Program' Proc' Stat'
 attr Procs'
     syn     labels use {++} {[]} :: {[Int]}
 
-attr Program' Proc' Stat'
+attr Procs' Proc'
+    syn     plabels use {`M.union`} {M.empty} :: {M.Map String (Int, Int)}
+
+attr Procs' Proc' Stat'
+    inh     plabels' :: {M.Map String (Int, Int)}
+
+attr Program' Procs' Proc' Stat'
     syn     flow use {++} {[]} :: {[(Int, Int)]}
 
 attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
@@ -24,45 +31,45 @@ attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
     syn     copy :: self
 
 sem Program'
-  | Program'      lhs.init    = @stat.init
-                  lhs.final   = @stat.final
-
-sem Procs'
-  | Nil           lhs.labels  = []
+  | Program'      lhs.init       = @stat.init
+                  lhs.final      = @stat.final
+                  stat .plabels' = @procs.plabels
+                  procs.plabels' = @procs.plabels
 
 sem Proc'
-  | Proc'         lhs.init    = @labelEntry
-                  lhs.final   = [@labelReturn]
-                     +labels  = (++) [@labelEntry, @labelReturn]
-                     +flow    = (++) $ [(@labelEntry, @stat.init)] ++ [(l, @labelReturn) | l <- @stat.final]
+  | Proc'         lhs.init       = @labelEntry
+                  lhs.final      = [@labelReturn]
+                     +labels     = (++) [@labelEntry, @labelReturn]
+                     +flow       = (++) $ [(@labelEntry, @stat.init)] ++ [(l, @labelReturn) | l <- @stat.final]
+                  lhs.plabels    = M.singleton @name (@labelEntry, @labelReturn)
 
 sem Stat'
   | Skip' IAssign' BAssign' Continue' Break'
-                  lhs.init    = @label
-                  lhs.final   = [@label]
-                  lhs.labels  = [@label]
+                  lhs.init       = @label
+                  lhs.final      = [@label]
+                  lhs.labels     = [@label]
   | IAssign' BAssign'
-                  lhs.names   = S.singleton @name
+                  lhs.names      = S.singleton @name
   | IfThenElse' While'
-                  lhs.init    = @labelc
-                     +labels  = (:) @labelc
-  | IfThenElse'      +flow    = (++) [(@labelc, @stat1.init), (@labelc, @stat2.init)]
-  | While'        lhs.final   = [@labelc]
-                     +flow    = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
-  | Seq'             +flow    = (++) [(x, @stat2.init) | x <- @stat1.final]
-                  lhs.final   = @stat2.final
-                  lhs.init    = @stat1.init
-  -- TODO: Implement this
-  | Call'         lhs.init    = @labelCall
-                  lhs.final   = [@labelExit]
-                  lhs.labels  = [@labelCall, @labelExit]
-                  lhs.flow    = [(@labelCall, @labelExit)] -- TODO: interprocedural stuff
+                  lhs.init       = @labelc
+                     +labels     = (:) @labelc
+  | IfThenElse'      +flow       = (++) [(@labelc, @stat1.init), (@labelc, @stat2.init)]
+  | While'        lhs.final      = [@labelc]
+                     +flow       = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
+  | Seq'             +flow       = (++) [(x, @stat2.init) | x <- @stat1.final]
+                  lhs.final      = @stat2.final
+                  lhs.init       = @stat1.init
+  | Call'         lhs.init       = @labelCall
+                  lhs.final      = [@labelExit]
+                  lhs.labels     = [@labelCall, @labelExit]
+                  loc.funLabels  = @lhs.plabels' M.! @name
+                  lhs.flow       = [(@labelCall, fst @loc.funLabels), (snd @loc.funLabels, @labelExit)]
 
 sem IExpr
-  | Var           lhs.names   = S.singleton @name
+  | Var           lhs.names      = S.singleton @name
 
 sem BExpr
-  | BVar          lhs.names   = S.singleton @name
+  | BVar          lhs.names      = S.singleton @name
 
 
 {
