@@ -14,6 +14,7 @@ type Info = M.Map Int (S.Set String -> S.Set String)
 
 attr Program' Proc' Stat'
     syn update use {`M.union`} {M.empty} :: Info
+    inh vars :: {S.Set String}
 
 attr IExpr BExpr
     syn uses use {`S.union`} {S.empty} :: {S.Set String}
@@ -21,7 +22,7 @@ attr IExpr BExpr
 sem Stat'
     | IfThenElse' While'
                        +update = M.insert @labelc (S.union @cond.uses)
-    | Call'         lhs.update = undefined
+    | Call'         lhs.update = M.fromList [(@labelCall, id), (@labelExit, const @lhs.vars)]
     | IAssign' BAssign'
                     lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
 

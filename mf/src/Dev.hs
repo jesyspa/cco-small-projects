@@ -18,7 +18,7 @@ import ApplyConstantPropagation
 import StronglyLiveVariable
 import ApplyStronglyLiveVariable
 import Analysis
-import ChaoticIteration
+import IntraproceduralMFP
 
 slv = Analysis stronglyLiveVariableAnalysis removeDeadAssignments
 cp  = Analysis constantPropagationAnalysis propagateConstants
@@ -34,7 +34,7 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     putStrLn "Input Program:"
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
-        (result, msgs) = runWriter $ chaoticIteration spec
+        (result, msgs) = runWriter $ runIntraprocAnalysis spec
         Program' _ stat = p
 
     putStr "\nFlowGraph: "

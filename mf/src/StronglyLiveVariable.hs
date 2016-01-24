@@ -21,7 +21,7 @@ stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  , update = update
                                                  , pp = ppF
                                                  }
-    where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
+    where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog allNames)
           allNames = names prog
           Program' _ stat = prog
 

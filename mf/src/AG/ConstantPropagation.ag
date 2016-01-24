@@ -21,7 +21,7 @@ attr IExpr
     syn value :: {M.Map String Int -> Maybe Int}
 
 sem Stat'
-    | Call'         lhs.update = undefined
+    | Call'         lhs.update = M.fromList [(@labelCall, id), (@labelExit, fmap $ const M.empty)]
     | IAssign'      lhs.update = M.singleton @label $ fmap $ \m -> M.alter (const $ @val.value m) @name m
 
 sem IExpr

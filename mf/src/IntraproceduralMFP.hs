@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
-module ChaoticIteration (
-      chaoticIteration
+module IntraproceduralMFP (
+      runIntraprocAnalysis
     , Comment(..)
 ) where
 
@@ -19,8 +19,8 @@ infix 2 `comment`
 comment :: Writer [Comment] a -> String -> Writer [Comment] a
 comment a s = tell [CS s] >> a
 
-chaoticIteration :: AnalysisSpec a -> Writer [Comment] (AnalysisResult a)
-chaoticIteration AnalysisSpec{..} = go flowGraph initialInfo
+runIntraprocAnalysis :: AnalysisSpec a -> Writer [Comment] (AnalysisResult a)
+runIntraprocAnalysis AnalysisSpec{..} = go flowGraph initialInfo
   where
     lookup = M.findWithDefault bottom
     initialInfo = foldr (`M.insert` extremal) M.empty entries

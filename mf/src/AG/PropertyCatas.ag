@@ -41,11 +41,11 @@ sem Stat'
                   lhs.final   = @stat2.final
                   lhs.init    = @stat1.init
   -- TODO: Implement this
-  | Call'         lhs.init    = undefined
-                  lhs.final   = undefined
-                  lhs.blocks  = undefined
-                  lhs.labels  = undefined
-                  lhs.flow    = undefined
+  | Call'         lhs.init    = @labelCall
+                  lhs.final   = [@labelExit]
+                  lhs.blocks  = [CStat @copy]
+                  lhs.labels  = [@labelCall, @labelExit]
+                  lhs.flow    = [(@labelCall, @labelExit)] -- TODO: interprocedural stuff
 
 sem IExpr
   | Var           lhs.names   = S.singleton @name
