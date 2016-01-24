@@ -26,17 +26,18 @@ attr Code Program' Proc' Stat' IExpr BExpr Expr
     syn     doc :: {Doc}
 
 attr Procs' Exprs
-    syn     docs use {:} {[]} :: {[Doc]}
+    syn     doc use {:} {[]} :: {[Doc]}
 
 sem Code
   | CStat           stat'.prec = None
 
 sem Program'
-  | Program'        lhs  .doc  = text "begin" $$ nest 4 (vcat @procs.docs $$ @stat.doc) $$ text "end"
+  | Program'        lhs  .doc  = text "begin" $$ nest 4 (vcat @procs.doc $$ @stat.doc) $$ text "end"
                     stat .prec = None
 
 sem Proc'
-  | Proc'           lhs  .doc  = text "<TODO:proc>" $$ nest 4 @stat.doc
+  | Proc'           lhs  .doc  = text "proc" <+> text @name <> parens @loc.args <+> text "is" $$ nest 4 @stat.doc $$ text "end"
+                    loc  .args = (hsep (map (\x -> text "val" <+> text x <> comma) @inp) <+> text "res" <+> text @out)
                     stat .prec = None
 
 sem Stat'
