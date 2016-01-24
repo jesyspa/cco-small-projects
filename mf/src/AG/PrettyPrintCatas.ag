@@ -22,14 +22,11 @@ data PrecedenceE = Atomic
 attr Stat'
     inh     prec :: {PrecedenceS}
 
-attr Code Program' Proc' Stat' IExpr BExpr Expr
+attr Program' Proc' Stat' IExpr BExpr Expr
     syn     doc :: {Doc}
 
 attr Procs' Exprs
     syn     doc use {:} {[]} :: {[Doc]}
-
-sem Code
-  | CStat           stat'.prec = None
 
 sem Program'
   | Program'        lhs  .doc  = text "begin" $$ nest 4 (vcat @procs.doc $$ @stat.doc) $$ text "end"

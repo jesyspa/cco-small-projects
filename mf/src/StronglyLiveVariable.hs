@@ -13,9 +13,9 @@ import Data.List
 stronglyLiveVariableAnalysis :: Program' -> AnalysisSpec (S.Set String)
 stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  , leq = S.isSubsetOf
-                                                 , flowGraph = flowR stat
-                                                 , entries = final stat
-                                                 , A.labels = P.labels stat
+                                                 , flowGraph = flowR prog
+                                                 , entries = final prog
+                                                 , A.labels = P.labels prog
                                                  , bottom = S.empty
                                                  , extremal = allNames
                                                  , update = update
@@ -23,7 +23,6 @@ stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  }
     where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog allNames)
           allNames = names prog
-          Program' _ stat = prog
 
 ppF :: S.Set String -> String
 ppF s = "{" ++ intercalate ", " (S.elems s) ++ "}"

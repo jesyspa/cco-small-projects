@@ -1,7 +1,6 @@
 module Properties (
       init
     , final
-    , blocks
     , labels
     , flow
     , flowR

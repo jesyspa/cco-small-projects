@@ -8,31 +8,43 @@ import qualified Data.Set as S
 
 include "AttributeGrammar.ag"
 
-attr Program' Proc' Procs'
-    syn     names use {`S.union`} {S.empty} :: {S.Set String}
-
-attr Stat'
+attr Program' Proc' Stat'
     syn     init :: {Int}
-    syn     final use {++} {undefined} :: {[Int]}
-    syn     blocks use {++} {undefined} :: {[Code]}
-    syn     labels use {++} {undefined} :: {[Int]}
+    syn     final use {++} {error "undefined finals"} :: {[Int]}
+    syn     labels use {++} {error "undefined labels"} :: {[Int]}
+
+attr Procs'
+    syn     labels use {++} {[]} :: {[Int]}
+
+attr Program' Proc' Stat'
     syn     flow use {++} {[]} :: {[(Int, Int)]}
 
-attr Stat' IExpr BExpr Exprs Expr
+attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
     syn     names use {`S.union`} {S.empty} :: {S.Set String}
     syn     copy :: self
+
+sem Program'
+  | Program'      lhs.init    = @stat.init
+                  lhs.final   = @stat.final
+
+sem Procs'
+  | Nil           lhs.labels  = []
+
+sem Proc'
+  | Proc'         lhs.init    = @labelEntry
+                  lhs.final   = [@labelReturn]
+                     +labels  = (++) [@labelEntry, @labelReturn]
+                     +flow    = (++) $ [(@labelEntry, @stat.init)] ++ [(l, @labelReturn) | l <- @stat.final]
 
 sem Stat'
   | Skip' IAssign' BAssign' Continue' Break'
                   lhs.init    = @label
                   lhs.final   = [@label]
-                  lhs.blocks  = [CStat @copy]
                   lhs.labels  = [@label]
   | IAssign' BAssign'
                   lhs.names   = S.singleton @name
   | IfThenElse' While'
                   lhs.init    = @labelc
-                     +blocks  = (:) $ CBExpr @cond.copy
                      +labels  = (:) @labelc
   | IfThenElse'      +flow    = (++) [(@labelc, @stat1.init), (@labelc, @stat2.init)]
   | While'        lhs.final   = [@labelc]
@@ -43,7 +55,6 @@ sem Stat'
   -- TODO: Implement this
   | Call'         lhs.init    = @labelCall
                   lhs.final   = [@labelExit]
-                  lhs.blocks  = [CStat @copy]
                   lhs.labels  = [@labelCall, @labelExit]
                   lhs.flow    = [(@labelCall, @labelExit)] -- TODO: interprocedural stuff
 
@@ -55,25 +66,22 @@ sem BExpr
 
 
 {
-run s = wrap_Stat' (sem_Stat' s) Inh_Stat'
+run s = wrap_Program' (sem_Program' s) Inh_Program'
 
 -- I was sorely tempted to use Template Haskell for this bit, but I thought your day might be bad enough without that.
-init :: Stat' -> Int
-init = init_Syn_Stat' . run
+init :: Program' -> Int
+init = init_Syn_Program' . run
 
-final :: Stat' -> [Int]
-final = final_Syn_Stat' . run
+final :: Program' -> [Int]
+final = final_Syn_Program' . run
 
-blocks :: Stat' -> [Code]
-blocks = blocks_Syn_Stat' . run
+labels :: Program' -> [Int]
+labels = labels_Syn_Program' . run
 
-labels :: Stat' -> [Int]
-labels = labels_Syn_Stat' . run
+flow :: Program' -> [(Int, Int)]
+flow = flow_Syn_Program' . run
 
-flow :: Stat' -> [(Int, Int)]
-flow = flow_Syn_Stat' . run
-
-flowR :: Stat' -> [(Int, Int)]
+flowR :: Program' -> [(Int, Int)]
 flowR = map (uncurry $ flip (,)) . flow
 
 names :: Program' -> S.Set String

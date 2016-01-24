@@ -12,17 +12,15 @@ import Data.List
 constantPropagationAnalysis :: Program' -> AnalysisSpec (Maybe (M.Map String Int))
 constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
                                                 , leq = leqF
-                                                , flowGraph = flow stat
-                                                , entries = [P.init stat]
-                                                , A.labels = P.labels stat
+                                                , flowGraph = flow prog
+                                                , entries = [P.init prog]
+                                                , A.labels = P.labels prog
                                                 , bottom = Nothing
                                                 , extremal = Just M.empty
                                                 , update = update
                                                 , pp = ppF
                                                 }
     where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
-          Program' _ stat = prog
-
 
 leqF :: Maybe (M.Map String Int) -> Maybe (M.Map String Int) -> Bool
 leqF (Just a) (Just b) = and (isEq <$> M.toList b)
