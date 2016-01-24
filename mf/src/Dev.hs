@@ -30,29 +30,30 @@ run = runAnalysis'
 runAnalysis' :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
 runAnalysis' (Analysis getSpec applyResult) programName = do
     p <- parse' programName
-    putStrLn "OUTPUT:"
-    -- The "analysis" by itself isn't what we want to print; it's just rules for making the analysis
-    -- We actually want to analyse using runAnalysis and then print the annotated results.
+
+    putStrLn "Input Program:"
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
         (result, msgs) = runWriter $ chaoticIteration spec
         Program' _ stat = p
 
-    putStrLn $ "FlowGraph: " ++ show (flowGraph spec)
+    putStr "\nFlowGraph: "
+    print $ flowGraph spec
 
+    putStrLn "\nAnalysis progress:"
     forM_ msgs $ \(CS msg) ->
         putStrLn msg
 
-    forM_ (P.labels stat) $ \l ->
-        forM_ [Entry, Exit] $ \e -> do
-            putStr $ show l
-            putStr " ("
-            putStr $ show e
-            putStr "): "
-            print $ result l e
+    putStrLn "\nAnalysis results:"
+    forM_ (P.labels stat) $ \l -> do
+        putStr $ show l
+        putStr ": "
+        putStr $ pp spec $ result l Entry
+        putStr " -> "
+        putStrLn $ pp spec $ result l Exit
 
+    putStrLn "\nImproved program:"
     putStrLn . render . ppProgram' $ applyResult result p
-    putStrLn "G'bye"
 
 -- parse program
 

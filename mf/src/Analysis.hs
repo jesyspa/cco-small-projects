@@ -15,6 +15,7 @@ data AnalysisSpec a = AnalysisSpec
                     , bottom :: a
                     , extremal :: a
                     , update :: Update a
+                    , pp :: a -> String
                     }
 
 data Side = Entry | Exit
