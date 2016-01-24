@@ -40,7 +40,7 @@ sem Proc'
                     stat .prec = None
 
 sem Stat'
-  | Skip'           lhs  .doc  = wrapWithLabel @label $ text "skip"
+  | Skip'           lhs  .doc  = wrapWithLabel @label $ text "skip" <+> semi
   | IfThenElse'     lhs  .doc  = text "if" <+> wrapWithLabel @labelc @cond.doc <+> text "then" <+> @stat1.doc <+> text "else" <+> @stat2.doc
                     stat1.prec = Compound
                     stat2.prec = Compound
@@ -48,13 +48,15 @@ sem Stat'
                     stat .prec = Compound
   | Call'           lhs  .doc  = text "<TODO:call>"
   | IAssign' BAssign'
-                    lhs  .doc  = wrapWithLabel @label $ text @name <+> assign <+> @val.doc
-  | Seq'            lhs  .doc  = @stat1.doc <+> semi <+> @stat2.doc
+                    lhs  .doc  = wrapWithLabel @label $ text @name <+> assign <+> @val.doc <+> semi
+  | Seq'            lhs  .doc  = maybeParens (@lhs.prec >= Compound) $ @stat1.doc $$ @stat2.doc
+                    stat1.prec = None
+                    stat2.prec = None
   | Malloc'         lhs  .doc  = undefined
   | Free'           lhs  .doc  = undefined
   | RefAssign'      lhs  .doc  = undefined
-  | Continue'       lhs  .doc  = wrapWithLabel @label $ text "continue"
-  | Break'          lhs  .doc  = wrapWithLabel @label $ text "break"
+  | Continue'       lhs  .doc  = wrapWithLabel @label $ text "continue" <+> semi
+  | Break'          lhs  .doc  = wrapWithLabel @label $ text "break" <+> semi
 
 sem IExpr
   | IConst          lhs  .doc  = int @val
@@ -88,6 +90,10 @@ assign = text ":="
 
 wrapWithLabel :: Int -> Doc -> Doc
 wrapWithLabel i d = brackets d <+> int i
+
+maybeParens :: Bool -> Doc -> Doc
+maybeParens True  = parens
+maybeParens False = id
 
 ppStat' :: Stat' -> Doc
 ppStat' stat = sem_Stat' stat None

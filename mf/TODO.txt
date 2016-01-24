@@ -6,3 +6,5 @@
     - Transfer functions
 * Create example programs
 * Write documentation
+
+* Make pretty-printing handle precedence properly.
