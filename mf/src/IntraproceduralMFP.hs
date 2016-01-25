@@ -18,8 +18,9 @@ runIntraprocAnalysis AnalysisSpec{..} = go flowGraph initialInfo
     lookup = M.findWithDefault bottom
     initialInfo = foldr (`M.insert` extremal) M.empty entries
 
+    -- Go through the transitions and update the data.
     go [] info = do
-            tell $ [Done]
+            tell [Done]
             return $ finalize info
     go ((l, l') : wl) info
         | fal `leq` al' = do
@@ -37,9 +38,7 @@ runIntraprocAnalysis AnalysisSpec{..} = go flowGraph initialInfo
         fal = runUpdate update combine l al
         tell' = tell . return . Process (l, l') []
 
+    -- Turn the final state into a function.
     finalize info i Entry = lookup i info
-    finalize info i Exit  = runUpdate update combine i (lookup i info)
+    finalize info i Exit  = runUpdate update combine i $ lookup i info
 
-runUpdate :: Update a -> (a -> a -> a) -> Int -> a -> a
-runUpdate (Monolithic f) _ i x = f i x
-runUpdate Composite{..} cmb i x = (x `remove` kill i) `cmb` gen i

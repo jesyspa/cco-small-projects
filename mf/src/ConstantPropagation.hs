@@ -10,7 +10,12 @@ import Properties as P
 import Data.List
 import Text.PrettyPrint
 
-constantPropagationAnalysis :: Program' -> AnalysisSpec (Maybe (M.Map String Int))
+-- | Spec for the CP analysis.
+--
+-- Works exactly as in the book.  Nothing indicates no information, while an
+-- element not being present in the map indicates that the value may vary
+-- (the book denotes this by top).
+constantPropagationAnalysis :: Program' -> AnalysisSpec CPData
 constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
                                                 , leq = leqF
                                                 , flowGraph = flow prog
@@ -25,7 +30,8 @@ constantPropagationAnalysis prog = AnalysisSpec { combine = combineF
                                                 }
     where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
 
-leqF :: Maybe (M.Map String Int) -> Maybe (M.Map String Int) -> Bool
+-- | Order in the CP lattice.
+leqF :: CPData -> CPData -> Bool
 leqF (Just a) (Just b) = and (isEq <$> M.toList b)
    where
      isEq (k,v) = case M.lookup k a of
@@ -34,7 +40,8 @@ leqF (Just a) (Just b) = and (isEq <$> M.toList b)
 leqF Nothing _ = True
 leqF (Just _) Nothing = False
 
-combineF :: Maybe (M.Map String Int) -> Maybe (M.Map String Int) -> Maybe (M.Map String Int)
+-- | Meet in the CP lattice.
+combineF :: CPData -> CPData -> CPData
 combineF (Just a) (Just b) = Just $ M.mergeWithKey comb kill kill a b
     where comb _ x y | x == y = Just x
                      | otherwise = Nothing
@@ -43,6 +50,9 @@ combineF (Just a) Nothing = Just a
 combineF Nothing (Just b) = Just b
 combineF Nothing Nothing = Nothing
 
-ppF :: Maybe (M.Map String Int) -> Doc
+-- | Pretty-print a map.
+--
+-- fromList [("a", 5), ("b", 6)] becomes {a => 5, b => 6}.
+ppF :: CPData -> Doc
 ppF Nothing = text "bottom"
 ppF (Just m) = braces . hsep $ punctuate comma [text k <+> text "=>" <+> int v | (k, v) <- M.assocs m]

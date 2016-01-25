@@ -80,22 +80,28 @@ sem Expr
 
 
 {
+-- | An assignment symbol
 assign :: Doc
 assign = text ":="
 
+-- | Wrap a document in brackets, adding a label.
 wrapWithLabel :: Int -> Doc -> Doc
 wrapWithLabel i d = brackets d <+> int i
 
+-- | Wrap a document in brackets, adding a label pair.
 wrapWithPair :: (Int, Int) -> Doc -> Doc
 wrapWithPair (l, l') d = brackets d <+> parens (int l <> comma <+> int l')
 
+-- | Add parentheses if true.
 maybeParens :: Bool -> Doc -> Doc
 maybeParens True  = parens
 maybeParens False = id
 
+-- | Pretty print a labelled statement.
 ppStat' :: Stat' -> Doc
 ppStat' stat = sem_Stat' stat None
 
+-- | Pretty print a labelled program.
 ppProgram' :: Program' -> Doc
 ppProgram' = sem_Program'
 }

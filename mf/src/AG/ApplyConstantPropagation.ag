@@ -17,6 +17,9 @@ attr Program' Procs' Proc' Stat'
 attr IExpr BExpr Exprs Expr
     inh analysis :: {M.Map String Int}
 
+-- We could optimise here by statically figuring out conditions and dropping
+-- dead branches, but this can make the results less clearly visible, which
+-- we'd rather avoid.
 sem Stat'
   | IfThenElse' While'
                     cond  .analysis = @lhs.analysis @labelc
@@ -24,6 +27,7 @@ sem Stat'
                     val   .analysis = @lhs.analysis @label
   | Call'           params.analysis = @lhs.analysis @labelCall
 
+-- Try to evaluate expressions as far as possible.
 sem IExpr
   | Var             lhs   .code     = maybe (Var @name) IConst $ M.lookup @name @lhs.analysis
   | Plus            lhs   .code     = case (@left.code, @right.code) of
@@ -55,5 +59,4 @@ sem BExpr
   | IEqual          lhs   .code     = case (@left.code, @right.code) of
                                           (IConst x, IConst y) -> BConst $ x == y
                                           (_, _) -> IEqual @left.code @right.code
-
 

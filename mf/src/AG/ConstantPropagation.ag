@@ -8,7 +8,8 @@ import qualified Data.Map as M
 include "AttributeGrammar.ag"
 
 {
-type Info = M.Map Int (Maybe (M.Map String Int) -> Maybe (M.Map String Int))
+type CPData = Maybe (M.Map String Int)
+type Info = M.Map Int (CPData -> CPData)
 }
 
 attr Program' Proc' Stat'

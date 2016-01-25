@@ -9,7 +9,6 @@ import Text.PrettyPrint
 import AG.AttributeGrammar
 import Comment
 import Parsing.Lexer
-import Main
 import Parsing.Parser
 import Properties as P
 import PrettyPrint
@@ -22,25 +21,33 @@ import Analysis
 import IntraproceduralMFP
 import InterproceduralMFP
 
+-- | Strongly live variable analysis specification
 slv = Analysis stronglyLiveVariableAnalysis removeDeadAssignments
+
+-- | Constant propagation analysis specification
 cp  = Analysis constantPropagationAnalysis propagateConstants
 
-run :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
+-- | Run the analysis.
+--
+-- There being two names for this is a historical oddity.
+run :: Analysis Program' a -> String -> IO ()
 run = runAnalysis'
 
 -- run some analysis by passing an analysis function and a 'show' function to display the result
-runAnalysis' :: (Eq a, Show a) => Analysis Program' a -> String -> IO ()
+runAnalysis' :: Analysis Program' a -> String -> IO ()
 runAnalysis' (Analysis getSpec applyResult) programName = do
     p <- parse' programName
 
     putStrLn "Input Program:"
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
-        (result, msgs) = runWriter $ runInterprocAnalysis spec
+        (result, msgs) = runWriter $ runInterprocAnalysis 5 spec
         ppS = pp spec
 
     putStr "\nFlowGraph: "
     print $ flowGraph spec
+    putStr "Inter-procedural flow: "
+    print $ procFlowGraph spec
 
     putStrLn "\nAnalysis progress:"
     putStrLn . render . vcat . map (ppComment ppS) $ msgs
@@ -56,12 +63,12 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     putStrLn "\nImproved program:"
     putStrLn . render . ppProgram' $ applyResult result p
 
--- parse program
-
+-- | Parse a program.
 parse :: String -> IO Program
 parse programName = do
    let fileName = "../examples/"++programName++".c"
    happy . alex <$> readFile fileName
 
+-- | Parse and label a program.
 parse' :: String -> IO Program'
 parse' = fmap toLabelled . parse

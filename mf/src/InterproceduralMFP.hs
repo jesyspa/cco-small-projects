@@ -12,11 +12,19 @@ import qualified Data.Map as M
 
 import Control.Monad.Writer
 
+-- | A transfer we must still consider in the analysis.
+--
+-- Gives what label we transition from and to, and in what context.
 data Transfer = Transfer (Int, Int) Context
               deriving (Eq, Ord, Read, Show)
 
-runInterprocAnalysis :: AnalysisSpec a -> Writer [Comment a] (AnalysisResult a)
-runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
+-- | Run the given analysis up to the given depth (of function calls), yielding
+-- a result and some comments.
+--
+-- The comments were added to assist in debuging, but nicely illustrate the
+-- behaviour of the algorithm.
+runInterprocAnalysis :: Int -> AnalysisSpec a -> Writer [Comment a] (AnalysisResult a)
+runInterprocAnalysis k AnalysisSpec{..} = go initialWork initialInfo
   where
     lookup       = M.findWithDefault bottom
     initialInfo  = foldr (`M.insert` extremal) M.empty $ map (\x -> (x, [])) entries
@@ -24,10 +32,19 @@ runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
     initialBody  = [Transfer tf [] | l <- entries, tf <- M.findWithDefault [] l procBodies]
     initialWork  = initialSteps ++ initialBody
 
+    -- Update the state with the given transfers.
+    --
+    -- There are a bunch of checks here that should never actually be triggered;
+    -- for example, as far as I can tell, j
     go [] info = do
-            tell $ [Done]
+            tell [Done]
             return $ finalize info
     go (Transfer tf@(l, l') ctx : wl) info
+        -- We are recursing too deep.
+        | length ctx > k = do
+            tell' TooDeep
+            go wl info
+        -- 
         | invalidReturn tf ctx = do
             tell' Invalid
             go wl info
@@ -39,7 +56,9 @@ runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
             tell' $ Update fal al' newVal
             let newInfo = M.insert (l', ctx) newVal info
                 (newCtx, retJmp) = case Prelude.lookup tf procFlowGraph of
-                                        Just rj -> (tf:ctx, [Transfer rj newCtx])
+                                        Just rj -> (tf:ctx, if length ctx < k
+                                                            then [Transfer rj newCtx]
+                                                            else [Transfer (fst tf, snd rj) ctx])
                                         Nothing -> (ctx, [])
                 nextSteps = [Transfer ntf newCtx | ntf <- flowGraph, fst ntf == l']
                 newBody = [Transfer ntf newCtx | ntf <- M.findWithDefault [] l' procBodies]
@@ -52,12 +71,12 @@ runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
         fal = runUpdate update combine l al
         tell' = tell . return . Process tf ctx
 
+    -- Turn the final state into a function, so that it can be used as the
+    -- analysis result.
     finalize info i Entry = foldr combine bottom [v | ((i', _), v) <- M.assocs info, i == i']
     finalize info i Exit  = runUpdate update combine i $ finalize info i Entry
 
+    -- Check whether the transfer we return by is valid.
     invalidReturn rl [] = False
     invalidReturn rl (cl:_) = rl `elem` map snd procFlowGraph && (cl, rl) `notElem` procFlowGraph
 
-runUpdate :: Update a -> (a -> a -> a) -> Int -> a -> a
-runUpdate (Monolithic f) _ i x = f i x
-runUpdate Composite{..} cmb i x = (x `remove` kill i) `cmb` gen i

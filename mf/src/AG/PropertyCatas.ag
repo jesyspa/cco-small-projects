@@ -16,16 +16,19 @@ attr Program' Proc' Stat'
 attr Program' Procs'
     syn     bodies use {`M.union`} {M.empty} :: {M.Map Int [(Int, Int)]}
 
+-- plabels and plabels' are used to figure out flow when it comes to calls.
+-- The list of procedure definitions generates plabels, which we then pass
+-- back into the procedures and statements using plabels'.
 attr Procs' Proc'
     syn     plabels use {`M.union`} {M.empty} :: {M.Map String (Int, Int)}
+
+attr Procs' Proc' Stat'
+    inh     plabels' :: {M.Map String (Int, Int)}
 
 attr Program' Procs' Proc' Stat'
     syn     flow use {++} {[]} :: {[(Int, Int)]}
     syn     interFlow use {++} {[]} :: {[((Int, Int), (Int, Int))]}
     syn     labels use {++} {[]} :: {[Int]}
-
-attr Procs' Proc' Stat'
-    inh     plabels' :: {M.Map String (Int, Int)}
 
 attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
     syn     names use {`S.union`} {S.empty} :: {S.Set String}
@@ -90,31 +93,45 @@ sem BExpr
 
 
 {
+-- | Compute the properties and wrap them in an easy-to-access struct.
 run s = wrap_Program' (sem_Program' s) Inh_Program'
 
--- I was sorely tempted to use Template Haskell for this bit, but I thought your day might be bad enough without that.
+-- I was sorely tempted to use Template Haskell for this bit, but I thought
+-- your day might be bad enough without that.
+
+-- | Get the first label to be executed.
 init :: Program' -> Int
 init = init_Syn_Program' . run
 
+-- | Get the possible labels at which computation can terminate.
 final :: Program' -> [Int]
 final = final_Syn_Program' . run
 
+-- | Get a list of all labels.
 labels :: Program' -> [Int]
 labels = labels_Syn_Program' . run
 
+-- | Get a list of all transitions.
 flow :: Program' -> [(Int, Int)]
 flow = flow_Syn_Program' . run
 
+-- | Get a list of all transitions, backwards.
 flowR :: Program' -> [(Int, Int)]
 flowR = map (uncurry $ flip (,)) . flow
 
+-- | Get all possible procedure calls and returns.
+--
+-- The book uses four-tuples here, but it is more convenient to work with
+-- tuples of tuples in Haskell.
 interFlow :: Program' -> [((Int, Int), (Int, Int))]
 interFlow = interFlow_Syn_Program' . run
 
+-- | Get a map from the entry point of a function to all the flow in its body.
 bodies :: Program' -> M.Map Int [(Int, Int)]
 bodies = bodies_Syn_Program' . run
 
+-- | Get a list of all variable names used in the program.
 names :: Program' -> S.Set String
-names prog = names_Syn_Program' $ wrap_Program' (sem_Program' prog) Inh_Program'
+names = names_Syn_Program' . run
 
 }

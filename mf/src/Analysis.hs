@@ -1,14 +1,27 @@
+{-# LANGUAGE RecordWildCards #-}
 module Analysis where
 
 import Text.PrettyPrint
 import qualified Data.Map as M
 
+-- | An update strategy.
+--
+-- Depending on the kind of analysis, it may be beneficial to regard updates as
+-- monolithic (updating the state), or by specifying what variables are killed
+-- and generated and deducing it from that.
+--
+-- Unfortunately, we didn't get around to any analyses where the composite
+-- approach was worth the time.  I suspect SLV could be reformulated that way
+-- to good effect.
 data Update a = Monolithic (Int -> a -> a)
               | Composite { remove :: a -> a -> a
                           , gen :: Int -> a
                           , kill :: Int -> a
                           }
 
+-- | A specification for an analysis.
+--
+-- This provides all the data necessary for the algorithm.
 data AnalysisSpec a = AnalysisSpec
                     { combine :: a -> a -> a
                     , leq :: a -> a -> Bool
@@ -23,9 +36,17 @@ data AnalysisSpec a = AnalysisSpec
                     , pp :: a -> Doc
                     }
 
+-- | Flag for distinguishing between entry and exit analysis values.
 data Side = Entry | Exit
           deriving (Eq, Ord, Read, Show)
 
+-- | The data the analysis produces.
 type AnalysisResult a = Int -> Side -> a
 
+-- | A spec for performing the analysis and a function for applying the result.
 data Analysis p a = Analysis (p -> AnalysisSpec a) (AnalysisResult a -> p -> p)
+
+-- Update the state.
+runUpdate :: Update a -> (a -> a -> a) -> Int -> a -> a
+runUpdate (Monolithic f) _ i x = f i x
+runUpdate Composite{..} cmb i x = (x `remove` kill i) `cmb` gen i

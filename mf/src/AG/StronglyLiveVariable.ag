@@ -9,21 +9,22 @@ import qualified Data.Set as S
 include "AttributeGrammar.ag"
 
 {
-type Info = M.Map Int (S.Set String -> S.Set String)
+type SLVData = S.Set String
+type Info = M.Map Int (SLVData -> SLVData)
 }
 
 attr Program' Procs' Proc' Stat'
     syn update use {`M.union`} {M.empty} :: Info
-    inh vars :: {S.Set String}
 
 attr IExpr BExpr
-    syn uses use {`S.union`} {S.empty} :: {S.Set String}
-
+    syn uses use {`S.union`} {S.empty} :: {SLVData}
 
 
 sem Stat'
     | IfThenElse' While'
                        +update = M.insert @labelc (S.union @cond.uses)
+    -- This is the kind of case we wanted the Composite update form for,
+    -- but never got around to actually using it.
     | IAssign' BAssign'
                     lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
 

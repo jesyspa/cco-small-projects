@@ -14,6 +14,8 @@ attr Program' Procs' Proc' Stat' IExpr BExpr Exprs Expr
 attr Program' Procs' Proc' Stat'
     inh analysis :: {Int -> S.Set String}
 
+-- If an assignment is not used, skip it.
 sem Stat'
-  | IAssign'        +code     = if @name `S.member` @lhs.analysis @label then id else const (Skip' @label)
+  | IAssign' BAssign'
+                    +code = if @name `S.member` @lhs.analysis @label then id else const (Skip' @label)
 
