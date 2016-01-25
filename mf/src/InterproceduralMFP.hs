@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, ExplicitForAll, ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards #-}
 module InterproceduralMFP (
       runInterprocAnalysis
 ) where
@@ -15,7 +15,7 @@ import Control.Monad.Writer
 data Transfer = Transfer (Int, Int) Context
               deriving (Eq, Ord, Read, Show)
 
-runInterprocAnalysis :: forall a. AnalysisSpec a -> Writer [Comment a] (AnalysisResult a)
+runInterprocAnalysis :: AnalysisSpec a -> Writer [Comment a] (AnalysisResult a)
 runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
   where
     lookup       = M.findWithDefault bottom
@@ -24,7 +24,6 @@ runInterprocAnalysis AnalysisSpec{..} = go initialWork initialInfo
     initialBody  = [Transfer tf [] | l <- entries, tf <- M.findWithDefault [] l procBodies]
     initialWork  = initialSteps ++ initialBody
 
-    go :: [Transfer] -> M.Map (Int, Context) a -> Writer [Comment a] (AnalysisResult a)
     go [] info = do
             tell $ [Done]
             return $ finalize info

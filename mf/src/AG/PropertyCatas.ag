@@ -31,6 +31,10 @@ attr Program' Proc' Procs' Stat' IExpr BExpr Exprs Expr
     syn     names use {`S.union`} {S.empty} :: {S.Set String}
     syn     copy :: self
 
+attr Stat'
+    syn     breaks use {++} {[]} :: {[Int]}
+    syn     continues use {++} {[]} :: {[Int]}
+
 sem Program'
   | Program'      lhs  .init     = @stat.init
                   lhs  .final    = @stat.final
@@ -51,16 +55,19 @@ sem Proc'
 sem Stat'
   | Skip' IAssign' BAssign' Continue' Break'
                   lhs.init       = @label
-                  lhs.final      = [@label]
                   lhs.labels     = [@label]
+  | Skip' IAssign' BAssign'
+                  lhs.final      = [@label]
   | IAssign' BAssign'
                   lhs.names      = S.singleton @name
   | IfThenElse' While'
                   lhs.init       = @labelc
                      +labels     = (:) @labelc
   | IfThenElse'      +flow       = (++) [(@labelc, @stat1.init), (@labelc, @stat2.init)]
-  | While'        lhs.final      = [@labelc]
-                     +flow       = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final]
+  | While'        lhs.final      = [@labelc] ++ @stat.breaks
+                     +flow       = (++) $ [(@labelc, @stat.init)] ++ [(x, @labelc) | x <- @stat.final] ++ [(x, @labelc) | x <- @stat.breaks]
+                  lhs.breaks     = []
+                  lhs.continues  = []
   | Seq'             +flow       = (++) [(x, @stat2.init) | x <- @stat1.final]
                   lhs.final      = @stat2.final
                   lhs.init       = @stat1.init
@@ -70,6 +77,10 @@ sem Stat'
                   loc.funLabels  = @lhs.plabels' M.! @name
                   lhs.flow       = [(@labelCall, fst @loc.funLabels), (snd @loc.funLabels, @labelExit)]
                   lhs.interFlow  = [((@labelCall, fst @loc.funLabels), (snd @loc.funLabels, @labelExit))]
+  | Break'        lhs.breaks     = [@label]
+                  lhs.final      = []
+  | Continue'     lhs.continues  = [@label]
+                  lhs.final      = []
 
 sem IExpr
   | Var           lhs.names      = S.singleton @name
