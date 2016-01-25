@@ -10,11 +10,14 @@ include "AttributeGrammar.ag"
 
 {
 type SLVData = S.Set String
-type Info = M.Map Int (SLVData -> SLVData)
+type Vars = M.Map Int SLVData
 }
 
 attr Program' Procs' Proc' Stat'
-    syn update use {`M.union`} {M.empty} :: Info
+    syn gens use {`M.union`} {M.empty} :: {Vars}
+    -- Strictly speaking, we could use an M.Map Int String for kills, since
+    -- every statement kills at most one variable.
+    syn kills use {`M.union`} {M.empty} :: {Vars}
 
 attr IExpr BExpr
     syn uses use {`S.union`} {S.empty} :: {SLVData}
@@ -22,13 +25,13 @@ attr IExpr BExpr
 
 sem Stat'
     | IfThenElse' While'
-                       +update = M.insert @labelc (S.union @cond.uses)
-    -- This is the kind of case we wanted the Composite update form for,
-    -- but never got around to actually using it.
+                       +gens = M.insert @labelc @cond.uses
+    | IAssign' BAssign' Malloc'
+                    lhs.kills   = M.singleton @label (S.singleton @name)
     | IAssign' BAssign'
-                    lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
+                    lhs.gens    = M.singleton @label @val.uses
     | Malloc'
-                    lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @size.uses else s
+                    lhs.gens    = M.singleton @label @size.uses
 
 sem IExpr
     | Var           lhs.uses   = S.singleton @name

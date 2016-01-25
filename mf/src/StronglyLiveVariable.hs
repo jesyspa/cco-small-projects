@@ -27,7 +27,9 @@ stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  , update = update
                                                  , pp = ppF
                                                  }
-    where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog)
+    where update = Composite S.difference (search gens) (search uses)
+          search m x = M.findWithDefault S.empty x m
+          (gens, uses) = sem_Program' prog
           allNames = names prog
 
 -- | Pretty-print a set.
