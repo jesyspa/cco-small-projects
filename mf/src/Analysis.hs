@@ -10,8 +10,8 @@ import qualified Data.Map as M
 -- monolithic (updating the state), or by specifying what variables are killed
 -- and generated and deducing it from that.
 --
--- We use the monolithic approach for constant propagation and the composite
--- approach for strongly live variable analysis.
+-- At least, that's the theory.  In practice, it turned out that writing
+-- everything monolithically was much more convenient.
 data Update a = Monolithic (Int -> a -> a)
               | Composite { remove :: a -> a -> a
                           , gen :: Int -> a

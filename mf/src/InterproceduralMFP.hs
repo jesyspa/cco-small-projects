@@ -24,13 +24,14 @@ data Transfer = Transfer (Int, Int) Context
 -- The comments were added to assist in debuging, but nicely illustrate the
 -- behaviour of the algorithm.
 runInterprocAnalysis :: Int -> AnalysisSpec a -> Writer [Comment a] (AnalysisResult a)
-runInterprocAnalysis k AnalysisSpec{..} = go initialWork initialInfo
+runInterprocAnalysis k AnalysisSpec{..} = tell initialExploration >> go initialWork initialInfo
   where
     lookup       = M.findWithDefault bottom
     initialInfo  = foldr (`M.insert` extremal) M.empty $ map (\x -> (x, [])) entries
     initialSteps = [Transfer tf [] | tf <- flowGraph, fst tf `elem` entries]
     initialBody  = [Transfer tf [] | l <- entries, tf <- M.findWithDefault [] l procBodies]
     initialWork  = initialSteps ++ initialBody
+    initialExploration = [Explore tf ctx | Transfer tf ctx <- initialWork]
 
     -- Update the state with the given transfers.
     --
@@ -44,13 +45,15 @@ runInterprocAnalysis k AnalysisSpec{..} = go initialWork initialInfo
         | length ctx > k = do
             tell' TooDeep
             go wl info
-        -- 
+        -- The return path we are trying to follow doesn't match the call path.
         | invalidReturn tf ctx = do
             tell' Invalid
             go wl info
+        -- The solution is already consistent here.
         | fal `leq` al' = do
             tell' $ Keep fal al'
             go wl info
+        -- We need to update the current information.
         | otherwise = do
             let newVal = al' `combine` fal
             tell' $ Update fal al' newVal

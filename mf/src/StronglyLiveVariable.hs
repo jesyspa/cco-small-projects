@@ -11,10 +11,7 @@ import Properties as P
 import Data.List
 import Text.PrettyPrint
 
--- | Specification for the SLV analysis.
---
--- Works exactly as described in the book; nothing interesting here.
-stronglyLiveVariableAnalysis :: Program' -> AnalysisSpec SLVData
+stronglyLiveVariableAnalysis :: Program' -> AnalysisSpec (S.Set String)
 stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  , leq = S.isSubsetOf
                                                  , flowGraph = flowR prog
@@ -27,13 +24,8 @@ stronglyLiveVariableAnalysis prog = AnalysisSpec { combine = S.union
                                                  , update = update
                                                  , pp = ppF
                                                  }
-    where update = Composite S.difference (search gens) (search uses)
-          search m x = M.findWithDefault S.empty x m
-          (gens, uses) = sem_Program' prog
+    where update = Monolithic $ \x -> M.findWithDefault id x (sem_Program' prog allNames)
           allNames = names prog
 
--- | Pretty-print a set.
---
--- fromList ["a", "b", "c"] becomes {a, b, c}.
 ppF :: S.Set String -> Doc
 ppF = braces . hsep . punctuate comma . map text . S.elems

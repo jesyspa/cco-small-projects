@@ -1,16 +1,14 @@
-
 name:                  mf
 version:               0.1.0.0
 description:           Project distribution for Mini Project F of the course on
                        Compiler Construction (INFOMCCO) at Utrecht University.
 category:              Compilers/Interpreters
 license:               BSD3
--- license-file:       LICENSE
 author:                Yorick Sijsling, Jarno le Conte and Nico Naus
 maintainer:            Jurriaan Hage <J.Hage@uu.nl>
 homepage:              http://foswiki.cs.uu.nl/foswiki/Cco/MiniProjects
 build-type:            Simple
-cabal-version:         >=1.8
+cabal-version:         >=1.10
 extra-source-files:    Makefile,
                        examples/cp1.c,
                        examples/fib.c,
@@ -26,5 +24,7 @@ executable mf
   other-modules:       Dev
                        Labelling
                        Properties
-  build-depends:       base >= 4 && < 5, containers, array, pretty
+  build-depends:       base >= 4 && < 5, containers, array, pretty, mtl
   hs-source-dirs:      src
+  default-language:    Haskell2010
+  default-extensions:  FlexibleContexts

@@ -27,17 +27,13 @@ slv = Analysis stronglyLiveVariableAnalysis removeDeadAssignments
 -- | Constant propagation analysis specification
 cp  = Analysis constantPropagationAnalysis propagateConstants
 
--- | Run the analysis.
---
--- There being two names for this is a historical oddity.
+-- | Run the analysis in the given file.
 run :: Analysis Program' a -> String -> IO ()
-run = runAnalysis'
+run anl name = parse' name >>= runAnalysis' anl
 
 -- run some analysis by passing an analysis function and a 'show' function to display the result
-runAnalysis' :: Analysis Program' a -> String -> IO ()
-runAnalysis' (Analysis getSpec applyResult) programName = do
-    p <- parse' programName
-
+runAnalysis' :: Analysis Program' a -> Program' -> IO ()
+runAnalysis' (Analysis getSpec applyResult) p = do
     putStrLn "Input Program:"
     putStrLn . render $ ppProgram' p
     let spec = getSpec p
@@ -63,11 +59,15 @@ runAnalysis' (Analysis getSpec applyResult) programName = do
     putStrLn "\nImproved program:"
     putStrLn . render . ppProgram' $ applyResult result p
 
--- | Parse a program.
+-- | Parse a program in the examples directory.
+--
+-- Lookup is relative to this file.
+parseExample :: String -> IO Program
+parseExample programName = parse $ "../examples/"++programName++".c"
+
+-- | Parse a program 
 parse :: String -> IO Program
-parse programName = do
-   let fileName = "../examples/"++programName++".c"
-   happy . alex <$> readFile fileName
+parse fileName = happy . alex <$> readFile fileName
 
 -- | Parse and label a program.
 parse' :: String -> IO Program'

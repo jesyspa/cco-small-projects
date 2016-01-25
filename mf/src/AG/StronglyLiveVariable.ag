@@ -9,29 +9,23 @@ import qualified Data.Set as S
 include "AttributeGrammar.ag"
 
 {
-type SLVData = S.Set String
-type Vars = M.Map Int SLVData
+type Info = M.Map Int (S.Set String -> S.Set String)
 }
 
 attr Program' Procs' Proc' Stat'
-    syn gens use {`M.union`} {M.empty} :: {Vars}
-    -- Strictly speaking, we could use an M.Map Int String for kills, since
-    -- every statement kills at most one variable.
-    syn kills use {`M.union`} {M.empty} :: {Vars}
+    syn update use {`M.union`} {M.empty} :: Info
+    inh vars :: {S.Set String}
 
 attr IExpr BExpr
-    syn uses use {`S.union`} {S.empty} :: {SLVData}
+    syn uses use {`S.union`} {S.empty} :: {S.Set String}
+
 
 
 sem Stat'
     | IfThenElse' While'
-                       +gens = M.insert @labelc @cond.uses
-    | IAssign' BAssign' Malloc'
-                    lhs.kills   = M.singleton @label (S.singleton @name)
+                       +update = M.insert @labelc (S.union @cond.uses)
     | IAssign' BAssign'
-                    lhs.gens    = M.singleton @label @val.uses
-    | Malloc'
-                    lhs.gens    = M.singleton @label @size.uses
+                    lhs.update = M.singleton @label $ \s -> if @name `S.member` s then S.delete @name s `S.union` @val.uses else s
 
 sem IExpr
     | Var           lhs.uses   = S.singleton @name

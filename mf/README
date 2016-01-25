@@ -1,17 +1,116 @@
 
 Original authors: Yorick Sijsling, Jarno le Conte and Nico Naus
 
+Homework of group B, Anton Golov (3809277) and Giovanni Garufi (5685109)
+
 Running the code
 ================
 
-Besides ghc, you will need happy, alex and uuagc to build all the files. 
-You should be able to compile the code with `make all`. 
+Besides ghc, you will need happy, alex, uuagc, array, pretty, and mtl to build
+all the files.
+
+You should be able to compile the code with `make all`.
+
 To clean up, rebuild and start ghci in the Dev module all at once, run `make
 clean dev`.
 
-Once you're in ghci in the Dev module, you can run different analyses (that
-you first need to develop). 
+Once you're in ghci in the Dev module, you can run different analyses.
 
-The file AttributeGrammar.ag contains the datatype declarations for storing
-programs and expressions in the language.
+You can also run make and then run cabal build (provided you have the
+dependencies installed).  Running the generated executable (either directly
+or via cabal run Main) will run all of our examples.
 
+TL;DR:
+
+    cabal install uuagc happy alex mtl array pretty
+    make
+
+then
+    make dev
+or
+    cabal build
+    cabal run Main
+
+
+What we've done
+===============
+
+We have fully completed the intraprocedural parts of the assignment and have
+made some progress on interprocedural analysis.  The constant propagation and
+strongly live variable analyses both work in the intraprocedural case, but the
+implementation of the interprocedural case is incomplete.
+
+In addition to the analyses, we have implemented the usage of their results for
+program optimisation; this happens automatically after the analysis has been
+run, and the improved program is pretty-printed.
+
+Analysis.hs contains the data structures necessary for specifying an analysis,
+and IntraproceduralMFS.hs and InterproceduralMFS.hs contain the code for running
+the resulting analyses.  The existing analyses are each spread out over four
+files.  For constant propagation this is:
+
+* ConstantPropagation.hs
+    Specify how the analysis must be done.
+* AG/ConstantPropagation.ag
+    Define how the transfer functions are computed.
+* ApplyConstantPropagation.hs
+    Specify how to apply the analysis.
+* AG/ApplyConstantPropagation.ag
+    Use the analysis results to improve the code.
+
+The structure for SLV is analogous.
+
+In addition to the features provided out of the box, we also support break and
+continue statements.
+
+We have, of course, also implemented the various properties mentioned in NNH
+(see AG/PropertyCatas.ag), pretty printing (see AG/PrettyPrintCatas.ag), and
+labelling (see AG/LabellingCata.ag).
+
+Understanding analysis output
+=============================
+
+The analysis will first of all pretty-print the source program with labels, and
+display the flow that it computed.  It will then give a step-by-step overview of
+how the minimum fixed point is computed.  This is followed by a number of lines
+of the form
+
+    n: state1 -> state2
+
+This means that the initial information at label n is state1, and the
+information after an update is state2.
+
+It would be more accurate to track individual contexts and output the
+information per context.  However, if our goal is to optimise the code then we
+wish to take the meet over all the possible contexts, since that tells us what
+we may in any case assume.
+
+The examples/ directory has a few files with the .analysis extension; these
+describe the analysis in depth and show correctness.
+
+More detail on the transfer functions
+=====================================
+
+What do you mean, more detail?  They're already fully formally specified by NNH.
+
+The only useful transfer function for constant propagation is the one for
+assignment, where if the right hand side is a constant, we remember that value
+for the name on the left-hand side.  We ignore assignments to boolean values
+(because they add a lot of clutter and are otherwise exactly the same) and we
+assume we can't know the value of a pointer (because of aliasing issues).  (The
+latter could be corrected in some nasty ad-hoc ways, but it would be of very
+limited use.)
+
+For strongly live variable analysis, we don't have monolithic transfer
+functions.  Instead, we have every statement generate a list of variables it
+generates and kills.  This is then used in the obvious way.  Why am I even
+explaining this?  It's all entirely straightforward.  If a value is assigned to
+a variable that is strongly live, then that value is necessary.  A variable that
+has just been assigned to is only strongly live if it was used for computing its
+own value, and was furthermore strongly live before.  Any variable is strongly
+live at the final points of the program, since we might be interested in its
+value after termination.
+
+The transfer functions involved in function calls are probably more interesting,
+but we didn't get around to implementing those, so they're all the identity
+function.
