@@ -56,10 +56,10 @@ sem Proc'
                   lhs.plabels    = M.singleton @name (@labelEntry, @labelReturn)
 
 sem Stat'
-  | Skip' IAssign' BAssign' Continue' Break'
+  | Skip' IAssign' BAssign' Continue' Break' Malloc' Free' RefAssign'
                   lhs.init       = @label
                   lhs.labels     = [@label]
-  | Skip' IAssign' BAssign'
+  | Skip' IAssign' BAssign' Malloc' Free' RefAssign'
                   lhs.final      = [@label]
   | IAssign' BAssign'
                   lhs.names      = S.singleton @name

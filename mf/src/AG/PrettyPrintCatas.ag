@@ -14,9 +14,10 @@ data PrecedenceS = None
                  | Compound
                  deriving(Eq, Ord, Read, Show)
 
+-- We were going to, at some point, make the arithmetic expressions display
+-- the minimal number of parentheses necessary.  Never got around to it, though.
 data PrecedenceE = Atomic
                  deriving(Eq, Ord, Read, Show)
-
 }
 
 attr Stat'
@@ -51,27 +52,31 @@ sem Stat'
   | Seq'            lhs  .doc  = maybeParens (@lhs.prec >= Compound) $ @stat1.doc $$ @stat2.doc
                     stat1.prec = None
                     stat2.prec = None
+  | Malloc'         lhs  .doc  = wrapWithLabel @label $ text "malloc" <> parens (text @name <> comma <+> @size.doc) <+> semi
+  | Free'           lhs  .doc  = wrapWithLabel @label $ text "free" <> parens @ptr.doc <+> semi
+  | RefAssign'      lhs  .doc  = wrapWithLabel @label $ char '*' <> @ptr.doc <+> assign <+> @val.doc <+> semi
   | Continue'       lhs  .doc  = wrapWithLabel @label $ text "continue" <+> semi
   | Break'          lhs  .doc  = wrapWithLabel @label $ text "break" <+> semi
 
 sem IExpr
   | IConst          lhs  .doc  = int @val
   | Var             lhs  .doc  = text @name
-  | Plus            lhs  .doc  = @left.doc <+> char '+' <+> @right.doc
-  | Minus           lhs  .doc  = @left.doc <+> char '-' <+> @right.doc
-  | Times           lhs  .doc  = @left.doc <+> char '*' <+> @right.doc
-  | Divide          lhs  .doc  = @left.doc <+> char '/' <+> @right.doc
+  | Plus            lhs  .doc  = parens $ @left.doc <+> char '+' <+> @right.doc
+  | Minus           lhs  .doc  = parens $ @left.doc <+> char '-' <+> @right.doc
+  | Times           lhs  .doc  = parens $ @left.doc <+> char '*' <+> @right.doc
+  | Divide          lhs  .doc  = parens $ @left.doc <+> char '/' <+> @right.doc
+  | Deref           lhs  .doc  = char '*' <> @ptr.doc
 
 sem BExpr
   | BConst          lhs  .doc  = text $ if @val then "true" else "false"
   | BVar            lhs  .doc  = text @name
-  | LessThan        lhs  .doc  = @left.doc <+> char '<' <+> @right.doc
-  | GreaterThan     lhs  .doc  = @left.doc <+> char '>' <+> @right.doc
-  | LessEqual       lhs  .doc  = @left.doc <+> text "<=" <+> @right.doc
-  | GreaterEqual    lhs  .doc  = @left.doc <+> text ">=" <+> @right.doc
-  | IEqual BEqual   lhs  .doc  = @left.doc <+> text "==" <+> @right.doc
-  | And             lhs  .doc  = @left.doc <+> text "&&" <+> @right.doc
-  | Or              lhs  .doc  = @left.doc <+> text "||" <+> @right.doc
+  | LessThan        lhs  .doc  = parens $ @left.doc <+> char '<' <+> @right.doc
+  | GreaterThan     lhs  .doc  = parens $ @left.doc <+> char '>' <+> @right.doc
+  | LessEqual       lhs  .doc  = parens $ @left.doc <+> text "<=" <+> @right.doc
+  | GreaterEqual    lhs  .doc  = parens $ @left.doc <+> text ">=" <+> @right.doc
+  | IEqual BEqual   lhs  .doc  = parens $ @left.doc <+> text "==" <+> @right.doc
+  | And             lhs  .doc  = parens $ @left.doc <+> text "&&" <+> @right.doc
+  | Or              lhs  .doc  = parens $ @left.doc <+> text "||" <+> @right.doc
   | Not             lhs  .doc  = text "!" <+> @val.doc
 
 sem Expr

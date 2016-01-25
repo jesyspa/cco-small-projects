@@ -23,9 +23,12 @@ attr IExpr BExpr Exprs Expr
 sem Stat'
   | IfThenElse' While'
                     cond  .analysis = @lhs.analysis @labelc
-  | IAssign' BAssign'
+  | IAssign' BAssign' RefAssign'
                     val   .analysis = @lhs.analysis @label
   | Call'           params.analysis = @lhs.analysis @labelCall
+  | Malloc'         size  .analysis = @lhs.analysis @label
+  | Free' RefAssign'
+                    ptr   .analysis = @lhs.analysis @label
 
 -- Try to evaluate expressions as far as possible.
 sem IExpr

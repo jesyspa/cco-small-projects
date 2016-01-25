@@ -27,7 +27,8 @@ tokens :-
   break                            { \s -> TBreak}
   
   \:\=                             { \s -> TAssign }
-  [\*\+\-\/]                       { \s -> TArithmeticOp s }
+  [\+\-\/]                         { \s -> TArithmeticOp s }
+  \*                               { \s -> TStar }
   and                              { \s -> TBoolOp s }
   or                               { \s -> TBoolOp s }
   (\<|\>|\<\=|\>\=|\=\=)           { \s -> TRelOp s }
@@ -49,6 +50,11 @@ tokens :-
   call                             { \s -> TCall }
   \,                               { \s -> TComma }
 
+  malloc                           { \s -> TMalloc }
+  free                             { \s -> TFree }
+
+  int                              { \s -> TTyInt }
+
   $alpha [$alpha $digit \_ \']*    { \s -> TIdent s }
   $digit+                          { \s -> TInt (read s) }
 
@@ -68,6 +74,7 @@ data Token  = TIdent String
             | TNot
             | TAssign
             | TArithmeticOp String
+            | TStar
             | TBoolOp String
             | TRelOp String
             | TSemicolon
@@ -85,6 +92,8 @@ data Token  = TIdent String
             | TRes
             | TCall
             | TComma
+            | TMalloc
+            | TFree
             | TContinue
             | TBreak
             | TTyInt

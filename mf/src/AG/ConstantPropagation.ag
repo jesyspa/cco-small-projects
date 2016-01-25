@@ -21,6 +21,9 @@ attr IExpr
     -- pass within the grammar itself.
     syn value :: {M.Map String Int -> Maybe Int}
 
+-- We only do constant propagation for integer values.  We could fairly easily
+-- also implement boolean vlues, but it would involve a whole lot of branching
+-- and would not add much to the exercise.
 sem Stat'
     | IAssign'      lhs.update = M.singleton @label $ fmap $ \m -> M.alter (const $ @val.value m) @name m
 

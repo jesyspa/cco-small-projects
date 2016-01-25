@@ -26,6 +26,9 @@ data Stat
   | IAssign       name  :: String     val    :: {IExpr}
   | BAssign       name  :: String     val    :: {BExpr}
   | Seq           stat1 :: Stat       stat2  :: Stat
+  | Malloc        name  :: String     size   :: {IExpr}
+  | Free          ptr   :: {IExpr}
+  | RefAssign     ptr   :: {IExpr}    val    :: {IExpr}
   | Continue
   | Break
 deriving Stat : Show
@@ -38,6 +41,9 @@ data Stat'
   | IAssign'       label :: Int        name  :: String     val    :: IExpr
   | BAssign'       label :: Int        name  :: String     val    :: BExpr
   | Seq'           stat1 :: Stat'      stat2  :: Stat'
+  | Malloc'        label :: Int        name  :: String     size   :: IExpr
+  | Free'          label :: Int        ptr   :: IExpr
+  | RefAssign'     label :: Int        ptr   :: IExpr      val :: IExpr
   | Continue'      label :: Int
   | Break'         label :: Int
 deriving Stat' : Show
@@ -49,6 +55,7 @@ data IExpr
   | Minus         left :: IExpr       right :: IExpr
   | Times         left :: IExpr       right :: IExpr
   | Divide        left :: IExpr       right :: IExpr
+  | Deref         ptr  :: IExpr
 deriving IExpr : Eq, Show
 
 data BExpr
